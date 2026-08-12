@@ -39,7 +39,7 @@
 ### Verification & Safety (VERIFY)
 
 - [ ] **VERIFY-01**: Full pipeline (subworld kill → item drop → main-world apply) verified end-to-end in singleplayer for at least one boss per registered mod
-- [ ] **VERIFY-02**: World-backup guidance is documented and followed before any live testing against a real save
+- [x] **VERIFY-02**: World-backup guidance is documented and followed before any live testing against a real save
 - [ ] **VERIFY-03**: Applied flags are confirmed recognized by Boss Checklist (or equivalent tracker mod) after application — not just internally consistent
 
 ## v2 Requirements
@@ -94,7 +94,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOD-05 | Phase 7 | Pending |
 | MOD-06 | Phase 7 | Pending |
 | VERIFY-01 | Phase 8 | Pending |
-| VERIFY-02 | Phase 1 | Pending |
+| VERIFY-02 | Phase 1 | Complete |
 | VERIFY-03 | Phase 8 | Pending |
 
 **Coverage:**
