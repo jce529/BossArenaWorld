@@ -11,7 +11,7 @@
 - [ ] **SUBW-02**: Using a registered summon item cancels its normal main-world summon effect (e.g. via `GlobalItem.PreUseItem` or equivalent hook returning false) before anything else happens — the boss must never spawn in the main world for a registered item
 - [ ] **SUBW-03**: After cancelling the main-world effect, the redirect sends the player into the boss-arena subworld — no separate portal item needed; the summon item itself is the entry trigger
 - [ ] **SUBW-04**: The boss automatically summons inside the subworld once the player arrives, reusing the original summon mechanic (item is not wasted/consumed by the redirect)
-- [ ] **SUBW-05**: The boss-arena subworld has zero placed mod content (custom `GenPass` list, not vanilla/modded worldgen) — this is the actual FPS-avoidance guarantee
+- [x] **SUBW-05**: The boss-arena subworld has zero placed mod content (custom `GenPass` list, not vanilla/modded worldgen) — this is the actual FPS-avoidance guarantee
 - [ ] **SUBW-06**: Player can reliably exit/return from the subworld to the main world
 
 ### Boss Detection & Carrier Item (DROP)
@@ -78,7 +78,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SUBW-02 | Phase 2 | Pending |
 | SUBW-03 | Phase 2 | Pending |
 | SUBW-04 | Phase 2 | Pending |
-| SUBW-05 | Phase 1 | Pending |
+| SUBW-05 | Phase 1 | Complete |
 | SUBW-06 | Phase 1 | Pending |
 | DROP-01 | Phase 3 | Pending |
 | DROP-02 | Phase 3 | Pending |
