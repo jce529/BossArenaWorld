@@ -74,34 +74,34 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SUBW-01 | TBD | Pending |
-| SUBW-02 | TBD | Pending |
-| SUBW-03 | TBD | Pending |
-| SUBW-04 | TBD | Pending |
-| SUBW-05 | TBD | Pending |
-| SUBW-06 | TBD | Pending |
-| DROP-01 | TBD | Pending |
-| DROP-02 | TBD | Pending |
-| DROP-03 | TBD | Pending |
-| APPLY-01 | TBD | Pending |
-| APPLY-02 | TBD | Pending |
-| APPLY-03 | TBD | Pending |
-| APPLY-04 | TBD | Pending |
-| MOD-01 | TBD | Pending |
-| MOD-02 | TBD | Pending |
-| MOD-03 | TBD | Pending |
-| MOD-04 | TBD | Pending |
-| MOD-05 | TBD | Pending |
-| MOD-06 | TBD | Pending |
-| VERIFY-01 | TBD | Pending |
-| VERIFY-02 | TBD | Pending |
-| VERIFY-03 | TBD | Pending |
+| SUBW-01 | Phase 2 | Pending |
+| SUBW-02 | Phase 2 | Pending |
+| SUBW-03 | Phase 2 | Pending |
+| SUBW-04 | Phase 2 | Pending |
+| SUBW-05 | Phase 1 | Pending |
+| SUBW-06 | Phase 1 | Pending |
+| DROP-01 | Phase 3 | Pending |
+| DROP-02 | Phase 3 | Pending |
+| DROP-03 | Phase 3 | Pending |
+| APPLY-01 | Phase 3 | Pending |
+| APPLY-02 | Phase 4 | Pending |
+| APPLY-03 | Phase 4 | Pending |
+| APPLY-04 | Phase 3 | Pending |
+| MOD-01 | Phase 4 | Pending |
+| MOD-02 | Phase 5 | Pending |
+| MOD-03 | Phase 6 | Pending |
+| MOD-04 | Phase 6 | Pending |
+| MOD-05 | Phase 7 | Pending |
+| MOD-06 | Phase 7 | Pending |
+| VERIFY-01 | Phase 8 | Pending |
+| VERIFY-02 | Phase 1 | Pending |
+| VERIFY-03 | Phase 8 | Pending |
 
 **Coverage:**
 - v1 requirements: 22 total
-- Mapped to phases: 0 (pending roadmap creation)
-- Unmapped: 22 ⚠️ (expected — filled by `/gsd:new-project` roadmap step)
+- Mapped to phases: 22 (100%)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-08-12*
-*Last updated: 2026-08-12 after initial definition*
+*Last updated: 2026-08-13 after roadmap creation*
