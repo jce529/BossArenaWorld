@@ -32,7 +32,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Player can enter the subworld and reliably exit/return to the main world without losing inventory or carried items.
   3. World-backup guidance is documented and followed before any live testing begins against a real save.
   4. Empirical test confirms a boss's downed flag does NOT propagate from the subworld back to the main world without an explicit carrier-item action — validates the premise the entire carrier-item architecture depends on.
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — SDK pin (global.json), SubworldLibrary modReference, VERIFY-02 world-backup guidance doc
+- [ ] 01-02-PLAN.md — BossArenaSubworld Subworld subclass + FlatStonePlatformPass GenPass (SUBW-05)
+- [ ] 01-03-PLAN.md — Debug enter/exit/checkflag chat commands + generic biome-zone override hook (SUBW-06, D-09)
+- [ ] 01-04-PLAN.md — King Slime isolation-proof checkpoint test (SUBW-05, SUBW-06, VERIFY-02)
 
 ### Phase 2: Summon-Item Redirect & Entry Registry
 **Goal**: Using an existing, registered boss-summon item redirects the player into the boss-arena subworld instead of summoning the boss in the main world, with the boss auto-summoning on arrival and the item preserved.
@@ -115,7 +121,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Subworld Skeleton & Isolation Proof | 0/TBD | Not started | - |
+| 1. Subworld Skeleton & Isolation Proof | 0/4 | Not started | - |
 | 2. Summon-Item Redirect & Entry Registry | 0/TBD | Not started | - |
 | 3. BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) | 0/TBD | Not started | - |
 | 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 0/TBD | Not started | - |
