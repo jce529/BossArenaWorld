@@ -37,7 +37,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md — SDK pin (global.json), SubworldLibrary modReference, VERIFY-02 world-backup guidance doc
 - [x] 01-02-PLAN.md — BossArenaSubworld Subworld subclass + FlatStonePlatformPass GenPass (SUBW-05)
-- [ ] 01-03-PLAN.md — Debug enter/exit/checkflag chat commands + generic biome-zone override hook (SUBW-06, D-09)
+- [x] 01-03-PLAN.md — Debug enter/exit/checkflag chat commands + generic biome-zone override hook (SUBW-06, D-09)
 - [ ] 01-04-PLAN.md — King Slime isolation-proof checkpoint test (SUBW-05, SUBW-06, VERIFY-02)
 
 ### Phase 2: Summon-Item Redirect & Entry Registry
@@ -121,7 +121,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Subworld Skeleton & Isolation Proof | 1/4 | In Progress|  |
+| 1. Subworld Skeleton & Isolation Proof | 3/4 | In Progress|  |
 | 2. Summon-Item Redirect & Entry Registry | 0/TBD | Not started | - |
 | 3. BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) | 0/TBD | Not started | - |
 | 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 0/TBD | Not started | - |
