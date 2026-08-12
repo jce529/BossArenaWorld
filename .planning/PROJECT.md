@@ -16,7 +16,7 @@ The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegis
 
 ### Active
 
-- [ ] Player can manually enter a dedicated boss-arena subworld (no mod content ever placed) via item or NPC interaction
+- [ ] Using an existing, registered boss-summon item (vanilla or modded) cancels its main-world summon effect and redirects the player into a dedicated boss-arena subworld (no mod content ever placed) instead — no separate portal item needed, and the boss auto-summons once inside
 - [ ] Killing a registered boss in the subworld drops a BossCoreItem carrying that boss's key (GlobalNPC.OnKill detection)
 - [ ] Using BossCoreItem in the main world applies the boss's downed flag via BossRegistry.Apply(key)
 - [ ] Boss-specific side effects (netcode sync calls, "boss just downed" messages) are reproduced when the item is used, matching each source mod's original OnKill behavior
@@ -32,7 +32,7 @@ The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegis
 ### Out of Scope
 
 - Multiplayer / dedicated server support — netcode complexity deferred; v1 targets singleplayer only
-- Automatic subworld entry (e.g. auto-detecting an imminent boss fight) — v1 uses explicit manual item/NPC entry, simpler and more controllable
+- Automatic subworld entry based on game-state heuristics (e.g. auto-detecting an imminent boss fight) — v1 redirects only on explicit use of an existing boss-summon item, still a deliberate player action
 - Boss priority ordering / phased rollout by "worst offender" — registration cost is uniform per boss once the BossRegistry/BossCoreItem/GlobalNPC skeleton exists, so there's no value in special-casing specific bosses first
 
 ## Context
@@ -64,7 +64,8 @@ Mod-specific research completed so far (see `DESIGN_1.md` for full detail, origi
 | Research all target mods (Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, Homeward) before writing implementation code | User explicitly chose full-research-first over incremental research+build | — Pending |
 | No boss priority ordering in v1 | Once the BossRegistry/BossCoreItem/GlobalNPC skeleton exists, registering any individual boss costs the same — no benefit to special-casing "worst offenders" like Moon Lord first | — Pending |
 | Singleplayer-only for v1 | Netcode/dedicated-server sync adds significant complexity; explicitly deferred | — Pending |
-| Manual item/NPC subworld entry | Explicit and simple to implement/control vs. automatic detection of an impending boss fight | — Pending |
+| Existing boss-summon items are the subworld entry trigger, not a new dedicated portal item | Simpler for the player (reuse the item they already have), less new content to build/maintain than a custom portal item/NPC; still an explicit, deliberate player action | — Pending |
+| BossCoreItem drop via `GlobalNPC.ModifyNPCLoot` + conditional `ItemDropRule` (gated to boss-arena subworld) instead of imperative `OnKill()` spawn | More idiomatic tModLoader loot pipeline (bestiary/expert-mode integration); custom drop rule can set the item's BossKey instance data at spawn time in one step | — Pending |
 
 ## Evolution
 
