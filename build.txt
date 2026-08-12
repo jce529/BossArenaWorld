@@ -1,0 +1,4 @@
+displayName = 보스 진행도 동기화되는 서브월드
+author = HiPoDEV
+version = 0.1
+modReferences = SubworldLibrary
