@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-08-12T22:46:46.717Z"
-last_activity: 2026-08-13 — Plan 01-01 executed (global.json SDK pin, SubworldLibrary modReferences, VERIFY-02 world-backup guidance)
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-08-12T23:21:49.434Z"
+last_activity: 2026-08-13 — Completed 01-01-PLAN.md and 01-02-PLAN.md (build-env prereqs; FlatStonePlatformPass + BossArenaSubworld)
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
-  percent: 0
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-08-12)
 ## Current Position
 
 Phase: 1 of 8 (Subworld Skeleton & Isolation Proof)
-Plan: 01 of 04 (Build-Environment Prerequisites) — complete
-Status: In progress (parallel plans 01-02, 01-03, 01-04 may still be executing)
-Last activity: 2026-08-13 — Plan 01-01 executed (global.json SDK pin, SubworldLibrary modReferences, VERIFY-02 world-backup guidance)
+Plan: 02 of 04 complete (01-01: Build-Environment Prerequisites; 01-02: Subworld skeleton -- GenPass + Subworld subclass)
+Status: In progress (wave 2/3 — plan 01-03 next)
+Last activity: 2026-08-13 — Completed 01-01-PLAN.md and 01-02-PLAN.md
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01 P01 | 8 | 3 tasks | 3 files |
+| Phase 01 P02 | 55 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -64,11 +65,13 @@ Recent decisions affecting current work:
 - Roadmap: Reflection/weak-reference cross-mod access helper is NOT a standalone phase — it's built as needed inside Phase 4 (Calamity), the first real content-mod integration, since it has no requirement of its own to anchor a phase to.
 - Roadmap: Phase 3 (registry/item/GlobalNPC pipeline) proven with one vanilla boss before any content-mod integration, isolating pipeline-mechanism risk from per-mod API risk.
 - Roadmap: Weak-references vs. pure-reflection tension (flagged in research/SUMMARY.md Gaps) is unresolved — needs explicit decision during Phase 4 planning, likely via `/gsd:research-phase`.
-- [Phase 01]: Copied untracked mod scaffold files (csproj, build.txt, tModLoader.targets, etc.) into the isolated worktree so Task 2's dotnet build verification could run; underlying gap is these files were never git-committed
+- [Phase 01]: GameConfiguration lives in Terraria.IO, not Terraria.WorldBuilding -- confirmed via reflection against installed tModLoader.dll
+- [Phase 01]: Plain dotnet build/msbuild cannot resolve build.txt modReferences (runtime-only mechanism) -- added a gitignored, locally-extracted Libs/SubworldLibrary.dll compile-time Reference (Private=false) alongside the authoritative build.txt declaration
+- [Phase 01]: Mod scaffold files (BossArenaSubWorld.cs, .csproj, build.txt, Properties/, Localization/, icons, description files) were untracked in git prior to this phase, causing isolated parallel worktrees to independently reconstruct them; scaffold is now committed to git as part of 01-01/01-02 merge, closing this gap for future worktree-isolated plans.
 
 ### Pending Todos
 
-- The mod's scaffold files (BossArenaSubWorld.cs, .csproj, build.txt, Properties/, Localization/, icons, description files) are untracked in the main git repository. Any future plan executed in a fresh, isolated worktree will hit the same "missing files" gap unless the scaffold is committed to git or the worktree setup is changed to copy untracked files.
+None yet.
 
 ### Blockers/Concerns
 
@@ -77,6 +80,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-08-12T22:46:44.145Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-08-12T23:21:49.428Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None

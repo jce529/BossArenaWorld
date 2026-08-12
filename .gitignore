@@ -1,0 +1,34 @@
+# Build output
+bin/
+obj/
+
+# Local compile-time-only reference DLLs extracted from installed Workshop
+# mods (e.g. SubworldLibrary.dll) -- not source, not redistributable;
+# each dev machine extracts its own copy from the installed .tmod via the
+# modReferences declared in build.txt. See build.txt for the actual
+# runtime dependency declaration.
+Libs/
+
+# tModLoader compiled mod
+*.tmod
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# NuGet
+*.nupkg
+packages/
+
+# OS files
+Thumbs.db
+.DS_Store
+.claude/
