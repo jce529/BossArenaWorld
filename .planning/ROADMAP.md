@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC)** - Killing a registered boss in the subworld drops a carrier item that applies the boss's downed state, idempotently, in the main world — proven with one vanilla boss
  (completed 2026-08-13)
 - [x] **Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction** - Calamity bosses are registered with full flag + netcode + WorldGen side-effect reproduction, establishing the safe cross-mod access pattern
-- [ ] **Phase 5: Spirit Integration** - Spirit bosses are registered via their structurally different static-field API, proving the registry pattern generalizes
+- [x] **Phase 5: Spirit Integration** - Spirit bosses are registered via their structurally different static-field API, proving the registry pattern generalizes (completed 2026-08-13)
 - [ ] **Phase 6: Redemption & CatalystMod Integration** - Both mods' downed-progress APIs are researched and their bosses registered
 - [ ] **Phase 7: NoxusBoss & ContinentOfJourney/Daybreak Integration** - Both mods' downed-progress APIs are researched and their bosses registered, completing v1 mod coverage
 - [ ] **Phase 8: Full Pipeline Verification & Tracker Confirmation** - The complete pipeline is verified end-to-end for every registered mod and confirmed recognized by external tracker mods
@@ -145,7 +145,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 2. Summon-Item Redirect & Entry Registry | 3/3 | Complete | 2026-08-13 |
 | 3. BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) | 3/3 | Complete   | 2026-08-13 |
 | 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 2/2 | Complete | 2026-08-13 |
-| 5. Spirit Integration | 1/2 | In Progress | - |
+| 5. Spirit Integration | 2/2 | Complete | 2026-08-13 |
 | 6. Redemption & CatalystMod Integration | 0/TBD | Not started | - |
 | 7. NoxusBoss & ContinentOfJourney/Daybreak Integration | 0/TBD | Not started | - |
 | 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |

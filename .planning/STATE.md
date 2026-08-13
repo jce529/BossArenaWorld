@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-08-13T13:24:05.113Z"
+status: executing
+stopped_at: Phase 5 complete and verified
+last_updated: "2026-08-13T13:29:29.213Z"
 last_activity: 2026-08-13
 progress:
   total_phases: 9
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 05 — spirit-integration
+**Current focus:** Phase 06 — redemption-catalystmod-integration
 
 ## Current Position
 
-Phase: 05 (spirit-integration) — PLANS COMPLETE
-Plan: 2 of 2
-Status: Phase complete — ready for verification
-Last activity: 2026-08-13 -- Phase 05 Plan 02 complete (all 3 checkpoints resolved: 2 live-verified, 1 explicitly skipped by user decision)
+Phase: 06 (redemption-catalystmod-integration) — NOT PLANNED
+Plan: Not started
+Status: Phase 5 verified complete — ready to plan Phase 6
+Last activity: 2026-08-13 -- Phase 05 verified complete (05-VERIFICATION.md, status: passed)
 
 Progress: [██████████] 100% (of 14 currently-planned plans across Phases 1-5; Phases 6-9 plans not yet created)
 
@@ -102,6 +102,7 @@ Recent decisions affecting current work:
 - [Phase 05]: Tooling note (not a project code issue): the `state update-progress`/`state advance-plan` gsd-tools commands have a case-insensitive-regex bug that matches the YAML frontmatter's `progress:` key instead of the body's `Progress:` line, silently no-op-ing the update (the corrupted frontmatter copy gets discarded when syncStateFrontmatter rebuilds frontmatter from the unchanged body). Updated STATE.md's Current Position/Progress/frontmatter fields manually for 05-01 as a workaround.
 - [Phase 05]: [Phase 05]: Task 2 (reflection-failure graceful-degradation checkpoint) was explicitly skipped by user decision -- it is not one of Phase 5's formal ROADMAP.md Success Criteria (only registration correctness, player/world-scope classification, and safe-disabled-load are), only an untested implementation-robustness path already confirmed via code review in 05-01. Precedent: future first-reflection-integration checkpoints (Phase 6/7) should be scoped strictly to formal Success Criteria unless the user asks for broader robustness coverage.
 - [Phase 05]: [Phase 05]: Live-verification lesson -- a summon item's in-game display name can differ from its underlying ModItem class name (SpiritMod's CursedCloth displayed in-game as 'Pain Caller' during Task 1's checkpoint). Do not treat a display-name mismatch alone as a verification failure; cross-check by ModItem class/type for all future mods' live-verification checkpoints (Phases 6-9).
+- [Phase 05]: Tooling note: `gsd-tools phase complete "05"` reported `roadmap_updated: true` but made zero changes to ROADMAP.md (verified via git diff), and set STATE.md's Current Position to "Phase: 09" instead of the actual next unplanned phase (Phase 6) -- likely picking the highest-numbered phase in the file rather than the next sequential incomplete one, now that Phase 9 exists past the still-unplanned Phases 6-8. Manually fixed ROADMAP.md's Phase 5 checkbox/Progress row and STATE.md's Current Position as a workaround. Re-verify `phase complete`'s output against `git diff` every time, don't trust its `*_updated` flags at face value.
 
 ### Roadmap Evolution
 
