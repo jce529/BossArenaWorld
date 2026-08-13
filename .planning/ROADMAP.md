@@ -66,7 +66,12 @@ Plans:
   3. Using `BossCoreItem` in the main world calls `BossRegistry.Apply(key)` and sets the corresponding boss's downed flag.
   4. Re-using a `BossCoreItem`, or using it again after a partial failure, does not double-apply rewards or duplicate side effects.
   5. The full pipeline (subworld kill → item drop → main-world apply) is demonstrated end-to-end in singleplayer with one vanilla boss, with a world backup taken first.
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — BossRegistry (key -> BossDefinition, Apply/idempotency) + BossCoreItem (carrier item, UseItem -> Apply)
+- [ ] 03-02-PLAN.md — BossCoreDropRule (subworld-gated custom IItemDropRule) + BossKillGlobalNPC (ModifyNPCLoot wiring)
+- [ ] 03-03-PLAN.md — Live pipeline verification checkpoint (DROP-02, DROP-03, APPLY-01, APPLY-04 end-to-end)
 
 ### Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction
 **Goal**: Calamity bosses' full downed state (flag, netcode sync, and WorldGen side effects) is faithfully reproduced in the main world, and the safe cross-mod access pattern used by every later integration is established here.
