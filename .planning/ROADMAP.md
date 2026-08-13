@@ -102,7 +102,7 @@ Plans:
 
 Plans:
 - [x] 05-01-PLAN.md -- SpiritMod weakReferences build wiring + Integrations/SpiritIntegration.cs registering Infernon (MOD-02)
-- [ ] 05-02-PLAN.md -- Live downed-flag/WorldGen checkpoint (D-05) + reflection-failure checkpoint + SpiritMod-disabled load-safety checkpoint (D-05)
+- [x] 05-02-PLAN.md -- Live downed-flag/WorldGen checkpoint (D-05) + reflection-failure checkpoint + SpiritMod-disabled load-safety checkpoint (D-05)
 
 ### Phase 6: Redemption & CatalystMod Integration
 **Goal**: Redemption and CatalystMod bosses' downed-progress APIs are researched and both mods' bosses are registered and applied correctly in the main world.

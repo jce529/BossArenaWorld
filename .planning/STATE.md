@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-08-13T12:41:00.000Z"
-last_activity: 2026-08-13 -- Phase 05 Plan 01 complete
+status: verifying
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-08-13T13:24:05.113Z"
+last_activity: 2026-08-13
 progress:
-  total_phases: 8
-  completed_phases: 4
+  total_phases: 9
+  completed_phases: 5
   total_plans: 14
-  completed_plans: 13
-  percent: 93
+  completed_plans: 14
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-08-12)
 
 ## Current Position
 
-Phase: 05 (spirit-integration) — EXECUTING
+Phase: 05 (spirit-integration) — PLANS COMPLETE
 Plan: 2 of 2
-Status: Ready to execute
-Last activity: 2026-08-13 -- Phase 05 Plan 01 complete
+Status: Phase complete — ready for verification
+Last activity: 2026-08-13 -- Phase 05 Plan 02 complete (all 3 checkpoints resolved: 2 live-verified, 1 explicitly skipped by user decision)
 
-Progress: [█████████░] 93%
+Progress: [██████████] 100% (of 14 currently-planned plans across Phases 1-5; Phases 6-9 plans not yet created)
 
 ## Performance Metrics
 
@@ -65,6 +65,7 @@ Progress: [█████████░] 93%
 | Phase 04 P01 | 5min | 2 tasks | 4 files |
 | Phase 04 P02 | 25min | 2 tasks | 1 files |
 | Phase 05 P01 | 7min | 2 tasks | 3 files |
+| Phase 05 P02 | verification-only | 3 tasks | 0 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,8 @@ Recent decisions affecting current work:
 - [Phase 05]: Both Infernon and InfernoSkull NPC types registered under one BossDefinition (Pitfall B) since either's OnKill can be the actual downed-trigger depending on Normal vs Expert Mode difficulty.
 - [Phase 05]: D-03 confirmed and documented in-code: Infernon's downed-tracking path (BossDownedTracker.OnKill + Infernon/InfernoSkull.OnKill) is fully world-scoped with no player-scoped side effect, so no exclusion logic is needed (unlike Calamity's Hive Mind SetNewBossJustDowned() case in Phase 4).
 - [Phase 05]: Tooling note (not a project code issue): the `state update-progress`/`state advance-plan` gsd-tools commands have a case-insensitive-regex bug that matches the YAML frontmatter's `progress:` key instead of the body's `Progress:` line, silently no-op-ing the update (the corrupted frontmatter copy gets discarded when syncStateFrontmatter rebuilds frontmatter from the unchanged body). Updated STATE.md's Current Position/Progress/frontmatter fields manually for 05-01 as a workaround.
+- [Phase 05]: [Phase 05]: Task 2 (reflection-failure graceful-degradation checkpoint) was explicitly skipped by user decision -- it is not one of Phase 5's formal ROADMAP.md Success Criteria (only registration correctness, player/world-scope classification, and safe-disabled-load are), only an untested implementation-robustness path already confirmed via code review in 05-01. Precedent: future first-reflection-integration checkpoints (Phase 6/7) should be scoped strictly to formal Success Criteria unless the user asks for broader robustness coverage.
+- [Phase 05]: [Phase 05]: Live-verification lesson -- a summon item's in-game display name can differ from its underlying ModItem class name (SpiritMod's CursedCloth displayed in-game as 'Pain Caller' during Task 1's checkpoint). Do not treat a display-name mismatch alone as a verification failure; cross-check by ModItem class/type for all future mods' live-verification checkpoints (Phases 6-9).
 
 ### Roadmap Evolution
 
@@ -116,6 +119,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-13T12:41:00.000Z
-Stopped at: Completed 05-01-PLAN.md
-Resume file: .planning/phases/05-spirit-integration/05-02-PLAN.md
+Last session: 2026-08-13T13:24:05.107Z
+Stopped at: Completed 05-02-PLAN.md
+Resume file: None
