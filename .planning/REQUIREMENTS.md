@@ -42,6 +42,10 @@
 - [x] **VERIFY-02**: World-backup guidance is documented and followed before any live testing against a real save
 - [ ] **VERIFY-03**: Applied flags are confirmed recognized by Boss Checklist (or equivalent tracker mod) after application — not just internally consistent
 
+### Arena Biome Coverage (ARENA)
+
+- [ ] **ARENA-01**: Every v1-registered boss across all integrated mods is explicitly classified (via source research) as biome/Zone-flag-dependent or not, and every boss classified as dependent has a matching routed biome-variant subworld (via `BossArenaRoutingRegistry`) — generalizing the ad-hoc `BossArenaCorruptionSubworld` fix built for Calamity's Hive Mind in Phase 4
+
 ## v2 Requirements
 
 Deferred to future release. Tracked but not in current roadmap.
@@ -96,12 +100,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VERIFY-01 | Phase 8 | Pending |
 | VERIFY-02 | Phase 1 | Complete |
 | VERIFY-03 | Phase 8 | Pending |
+| ARENA-01 | Phase 9 | Pending |
 
 **Coverage:**
-- v1 requirements: 22 total
-- Mapped to phases: 22 (100%)
+- v1 requirements: 23 total
+- Mapped to phases: 23 (100%)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-08-12*
-*Last updated: 2026-08-13 after roadmap creation*
+*Last updated: 2026-08-13 after adding Phase 9 (ARENA-01)*

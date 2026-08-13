@@ -100,6 +100,10 @@ Recent decisions affecting current work:
 - [Phase 05]: D-03 confirmed and documented in-code: Infernon's downed-tracking path (BossDownedTracker.OnKill + Infernon/InfernoSkull.OnKill) is fully world-scoped with no player-scoped side effect, so no exclusion logic is needed (unlike Calamity's Hive Mind SetNewBossJustDowned() case in Phase 4).
 - [Phase 05]: Tooling note (not a project code issue): the `state update-progress`/`state advance-plan` gsd-tools commands have a case-insensitive-regex bug that matches the YAML frontmatter's `progress:` key instead of the body's `Progress:` line, silently no-op-ing the update (the corrupted frontmatter copy gets discarded when syncStateFrontmatter rebuilds frontmatter from the unchanged body). Updated STATE.md's Current Position/Progress/frontmatter fields manually for 05-01 as a workaround.
 
+### Roadmap Evolution
+
+- Phase 9 added: Biome-Dependent Subworld Coverage — user requested during Phase 5 execution (05-02 checkpoint) after confirming Infernon's registration works live end-to-end. Generalizes Phase 4's ad-hoc `BossArenaCorruptionSubworld`/`BossArenaRoutingRegistry` fix (built live for Calamity's Hive Mind ZoneCorrupt despawn bug) into a systematic per-boss audit across all v1 mods, placed after Phase 8 per user's explicit placement choice. New requirement: ARENA-01.
+
 ### Pending Todos
 
 None yet.

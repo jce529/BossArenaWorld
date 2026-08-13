@@ -13,14 +13,15 @@ The journey starts by proving the subworld itself works in isolation — an empt
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Subworld Skeleton & Isolation Proof** - An empty, content-free boss-arena subworld exists; player can enter/exit reliably; the world-flag isolation premise is verified empirically (completed 2026-08-13)
-- [ ] **Phase 2: Summon-Item Redirect & Entry Registry** - Using a registered boss-summon item cancels its main-world effect and redirects the player into the subworld, where the boss auto-summons
+- [x] **Phase 2: Summon-Item Redirect & Entry Registry** - Using a registered boss-summon item cancels its main-world effect and redirects the player into the subworld, where the boss auto-summons
 - [x] **Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC)** - Killing a registered boss in the subworld drops a carrier item that applies the boss's downed state, idempotently, in the main world — proven with one vanilla boss
  (completed 2026-08-13)
-- [ ] **Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction** - Calamity bosses are registered with full flag + netcode + WorldGen side-effect reproduction, establishing the safe cross-mod access pattern
+- [x] **Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction** - Calamity bosses are registered with full flag + netcode + WorldGen side-effect reproduction, establishing the safe cross-mod access pattern
 - [ ] **Phase 5: Spirit Integration** - Spirit bosses are registered via their structurally different static-field API, proving the registry pattern generalizes
 - [ ] **Phase 6: Redemption & CatalystMod Integration** - Both mods' downed-progress APIs are researched and their bosses registered
 - [ ] **Phase 7: NoxusBoss & ContinentOfJourney/Daybreak Integration** - Both mods' downed-progress APIs are researched and their bosses registered, completing v1 mod coverage
 - [ ] **Phase 8: Full Pipeline Verification & Tracker Confirmation** - The complete pipeline is verified end-to-end for every registered mod and confirmed recognized by external tracker mods
+- [ ] **Phase 9: Biome-Dependent Subworld Coverage** - Every biome/Zone-dependent boss across all integrated mods has a matching routed subworld variant, audited systematically instead of discovered live in-game
 
 ## Phase Details
 
@@ -136,16 +137,26 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Subworld Skeleton & Isolation Proof | 4/4 | Complete   | 2026-08-13 |
-| 2. Summon-Item Redirect & Entry Registry | 0/3 | Not started | - |
+| 2. Summon-Item Redirect & Entry Registry | 3/3 | Complete | 2026-08-13 |
 | 3. BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) | 3/3 | Complete   | 2026-08-13 |
-| 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 1/2 | In Progress|  |
-| 5. Spirit Integration | 0/2 | Not started | - |
+| 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 2/2 | Complete | 2026-08-13 |
+| 5. Spirit Integration | 1/2 | In Progress | - |
 | 6. Redemption & CatalystMod Integration | 0/TBD | Not started | - |
 | 7. NoxusBoss & ContinentOfJourney/Daybreak Integration | 0/TBD | Not started | - |
 | 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |
-</content>
+| 9. Biome-Dependent Subworld Coverage | 0/TBD | Not started | - |
+
+### Phase 9: Biome-Dependent Subworld Coverage
+**Goal**: Every v1-registered boss whose AI depends on a biome/Zone flag (the despawn-bug class found live with Calamity's Hive Mind in Phase 4, fixed there only ad-hoc via `BossArenaCorruptionSubworld`) has a matching routed biome-variant subworld, audited systematically across every integrated mod instead of being discovered live in-game per boss.
+**Depends on**: Phase 8
+**Requirements**: ARENA-01
+**Success Criteria** (what must be TRUE):
+  1. Every boss registered in Phases 4-7 (Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak) is explicitly classified via source research as biome/Zone-dependent or not — extending the ad-hoc classification already done for Hive Mind (Phase 4, dependent) and Infernon (Phase 5, independent) to every remaining registered boss.
+  2. Every boss classified as biome/Zone-dependent has a matching `BossArenaXSubworld` variant registered via `BossArenaRoutingRegistry` (following the `BossArenaCorruptionSubworld` precedent), preventing the AI despawn/malfunction bug class found with Hive Mind.
+  3. Classification and routing coverage is documented per boss, so future (post-v1) mod integrations can extend the same audit instead of re-discovering biome dependencies live in-game.
+**Plans**: TBD
