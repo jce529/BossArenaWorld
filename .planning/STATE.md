@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2 context gathered
-last_updated: "2026-08-13T02:00:25.043Z"
-last_activity: 2026-08-12
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-08-13T03:25:03.397Z"
+last_activity: 2026-08-13
 progress:
   total_phases: 8
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 7
+  completed_plans: 5
   percent: 75
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 1 - Subworld Skeleton & Isolation Proof
+**Current focus:** Phase 2 — Summon-Item Redirect & Entry Registry
 
 ## Current Position
 
-Phase: 1 of 8 (Subworld Skeleton & Isolation Proof)
-Plan: 4 of 04 complete (01-01: Build-Environment Prerequisites; 01-02: Subworld skeleton -- GenPass + Subworld subclass; 01-03: Debug entry/exit tooling + biome-override hook)
+Phase: 2 (Summon-Item Redirect & Entry Registry) — EXECUTING
+Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-08-12
+Last activity: 2026-08-13
 
 Progress: [████████░░] 75%
 
@@ -56,6 +56,7 @@ Progress: [████████░░] 75%
 | Phase 01 P02 | 55 | 2 tasks | 4 files |
 | Phase 01 P03 | 3min | 2 tasks | 2 files |
 | Phase 01 P04 | 20min | 2 tasks | 0 files |
+| Phase 02 P01 | 8min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Mod scaffold files (BossArenaSubWorld.cs, .csproj, build.txt, Properties/, Localization/, icons, description files) were untracked in git prior to this phase, causing isolated parallel worktrees to independently reconstruct them; scaffold is now committed to git as part of 01-01/01-02 merge, closing this gap for future worktree-isolated plans.
 - [Phase 01]: BiomeOverridePlayer.cs references the Subworld type via using+unqualified name instead of fully-qualified path, avoiding CS0426 collision with the BossArenaSubWorld Mod class
 - [Phase 01]: CRITICAL: Live King Slime isolation test shows NPC.downedSlimeKing=True after subworld round-trip (expected False) -- isolation premise NOT confirmed, contradicts 01-RESEARCH.md's source-traced expectation; Phase 2 planning blocked pending re-investigation
+- [Phase 02]: Generalized D-09 as calling NPC.SpawnOnPlayer with the mapped boss type (vanilla summon items have no isolated, externally-callable use-effect method)
+- [Phase 02]: Used SubworldSystem.IsActive<BossArenaSubworld>(), not AnyActive, correcting a non-compiling example in 02-RESEARCH.md (AnyActive requires where T : Mod)
 
 ### Pending Todos
 
@@ -85,6 +88,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-13T02:00:25.037Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-summon-item-redirect-entry-registry/02-CONTEXT.md
+Last session: 2026-08-13T03:24:46.095Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: None
