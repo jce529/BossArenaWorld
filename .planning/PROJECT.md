@@ -16,12 +16,12 @@ The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegis
 - [x] Killing a registered boss in the subworld drops a BossCoreItem carrying that boss's key, gated dynamically per-kill (not baked in at mod load) via a custom `IItemDropRule` attached through `GlobalNPC.ModifyNPCLoot` — Validated in Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) (live in-game test confirmed, 2026-08-13)
 - [x] Using BossCoreItem in the main world applies the boss's downed flag via `BossRegistry.Apply(key)`, replaying vanilla's own `NPC.SetEventFlagCleared` fidelity path, idempotently (re-use after already-downed is a no-op with distinct feedback, no duplicate side effects) — Validated in Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) (live in-game test confirmed, 2026-08-13)
 - [x] Full pipeline verified end-to-end in singleplayer (subworld kill → item → main world apply), with world backup before testing — proven with one low-risk vanilla boss (King Slime) — Validated in Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) (live in-game test confirmed, 2026-08-13). Content-mod-specific reproduction (Calamity/Spirit/etc.) remains Active below.
+- [x] Boss-specific side effects (netcode sync calls, "boss just downed" messages) are reproduced when the item is used, matching each source mod's original OnKill behavior — Validated in Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction (live in-game test confirmed for Hive Mind: Sky Ore chat broadcast + CalamityNetcode.SyncWorld(), 2026-08-13)
+- [x] World-altering bosses also trigger their WorldGen side effects (ore generation, dungeon activation, etc.) when the item is used in the main world — Validated in Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction (live in-game test confirmed: Hive Mind's AerialiteOreGen.Enchant() converted real Aerialite Ore tiles on BossCoreItem use, 2026-08-13)
+- [x] Calamity bosses registered via `DownedBossSystem` pattern — Validated in Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction (Hive Mind registered end-to-end via `Integrations/CalamityIntegration.cs`; `[JITWhenModsEnabled("CalamityMod")]` isolation confirmed safe live with CalamityMod disabled, 2026-08-13)
 
 ### Active
 
-- [ ] Boss-specific side effects (netcode sync calls, "boss just downed" messages) are reproduced when the item is used, matching each source mod's original OnKill behavior
-- [ ] World-altering bosses (mechanical bosses, Plantera, etc.) also trigger their WorldGen side effects (ore generation, dungeon activation, etc.) when the item is used in the main world
-- [ ] Calamity bosses registered via `DownedBossSystem` pattern
 - [ ] Spirit bosses registered via `MyWorld` static-field pattern
 - [ ] Redemption bosses researched and registered
 - [ ] CatalystMod bosses researched and registered
@@ -68,6 +68,8 @@ Mod-specific research completed so far (see `DESIGN_1.md` for full detail, origi
 | ~~Existing boss-summon items are the subworld entry trigger, not a new dedicated portal item~~ — **SUPERSEDED in Phase 2 discuss-phase (2026-08-13)** | Original rationale: simpler for the player, less new content to maintain. Superseded because the user explicitly requested a dedicated portal tile instead — see next row | Superseded |
 | New placeable portal tile ("Test1", Corruption Altar sprite reused visually only — no vanilla altar behavior) is the subworld entry trigger; right-click while holding a registered summon item | User's explicit design choice (Phase 2 discuss-phase): a physical, placeable altar-style object reads more naturally as an "arena portal" than reusing an item's own use-action, and keeps the summon item's normal main-world behavior completely untouched | Validated (Phase 2) |
 | BossCoreItem drop via `GlobalNPC.ModifyNPCLoot` + conditional `ItemDropRule` (gated to boss-arena subworld) instead of imperative `OnKill()` spawn | More idiomatic tModLoader loot pipeline (bestiary/expert-mode integration); custom drop rule can set the item's BossKey instance data at spawn time in one step | Validated (Phase 3) |
+| Biome-gated bosses (e.g. Hive Mind, which despawns without `player.ZoneCorrupt`) get their own dedicated per-biome arena subworld, routed via `BossArenaRoutingRegistry`, instead of forcing biome Zone flags via an every-tick `ModPlayer` override | A real tile-based biome survives vanilla's per-tick Zone-flag recompute (`Player.UpdateBiomes()`); an ever-growing pile of per-boss `Zone*` overrides in `BiomeOverridePlayer` doesn't scale across future biome-gated bosses | Validated (Phase 4, see `.planning/debug/resolved/hivemind-zonecorrupt-despawn-corruption-subworld.md`) |
+| Delegates passed into `[JITWhenModsEnabled]`-guarded registration calls (e.g. `BossDefinition.IsDowned`) must be named, separately-`[JITWhenModsEnabled]`-tagged methods, never inline lambdas | An inline lambda compiles into a `<>c` compiler-generated cache-class method that does NOT inherit the enclosing method's `[JITWhenModsEnabled]` attribute; tModLoader's JIT prefilter still touches it and throws a real `JITException` when the referenced mod is disabled — confirmed live in Phase 4 (commit `0e19600`) | Validated (Phase 4) — applies to every future per-mod boss registration (Phase 5 Spirit onward) |
 
 ## Evolution
 
@@ -87,4 +89,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-13 — Phase 3 (BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC)) complete*
+*Last updated: 2026-08-13 — Phase 4 (Calamity Integration & Cross-Mod Side-Effect Reproduction) complete*
