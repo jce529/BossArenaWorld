@@ -12,7 +12,7 @@ The journey starts by proving the subworld itself works in isolation — an empt
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [x] **Phase 1: Subworld Skeleton & Isolation Proof** - An empty, content-free boss-arena subworld exists; player can enter/exit reliably; the world-flag isolation premise is verified empirically (completed 2026-08-13)
+- [x] **Phase 1: Subworld Skeleton & Isolation Proof** - An empty, content-free boss-arena subworld exists; player can enter/exit reliably; the world-flag isolation premise is verified empirically (completed 2026-08-13)
 - [ ] **Phase 2: Summon-Item Redirect & Entry Registry** - Using a registered boss-summon item cancels its main-world effect and redirects the player into the subworld, where the boss auto-summons
 - [ ] **Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC)** - Killing a registered boss in the subworld drops a carrier item that applies the boss's downed state, idempotently, in the main world — proven with one vanilla boss
 - [ ] **Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction** - Calamity bosses are registered with full flag + netcode + WorldGen side-effect reproduction, establishing the safe cross-mod access pattern
@@ -49,7 +49,12 @@ Plans:
   2. Using a registered summon item never spawns the boss in the main world — the normal summon effect is cancelled before anything else happens.
   3. After cancellation, the player is sent into the boss-arena subworld as the redirect's next step, with no separate portal item required.
   4. The target boss automatically summons inside the subworld once the player arrives, and the summon item itself is not consumed by the redirect.
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Summon-item registry (SUBW-01) + generic arrival auto-summon hook (SUBW-04 backend)
+- [ ] 02-02-PLAN.md — Test1 portal tile + placing item, right-click redirect trigger (SUBW-02, SUBW-03)
+- [ ] 02-03-PLAN.md — Live redirect verification checkpoint + Phase 1/2 debug tooling removal (SUBW-01..04)
 
 ### Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (Proof of Concept)
 **Goal**: Killing a registered boss inside the subworld reliably carries a boss-kill credential back to the main world and applies it exactly once, proven end-to-end with one low-risk vanilla boss before content-mod complexity is introduced.
@@ -122,10 +127,11 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Subworld Skeleton & Isolation Proof | 4/4 | Complete   | 2026-08-13 |
-| 2. Summon-Item Redirect & Entry Registry | 0/TBD | Not started | - |
+| 2. Summon-Item Redirect & Entry Registry | 0/3 | Not started | - |
 | 3. BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) | 0/TBD | Not started | - |
 | 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 0/TBD | Not started | - |
 | 5. Spirit Integration | 0/TBD | Not started | - |
 | 6. Redemption & CatalystMod Integration | 0/TBD | Not started | - |
 | 7. NoxusBoss & ContinentOfJourney/Daybreak Integration | 0/TBD | Not started | - |
 | 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |
+</content>
