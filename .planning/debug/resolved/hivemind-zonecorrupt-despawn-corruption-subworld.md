@@ -2,7 +2,7 @@
 status: resolved
 trigger: "Investigate issue: hivemind-zonecorrupt-despawn-corruption-subworld -- Hive Mind despawns almost immediately after spawning inside BossArenaSubworld because the arena has no Corruption biome tiles, so player.ZoneCorrupt stays false and HiveMind.AI() caps NPC.timeLeft to ~1 second. Blocks Phase 4's 04-02-PLAN.md live verification checkpoint."
 created: 2026-08-13T11:00:00Z
-updated: 2026-08-13T12:20:00Z
+updated: 2026-08-13T12:30:00Z
 ---
 
 ## Current Focus
@@ -10,7 +10,7 @@ updated: 2026-08-13T12:20:00Z
 hypothesis: RESOLVED (both the original ZoneCorrupt despawn bug AND the follow-up "double Sky Ore message" symptom found during live verification). The double-message symptom traced to completion and confirmed to be EXPECTED/architecturally-correct behavior, not a state-corruption bug -- see Evidence/Resolution below. Documentation comments added to Integrations/CalamityIntegration.cs capturing the full mechanism for future maintainers/future boss registrations. No functional code change was needed or made.
 test: N/A -- investigation complete, no fix to test (see Resolution). Build re-verified after adding documentation comments: `dotnet build BossArenaSubWorld.csproj` -- PASS (0 warnings, 0 errors).
 expecting: N/A.
-next_action: None. Session resolved -- user confirmed the fix is correct and complete and explicitly chose to skip the two remaining optional live spot-checks (downedHiveMind persistence across save/quit/relaunch; no third message/conversion on repeat use), both of which follow deterministically from the already-confirmed mechanism (ordinary ModSystem TagCompound persistence once written to the real main .wld; D-01 idempotency guard now correctly reading true). Archived to .planning/debug/resolved/.
+next_action: None. Session fully resolved -- user confirmed the fix is correct and complete, AND subsequently confirmed both remaining optional live spot-checks passed as well: (a) downedHiveMind persists as true across a real save/quit/relaunch of the main world, (b) no third "Sky is glittering" message or Aerialite conversion occurs on repeat BossCoreItem use / arena re-entry (idempotency via IsDowned() holds). Archived to .planning/debug/resolved/.
 
 ## Symptoms
 
@@ -167,7 +167,7 @@ fix_followup: |
 verification_followup: |
   Build verification: `dotnet build BossArenaSubWorld.csproj` -- PASS (0 warnings, 0 errors) after adding documentation comments.
   Mechanism verified via direct decompilation of all three relevant assemblies (CalamityMod.dll, SubworldLibrary.dll, tModLoader.dll) rather than inferred from the orchestrator's hypothesis alone -- confirms each link in the causal chain independently (see Evidence entries 2026-08-13T12:02:00Z through 12:09:30Z).
-  Live verification: user already confirmed the SECOND (real, main-world) broadcast correctly converted real Aerialite ore. Outstanding optional spot-checks for the checkpoint: (a) confirm `downedHiveMind` stays `true` after a normal save-and-quit/relaunch of the main world (should behave identically to any other normal boss kill from this point on, no subworld involved anymore); (b) confirm no THIRD message/conversion occurs if the BossCoreItem mechanism is exercised again or the arena is re-entered (idempotency via `IsDowned()` now correctly reading `true` from the real main save).
+  Live verification: user already confirmed the SECOND (real, main-world) broadcast correctly converted real Aerialite ore. User subsequently also confirmed both remaining optional spot-checks: (a) `downedHiveMind` stays `true` after a normal save-and-quit/relaunch of the main world; (b) no THIRD message/conversion occurs when the BossCoreItem mechanism is exercised again or the arena is re-entered (idempotency via `IsDowned()` correctly reading `true` from the real main save holds). All checkpoint verification items now fully closed.
 files_changed:
   - "Subworlds/CorruptionPlatformPass.cs"
   - "Subworlds/BossArenaCorruptionSubworld.cs"
