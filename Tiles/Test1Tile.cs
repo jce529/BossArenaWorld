@@ -1,9 +1,7 @@
 using Microsoft.Xna.Framework;
-using SubworldLibrary;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
-using BossArenaSubWorld.Subworlds;
 using BossArenaSubWorld.Systems;
 
 namespace BossArenaSubWorld.Tiles
@@ -51,7 +49,11 @@ namespace BossArenaSubWorld.Tiles
             Main.NewText("보스 아레나로 입장합니다. 도착하면 보스가 자동으로 소환됩니다.", 220, 180, 255); // D-11
 
             BossSummonPlayer.PendingBossNpcType = bossNpcType;
-            SubworldSystem.Enter<BossArenaSubworld>();
+            // SUBW-boss-aware: routes to the correct arena subworld for this boss (plain
+            // BossArenaSubworld by default, or a boss-specific biome arena if one was
+            // registered -- see Systems/BossArenaRoutingRegistry.cs and
+            // .planning/debug/resolved/hivemind-zonecorrupt-despawn-corruption-subworld.md).
+            BossArenaRoutingRegistry.Enter(bossNpcType);
             return true;
         }
     }

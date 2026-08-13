@@ -1,7 +1,5 @@
-using SubworldLibrary;
 using Terraria;
 using Terraria.ModLoader;
-using BossArenaSubWorld.Subworlds;
 
 namespace BossArenaSubWorld.Systems
 {
@@ -20,7 +18,13 @@ namespace BossArenaSubWorld.Systems
         public override void OnEnterWorld()
         {
             if (!PendingBossNpcType.HasValue) return;
-            if (!SubworldSystem.IsActive<BossArenaSubworld>()) return;
+            // Boss-aware guard (generalized from the original SubworldSystem.IsActive<
+            // BossArenaSubworld>() check -- see Systems/BossArenaRoutingRegistry.cs and
+            // .planning/debug/resolved/hivemind-zonecorrupt-despawn-corruption-subworld.md):
+            // accepts ANY registered boss-arena subworld type, not just the original plain one,
+            // while still preserving Pitfall 3's intent (prevents re-summon on a later,
+            // unrelated subworld entry belonging to some other mod).
+            if (!BossArenaRoutingRegistry.IsAnyArenaActive()) return;
 
             NPC.SpawnOnPlayer(Player.whoAmI, PendingBossNpcType.Value);
             PendingBossNpcType = null; // consume once -- Pitfall 3 guard: prevents

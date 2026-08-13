@@ -1,10 +1,9 @@
 using System.Collections.Generic;
-using SubworldLibrary;
 using Terraria;
 using Terraria.GameContent.ItemDropRules;
 using Terraria.ModLoader;
 using BossArenaSubWorld.Items;
-using BossArenaSubWorld.Subworlds;
+using BossArenaSubWorld.Systems;
 
 namespace BossArenaSubWorld.ItemDropRules
 {
@@ -20,8 +19,14 @@ namespace BossArenaSubWorld.ItemDropRules
 
         public List<IItemDropRuleChainAttempt> ChainedRules { get; } = new();
 
+        // Boss-aware gate (generalized from the original SubworldSystem.IsActive<
+        // BossArenaSubworld>() check -- found and fixed as a second bug during
+        // .planning/debug/resolved/hivemind-zonecorrupt-despawn-corruption-subworld.md: the
+        // original hardcoded check would have silently prevented the BossCoreItem from ever
+        // dropping for any boss killed in a non-default arena subworld, e.g. Hive Mind in
+        // BossArenaCorruptionSubworld).
         public bool CanDrop(DropAttemptInfo info) =>
-            SubworldSystem.IsActive<BossArenaSubworld>();
+            BossArenaRoutingRegistry.IsAnyArenaActive();
 
         // DROP-03: BossKey is set here, at spawn time, inside the drop rule -- immediately
         // after Item.NewItem returns the spawned item's Main.item[] index.
