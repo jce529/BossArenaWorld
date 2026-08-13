@@ -37,6 +37,19 @@
 			<HintPath>Libs\CalamityMod.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
+
+		<!--
+			Compile-time-only weak reference to SpiritMod, declared as a weak runtime
+			dependency via `weakReferences = ... SpiritMod@1.5.0.44` in build.txt (per D-01: the
+			mod must still load with SpiritMod absent). Libs/SpiritMod.dll is copied directly from
+			the already-decompiled ModReader/SpiritMod/SpiritMod.dll (SpiritMod's own .tmod is not
+			currently present locally to extract fresh, see 05-RESEARCH.md Environment
+			Availability) and never copied into this mod's own output (Private=false).
+		-->
+		<Reference Include="SpiritMod" Condition="Exists('Libs\SpiritMod.dll')">
+			<HintPath>Libs\SpiritMod.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
 	</ItemGroup>
 
 </Project>
