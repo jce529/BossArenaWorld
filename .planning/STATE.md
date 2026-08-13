@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 4 context gathered
-last_updated: "2026-08-13T06:40:08.899Z"
+status: executing
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-08-13T07:35:37.462Z"
 last_activity: 2026-08-13
 progress:
   total_phases: 8
   completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 12
+  completed_plans: 11
   percent: 75
 ---
 
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-08-12)
 ## Current Position
 
 Phase: 4
-Plan: Not started
-Status: Phase complete — ready for verification
+Plan: 2 of 2 in current phase
+Status: Ready to execute
 Last activity: 2026-08-13
 
 Progress: [████████░░] 75%
@@ -62,6 +62,7 @@ Progress: [████████░░] 75%
 | Phase 03 P01 | 6min | 2 tasks | 3 files |
 | Phase 03 P02 | 4min | 2 tasks | 2 files |
 | Phase 03 P03 | verification-only | 1 tasks | 0 files |
+| Phase 04 P01 | 5min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,8 @@ Recent decisions affecting current work:
 - [Phase 02]: Deleted Debug/SubworldDebugCommands.cs in full now that Tiles/Test1Tile.cs redirect and SubworldLibrary's Return button fully supersede it (closes Phase 1 D-02)
 - [Phase 03]: Fixed NpcTypes array literal (short->int[]) and CloneNewInstances access modifier (public->protected) to match installed tModLoader 1.4.4.9 API -- plan's illustrative code had two compile-blocking bugs
 - [Phase 03]: Live King Slime pipeline test confirms full BossRegistry/BossCoreItem/GlobalNPC pipeline end-to-end (DROP-02, DROP-03, APPLY-01, APPLY-04); Test1Item's missing acquisition path is a carried-over Phase 2 gap (D-05), not a Phase 3 defect
+- [Phase 04]: Confirmed installed CalamityMod version (2.2.4) by reading the .tmod's own header field during extraction, matching build.txt's weakReferences declaration exactly
+- [Phase 04]: ApplyHiveMindDowned() deliberately omits CalamityGlobalNPC.SetNewBossJustDowned() per 04-RESEARCH.md correction -- it is player-scoped speedrun-timer bookkeeping already applied live during the subworld kill; replaying it would double-apply
 
 ### Pending Todos
 
@@ -99,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-13T06:40:08.894Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-calamity-integration-cross-mod-side-effect-reproduction/04-CONTEXT.md
+Last session: 2026-08-13T07:35:37.457Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: None

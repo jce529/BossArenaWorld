@@ -23,13 +23,13 @@
 ### Progress Application (APPLY)
 
 - [x] **APPLY-01**: Using `BossCoreItem` in the main world calls `BossRegistry.Apply(key)`, which sets the corresponding boss's downed flag
-- [ ] **APPLY-02**: `BossRegistry.Apply` reproduces each source mod's netcode/messaging side effects (e.g. `CalamityNetcode.SyncWorld()`, `SetNewBossJustDowned()`)
-- [ ] **APPLY-03**: `BossRegistry.Apply` reproduces WorldGen side effects for world-altering bosses (ore generation, dungeon activation, etc.), not just the boolean flag
+- [x] **APPLY-02**: `BossRegistry.Apply` reproduces each source mod's netcode/messaging side effects (e.g. `CalamityNetcode.SyncWorld()`, `SetNewBossJustDowned()`)
+- [x] **APPLY-03**: `BossRegistry.Apply` reproduces WorldGen side effects for world-altering bosses (ore generation, dungeon activation, etc.), not just the boolean flag
 - [x] **APPLY-04**: Applying a boss's progress is idempotent — re-using the item after a partial failure does not double-apply rewards or duplicate netcode messages (world-scoped vs. player-scoped side effects classified explicitly to avoid double-granting anything that already survives the subworld round-trip via the live player object)
 
 ### Mod Coverage (MOD)
 
-- [ ] **MOD-01**: Calamity bosses registered via the `DownedBossSystem` wrapper-property pattern
+- [x] **MOD-01**: Calamity bosses registered via the `DownedBossSystem` wrapper-property pattern
 - [ ] **MOD-02**: Spirit bosses registered via the `MyWorld` static-field pattern
 - [ ] **MOD-03**: Redemption bosses researched (downed-progress API) and registered
 - [ ] **MOD-04**: CatalystMod bosses researched (downed-progress API) and registered
@@ -84,10 +84,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DROP-02 | Phase 3 | Complete |
 | DROP-03 | Phase 3 | Complete |
 | APPLY-01 | Phase 3 | Complete |
-| APPLY-02 | Phase 4 | Pending |
-| APPLY-03 | Phase 4 | Pending |
+| APPLY-02 | Phase 4 | Complete |
+| APPLY-03 | Phase 4 | Complete |
 | APPLY-04 | Phase 3 | Complete |
-| MOD-01 | Phase 4 | Pending |
+| MOD-01 | Phase 4 | Complete |
 | MOD-02 | Phase 5 | Pending |
 | MOD-03 | Phase 6 | Pending |
 | MOD-04 | Phase 6 | Pending |

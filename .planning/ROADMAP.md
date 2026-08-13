@@ -86,7 +86,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — weakReferences=CalamityMod build wiring + Integrations/CalamityIntegration.cs registering Hive Mind (MOD-01, APPLY-02, APPLY-03)
+- [x] 04-01-PLAN.md — weakReferences=CalamityMod build wiring + Integrations/CalamityIntegration.cs registering Hive Mind (MOD-01, APPLY-02, APPLY-03)
 - [ ] 04-02-PLAN.md — Live WorldGen/netcode checkpoint (D-04) + Calamity-disabled load-safety checkpoint (D-05)
 
 ### Phase 5: Spirit Integration
@@ -139,7 +139,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Subworld Skeleton & Isolation Proof | 4/4 | Complete   | 2026-08-13 |
 | 2. Summon-Item Redirect & Entry Registry | 0/3 | Not started | - |
 | 3. BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) | 3/3 | Complete   | 2026-08-13 |
-| 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 0/TBD | Not started | - |
+| 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 1/2 | In Progress|  |
 | 5. Spirit Integration | 0/TBD | Not started | - |
 | 6. Redemption & CatalystMod Integration | 0/TBD | Not started | - |
 | 7. NoxusBoss & ContinentOfJourney/Daybreak Integration | 0/TBD | Not started | - |
