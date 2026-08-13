@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 3 context gathered
-last_updated: "2026-08-13T04:27:14.866Z"
+status: executing
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-08-13T05:29:53.618Z"
 last_activity: 2026-08-13
 progress:
   total_phases: 8
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 10
+  completed_plans: 8
   percent: 75
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 2 — Summon-Item Redirect & Entry Registry
+**Current focus:** Phase 03 — bossregistry-bosscoreitem-globalnpc-pipeline-proof-of-concept
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 03 (bossregistry-bosscoreitem-globalnpc-pipeline-proof-of-concept) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
 Last activity: 2026-08-13
 
 Progress: [████████░░] 75%
@@ -59,6 +59,7 @@ Progress: [████████░░] 75%
 | Phase 02 P01 | 8min | 2 tasks | 2 files |
 | Phase 02 P02 | 25min | 3 tasks | 5 files |
 | Phase 02 P03 | 10min | 2 tasks | 1 files |
+| Phase 03 P01 | 6min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,7 @@ Recent decisions affecting current work:
 - [Phase 02]: Gitignored Libs/SubworldLibrary.dll compile-time reference must be manually copied into each fresh git worktree before dotnet build succeeds (not a code gap, a per-worktree setup step)
 - [Phase 02]: User-confirmed live test proves SUBW-01..04 via Test1Tile redirect; treated '전부 통과했어' as the plan's exact resume-signal
 - [Phase 02]: Deleted Debug/SubworldDebugCommands.cs in full now that Tiles/Test1Tile.cs redirect and SubworldLibrary's Return button fully supersede it (closes Phase 1 D-02)
+- [Phase 03]: Fixed NpcTypes array literal (short->int[]) and CloneNewInstances access modifier (public->protected) to match installed tModLoader 1.4.4.9 API -- plan's illustrative code had two compile-blocking bugs
 
 ### Pending Todos
 
@@ -94,6 +96,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-13T04:27:14.860Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-bossregistry-bosscoreitem-globalnpc-pipeline-proof-of-concept/03-CONTEXT.md
+Last session: 2026-08-13T05:29:53.612Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None

@@ -16,16 +16,16 @@
 
 ### Boss Detection & Carrier Item (DROP)
 
-- [ ] **DROP-01**: A central NPC.type → bossKey mapping registers which NPCs (across all covered mods) count as trackable bosses
+- [x] **DROP-01**: A central NPC.type → bossKey mapping registers which NPCs (across all covered mods) count as trackable bosses
 - [ ] **DROP-02**: Registered bosses drop a `BossCoreItem` via a conditional `ItemDropRule` added in `GlobalNPC.ModifyNPCLoot`, gated to only trigger when the kill happens inside the boss-arena subworld
-- [ ] **DROP-03**: `BossCoreItem` stores which boss it corresponds to (`BossKey`) as instance data (`Clone`/`SaveData`/`LoadData`), set at spawn time inside the custom drop rule
+- [x] **DROP-03**: `BossCoreItem` stores which boss it corresponds to (`BossKey`) as instance data (`Clone`/`SaveData`/`LoadData`), set at spawn time inside the custom drop rule
 
 ### Progress Application (APPLY)
 
-- [ ] **APPLY-01**: Using `BossCoreItem` in the main world calls `BossRegistry.Apply(key)`, which sets the corresponding boss's downed flag
+- [x] **APPLY-01**: Using `BossCoreItem` in the main world calls `BossRegistry.Apply(key)`, which sets the corresponding boss's downed flag
 - [ ] **APPLY-02**: `BossRegistry.Apply` reproduces each source mod's netcode/messaging side effects (e.g. `CalamityNetcode.SyncWorld()`, `SetNewBossJustDowned()`)
 - [ ] **APPLY-03**: `BossRegistry.Apply` reproduces WorldGen side effects for world-altering bosses (ore generation, dungeon activation, etc.), not just the boolean flag
-- [ ] **APPLY-04**: Applying a boss's progress is idempotent — re-using the item after a partial failure does not double-apply rewards or duplicate netcode messages (world-scoped vs. player-scoped side effects classified explicitly to avoid double-granting anything that already survives the subworld round-trip via the live player object)
+- [x] **APPLY-04**: Applying a boss's progress is idempotent — re-using the item after a partial failure does not double-apply rewards or duplicate netcode messages (world-scoped vs. player-scoped side effects classified explicitly to avoid double-granting anything that already survives the subworld round-trip via the live player object)
 
 ### Mod Coverage (MOD)
 
@@ -80,13 +80,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SUBW-04 | Phase 2 | Complete |
 | SUBW-05 | Phase 1 | Complete |
 | SUBW-06 | Phase 1 | Complete |
-| DROP-01 | Phase 3 | Pending |
+| DROP-01 | Phase 3 | Complete |
 | DROP-02 | Phase 3 | Pending |
-| DROP-03 | Phase 3 | Pending |
-| APPLY-01 | Phase 3 | Pending |
+| DROP-03 | Phase 3 | Complete |
+| APPLY-01 | Phase 3 | Complete |
 | APPLY-02 | Phase 4 | Pending |
 | APPLY-03 | Phase 4 | Pending |
-| APPLY-04 | Phase 3 | Pending |
+| APPLY-04 | Phase 3 | Complete |
 | MOD-01 | Phase 4 | Pending |
 | MOD-02 | Phase 5 | Pending |
 | MOD-03 | Phase 6 | Pending |
