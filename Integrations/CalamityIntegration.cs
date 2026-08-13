@@ -37,8 +37,21 @@ namespace BossArenaSubWorld.Integrations
             BossRegistry.Register("calamity:hive_mind", new BossDefinition(
                 NpcTypes: new[] { npcType },
                 ApplyDowned: ApplyHiveMindDowned,
-                IsDowned: () => CalamityMod.DownedBossSystem.downedHiveMind));
+                IsDowned: IsHiveMindDowned));
         }
+
+        // D-01/Pitfall 2 continued: the C# compiler hoists an inline lambda referencing a
+        // Calamity type into a compiler-generated method on a <>c cache class, which does
+        // NOT inherit [JITWhenModsEnabled] from its enclosing method -- tModLoader's JIT
+        // prefilter still eagerly touches that generated method even though RegisterHiveMind()
+        // itself is never called when CalamityMod is absent, producing a real JITException.
+        // (Confirmed live: CalamityMod-disabled load crashed with a JITException naming
+        // <RegisterHiveMind>b__1_0 until this lambda was extracted into its own tagged
+        // method below.) Every delegate passed into a [JITWhenModsEnabled]-guarded
+        // registration call must be a named, separately-tagged method -- never an inline
+        // lambda -- for this same reason.
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsHiveMindDowned() => CalamityMod.DownedBossSystem.downedHiveMind;
 
         // KNOWN COSMETIC LIMITATION (investigated, not a state-corruption bug -- see
         // .planning/debug/hivemind-zonecorrupt-despawn-corruption-subworld.md, session
