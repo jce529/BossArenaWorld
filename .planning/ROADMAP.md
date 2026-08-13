@@ -14,7 +14,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Subworld Skeleton & Isolation Proof** - An empty, content-free boss-arena subworld exists; player can enter/exit reliably; the world-flag isolation premise is verified empirically (completed 2026-08-13)
 - [ ] **Phase 2: Summon-Item Redirect & Entry Registry** - Using a registered boss-summon item cancels its main-world effect and redirects the player into the subworld, where the boss auto-summons
-- [x] **Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC)** - Killing a registered boss in the subworld drops a carrier item that applies the boss's downed state, idempotently, in the main world — proven with one vanilla boss (completed 2026-08-13)
+- [x] **Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC)** - Killing a registered boss in the subworld drops a carrier item that applies the boss's downed state, idempotently, in the main world — proven with one vanilla boss
+ (completed 2026-08-13)
 - [ ] **Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction** - Calamity bosses are registered with full flag + netcode + WorldGen side-effect reproduction, establishing the safe cross-mod access pattern
 - [ ] **Phase 5: Spirit Integration** - Spirit bosses are registered via their structurally different static-field API, proving the registry pattern generalizes
 - [ ] **Phase 6: Redemption & CatalystMod Integration** - Both mods' downed-progress APIs are researched and their bosses registered
@@ -82,7 +83,11 @@ Plans:
   2. Applying a Calamity boss's progress reproduces its netcode/messaging side effects (e.g. `CalamityNetcode.SyncWorld()`, `SetNewBossJustDowned()`), not just the flag.
   3. Applying a world-altering Calamity boss's progress (e.g. a mechanical boss) also triggers its WorldGen side effects (ore generation, dungeon activation, etc.).
   4. The mod continues to load and run safely with CalamityMod disabled — no JIT crash from the Calamity-specific integration code.
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — weakReferences=CalamityMod build wiring + Integrations/CalamityIntegration.cs registering Hive Mind (MOD-01, APPLY-02, APPLY-03)
+- [ ] 04-02-PLAN.md — Live WorldGen/netcode checkpoint (D-04) + Calamity-disabled load-safety checkpoint (D-05)
 
 ### Phase 5: Spirit Integration
 **Goal**: Spirit bosses' downed state is registered and applied correctly using Spirit's structurally different (raw static-field) API, proving the registry pattern generalizes across API shapes rather than being Calamity-specific.
