@@ -25,6 +25,18 @@
 			<HintPath>Libs\SubworldLibrary.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
+
+		<!--
+			Compile-time-only weak reference to CalamityMod, declared as a weak runtime
+			dependency via `weakReferences = CalamityMod@2.2.4` in build.txt (per D-01: the
+			mod must still load with CalamityMod absent). Libs/CalamityMod.dll is extracted
+			from the installed Workshop copy via scripts/extract_tmod.py (not committed,
+			see .gitignore) and never copied into this mod's own output (Private=false).
+		-->
+		<Reference Include="CalamityMod" Condition="Exists('Libs\CalamityMod.dll')">
+			<HintPath>Libs\CalamityMod.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
 	</ItemGroup>
 
 </Project>
