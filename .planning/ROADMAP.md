@@ -12,7 +12,7 @@ The journey starts by proving the subworld itself works in isolation — an empt
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Subworld Skeleton & Isolation Proof** - An empty, content-free boss-arena subworld exists; player can enter/exit reliably; the world-flag isolation premise is verified empirically
+- [x] **Phase 1: Subworld Skeleton & Isolation Proof** - An empty, content-free boss-arena subworld exists; player can enter/exit reliably; the world-flag isolation premise is verified empirically (completed 2026-08-13)
 - [ ] **Phase 2: Summon-Item Redirect & Entry Registry** - Using a registered boss-summon item cancels its main-world effect and redirects the player into the subworld, where the boss auto-summons
 - [ ] **Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC)** - Killing a registered boss in the subworld drops a carrier item that applies the boss's downed state, idempotently, in the main world — proven with one vanilla boss
 - [ ] **Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction** - Calamity bosses are registered with full flag + netcode + WorldGen side-effect reproduction, establishing the safe cross-mod access pattern
@@ -38,7 +38,7 @@ Plans:
 - [x] 01-01-PLAN.md — SDK pin (global.json), SubworldLibrary modReference, VERIFY-02 world-backup guidance doc
 - [x] 01-02-PLAN.md — BossArenaSubworld Subworld subclass + FlatStonePlatformPass GenPass (SUBW-05)
 - [x] 01-03-PLAN.md — Debug enter/exit/checkflag chat commands + generic biome-zone override hook (SUBW-06, D-09)
-- [ ] 01-04-PLAN.md — King Slime isolation-proof checkpoint test (SUBW-05, SUBW-06, VERIFY-02)
+- [x] 01-04-PLAN.md — King Slime isolation-proof checkpoint test (SUBW-05, SUBW-06, VERIFY-02)
 
 ### Phase 2: Summon-Item Redirect & Entry Registry
 **Goal**: Using an existing, registered boss-summon item redirects the player into the boss-arena subworld instead of summoning the boss in the main world, with the boss auto-summoning on arrival and the item preserved.
@@ -121,7 +121,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Subworld Skeleton & Isolation Proof | 3/4 | In Progress|  |
+| 1. Subworld Skeleton & Isolation Proof | 4/4 | Complete   | 2026-08-13 |
 | 2. Summon-Item Redirect & Entry Registry | 0/TBD | Not started | - |
 | 3. BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) | 0/TBD | Not started | - |
 | 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 0/TBD | Not started | - |
