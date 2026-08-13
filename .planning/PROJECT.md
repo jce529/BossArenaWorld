@@ -13,11 +13,12 @@ The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegis
 ### Validated
 
 - [x] Right-clicking a new placeable portal tile (working name "Test1", benchmarked off the Corruption Altar sprite) while holding an existing, registered boss-summon item (vanilla or modded) redirects the player into a dedicated boss-arena subworld (no mod content ever placed) instead of summoning in the main world — the boss auto-summons once inside by replaying the held item's own use-effect — Validated in Phase 2: Summon-Item Redirect & Entry Registry (live in-game test confirmed, 2026-08-13)
+- [x] Killing a registered boss in the subworld drops a BossCoreItem carrying that boss's key, gated dynamically per-kill (not baked in at mod load) via a custom `IItemDropRule` attached through `GlobalNPC.ModifyNPCLoot` — Validated in Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) (live in-game test confirmed, 2026-08-13)
+- [x] Using BossCoreItem in the main world applies the boss's downed flag via `BossRegistry.Apply(key)`, replaying vanilla's own `NPC.SetEventFlagCleared` fidelity path, idempotently (re-use after already-downed is a no-op with distinct feedback, no duplicate side effects) — Validated in Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) (live in-game test confirmed, 2026-08-13)
+- [x] Full pipeline verified end-to-end in singleplayer (subworld kill → item → main world apply), with world backup before testing — proven with one low-risk vanilla boss (King Slime) — Validated in Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) (live in-game test confirmed, 2026-08-13). Content-mod-specific reproduction (Calamity/Spirit/etc.) remains Active below.
 
 ### Active
 
-- [ ] Killing a registered boss in the subworld drops a BossCoreItem carrying that boss's key (GlobalNPC.OnKill detection)
-- [ ] Using BossCoreItem in the main world applies the boss's downed flag via BossRegistry.Apply(key)
 - [ ] Boss-specific side effects (netcode sync calls, "boss just downed" messages) are reproduced when the item is used, matching each source mod's original OnKill behavior
 - [ ] World-altering bosses (mechanical bosses, Plantera, etc.) also trigger their WorldGen side effects (ore generation, dungeon activation, etc.) when the item is used in the main world
 - [ ] Calamity bosses registered via `DownedBossSystem` pattern
@@ -26,7 +27,6 @@ The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegis
 - [ ] CatalystMod bosses researched and registered
 - [ ] NoxusBoss (Devourer of Universes) researched and registered
 - [ ] ContinentOfJourney / Daybreak (Homeward) bosses researched and registered
-- [ ] Full pipeline verified end-to-end in singleplayer (subworld kill → item → main world apply), with world backup before testing
 
 ### Out of Scope
 
@@ -41,6 +41,8 @@ Player runs several large Terraria content mods together (Calamity, Spirit, Rede
 Disabling content mods outright risks crashes because their content is already placed in the world. The adopted fix: keep all mods enabled, but run the heaviest boss fights in a subworld (via SubworldLibrary) that has never had any content placed in it.
 
 Known blocker: boss "downed" flags are serialized per-world-file and unconditionally overwritten on world load, so a subworld boss kill does not propagate to the main world automatically — this is a reported SubworldLibrary-ecosystem bug (workaround mods like "Calamity Boss Resyncer" exist for it). This mod works around it with a carrier item: kill drops a `BossCoreItem` tagged with a boss key; using that item in the main world looks up and replays the registered downed-flag + side-effect logic.
+
+Related discovery (Phase 1, confirmed live 2026-08-13): SubworldLibrary v2.2.3.2 also has the *opposite* problem for a whitelist of ~30 vanilla `NPC`/`DD2Event` downed flags (including `NPC.downedSlimeKing`) — its own `CopyDowned()`/`ReadCopiedDowned()` helpers bidirectionally sync those specific flags between main world and subworld on every entry/exit, independent of the carrier-item mechanism. `Subworlds/BossArenaSubworld.cs`'s `OnEnter()`/`OnExit()` snapshot-and-restore that whitelist so SubworldLibrary's own sync becomes a no-op. This fix must be preserved (not accidentally reverted) in all future phases — see `.planning/debug/resolved/isolation-premise-flag-persistence.md` for the full investigation.
 
 Mod-specific research completed so far (see `DESIGN_1.md` for full detail, originally at `C:\Users\chang\Downloads\DESIGN_1.md`):
 - **Calamity**: `CalamityMod.DownedBossSystem`, wrapper properties whose setters call `NPC.SetEventFlagCleared`; requires `CalamityNetcode.SyncWorld()` and `CalamityGlobalNPC.SetNewBossJustDowned()` side effects.
@@ -59,13 +61,13 @@ Mod-specific research completed so far (see `DESIGN_1.md` for full detail, origi
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Carrier-item pattern (BossCoreItem) instead of trying to sync subworld state directly | SubworldLibrary doesn't reliably propagate downed flags across worlds; item-use on return is a known, controllable workaround | — Pending |
+| Carrier-item pattern (BossCoreItem) instead of trying to sync subworld state directly | SubworldLibrary doesn't reliably propagate downed flags across worlds; item-use on return is a known, controllable workaround | Validated (Phase 3) |
 | Research all target mods (Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, Homeward) before writing implementation code | User explicitly chose full-research-first over incremental research+build | — Pending |
 | No boss priority ordering in v1 | Once the BossRegistry/BossCoreItem/GlobalNPC skeleton exists, registering any individual boss costs the same — no benefit to special-casing "worst offenders" like Moon Lord first | — Pending |
 | Singleplayer-only for v1 | Netcode/dedicated-server sync adds significant complexity; explicitly deferred | — Pending |
 | ~~Existing boss-summon items are the subworld entry trigger, not a new dedicated portal item~~ — **SUPERSEDED in Phase 2 discuss-phase (2026-08-13)** | Original rationale: simpler for the player, less new content to maintain. Superseded because the user explicitly requested a dedicated portal tile instead — see next row | Superseded |
 | New placeable portal tile ("Test1", Corruption Altar sprite reused visually only — no vanilla altar behavior) is the subworld entry trigger; right-click while holding a registered summon item | User's explicit design choice (Phase 2 discuss-phase): a physical, placeable altar-style object reads more naturally as an "arena portal" than reusing an item's own use-action, and keeps the summon item's normal main-world behavior completely untouched | Validated (Phase 2) |
-| BossCoreItem drop via `GlobalNPC.ModifyNPCLoot` + conditional `ItemDropRule` (gated to boss-arena subworld) instead of imperative `OnKill()` spawn | More idiomatic tModLoader loot pipeline (bestiary/expert-mode integration); custom drop rule can set the item's BossKey instance data at spawn time in one step | — Pending |
+| BossCoreItem drop via `GlobalNPC.ModifyNPCLoot` + conditional `ItemDropRule` (gated to boss-arena subworld) instead of imperative `OnKill()` spawn | More idiomatic tModLoader loot pipeline (bestiary/expert-mode integration); custom drop rule can set the item's BossKey instance data at spawn time in one step | Validated (Phase 3) |
 
 ## Evolution
 
@@ -85,4 +87,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-13 — Phase 2 (Summon-Item Redirect & Entry Registry) complete*
+*Last updated: 2026-08-13 — Phase 3 (BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC)) complete*
