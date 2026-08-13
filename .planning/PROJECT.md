@@ -16,7 +16,7 @@ The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegis
 
 ### Active
 
-- [ ] Using an existing, registered boss-summon item (vanilla or modded) cancels its main-world summon effect and redirects the player into a dedicated boss-arena subworld (no mod content ever placed) instead — no separate portal item needed, and the boss auto-summons once inside
+- [ ] Right-clicking a new placeable portal tile (working name "Test1", benchmarked off the Corruption Altar sprite) while holding an existing, registered boss-summon item (vanilla or modded) redirects the player into a dedicated boss-arena subworld (no mod content ever placed) instead of summoning in the main world — the boss auto-summons once inside by replaying the held item's own use-effect
 - [ ] Killing a registered boss in the subworld drops a BossCoreItem carrying that boss's key (GlobalNPC.OnKill detection)
 - [ ] Using BossCoreItem in the main world applies the boss's downed flag via BossRegistry.Apply(key)
 - [ ] Boss-specific side effects (netcode sync calls, "boss just downed" messages) are reproduced when the item is used, matching each source mod's original OnKill behavior
@@ -64,7 +64,8 @@ Mod-specific research completed so far (see `DESIGN_1.md` for full detail, origi
 | Research all target mods (Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, Homeward) before writing implementation code | User explicitly chose full-research-first over incremental research+build | — Pending |
 | No boss priority ordering in v1 | Once the BossRegistry/BossCoreItem/GlobalNPC skeleton exists, registering any individual boss costs the same — no benefit to special-casing "worst offenders" like Moon Lord first | — Pending |
 | Singleplayer-only for v1 | Netcode/dedicated-server sync adds significant complexity; explicitly deferred | — Pending |
-| Existing boss-summon items are the subworld entry trigger, not a new dedicated portal item | Simpler for the player (reuse the item they already have), less new content to build/maintain than a custom portal item/NPC; still an explicit, deliberate player action | — Pending |
+| ~~Existing boss-summon items are the subworld entry trigger, not a new dedicated portal item~~ — **SUPERSEDED in Phase 2 discuss-phase (2026-08-13)** | Original rationale: simpler for the player, less new content to maintain. Superseded because the user explicitly requested a dedicated portal tile instead — see next row | Superseded |
+| New placeable portal tile ("Test1", Corruption Altar sprite reused visually only — no vanilla altar behavior) is the subworld entry trigger; right-click while holding a registered summon item | User's explicit design choice (Phase 2 discuss-phase): a physical, placeable altar-style object reads more naturally as an "arena portal" than reusing an item's own use-action, and keeps the summon item's normal main-world behavior completely untouched | — Pending |
 | BossCoreItem drop via `GlobalNPC.ModifyNPCLoot` + conditional `ItemDropRule` (gated to boss-arena subworld) instead of imperative `OnKill()` spawn | More idiomatic tModLoader loot pipeline (bestiary/expert-mode integration); custom drop rule can set the item's BossKey instance data at spawn time in one step | — Pending |
 
 ## Evolution
