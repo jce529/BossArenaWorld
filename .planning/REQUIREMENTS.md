@@ -17,7 +17,7 @@
 ### Boss Detection & Carrier Item (DROP)
 
 - [x] **DROP-01**: A central NPC.type → bossKey mapping registers which NPCs (across all covered mods) count as trackable bosses
-- [ ] **DROP-02**: Registered bosses drop a `BossCoreItem` via a conditional `ItemDropRule` added in `GlobalNPC.ModifyNPCLoot`, gated to only trigger when the kill happens inside the boss-arena subworld
+- [x] **DROP-02**: Registered bosses drop a `BossCoreItem` via a conditional `ItemDropRule` added in `GlobalNPC.ModifyNPCLoot`, gated to only trigger when the kill happens inside the boss-arena subworld
 - [x] **DROP-03**: `BossCoreItem` stores which boss it corresponds to (`BossKey`) as instance data (`Clone`/`SaveData`/`LoadData`), set at spawn time inside the custom drop rule
 
 ### Progress Application (APPLY)
@@ -81,7 +81,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SUBW-05 | Phase 1 | Complete |
 | SUBW-06 | Phase 1 | Complete |
 | DROP-01 | Phase 3 | Complete |
-| DROP-02 | Phase 3 | Pending |
+| DROP-02 | Phase 3 | Complete |
 | DROP-03 | Phase 3 | Complete |
 | APPLY-01 | Phase 3 | Complete |
 | APPLY-02 | Phase 4 | Pending |

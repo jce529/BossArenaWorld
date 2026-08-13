@@ -70,7 +70,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — BossRegistry (key -> BossDefinition, Apply/idempotency) + BossCoreItem (carrier item, UseItem -> Apply)
-- [ ] 03-02-PLAN.md — BossCoreDropRule (subworld-gated custom IItemDropRule) + BossKillGlobalNPC (ModifyNPCLoot wiring)
+- [x] 03-02-PLAN.md — BossCoreDropRule (subworld-gated custom IItemDropRule) + BossKillGlobalNPC (ModifyNPCLoot wiring)
 - [ ] 03-03-PLAN.md — Live pipeline verification checkpoint (DROP-02, DROP-03, APPLY-01, APPLY-04 end-to-end)
 
 ### Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction
