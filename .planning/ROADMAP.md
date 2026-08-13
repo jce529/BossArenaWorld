@@ -53,7 +53,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — Summon-item registry (SUBW-01) + generic arrival auto-summon hook (SUBW-04 backend)
-- [ ] 02-02-PLAN.md — Test1 portal tile + placing item, right-click redirect trigger (SUBW-02, SUBW-03)
+- [x] 02-02-PLAN.md — Test1 portal tile + placing item, right-click redirect trigger (SUBW-02, SUBW-03)
 - [ ] 02-03-PLAN.md — Live redirect verification checkpoint + Phase 1/2 debug tooling removal (SUBW-01..04)
 
 ### Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (Proof of Concept)

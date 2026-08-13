@@ -8,8 +8,8 @@
 ### Subworld & Entry (SUBW)
 
 - [x] **SUBW-01**: A central mapping registers which existing boss-summon items (vanilla or modded, limited in v1 to simple "use item to summon" types — not altar-thrown or bulb-break style triggers) redirect into the subworld, keyed to the target boss
-- [ ] **SUBW-02**: A new placeable portal tile (`BossPortalTile`, working name "Test1" — visually benchmarked off the Corruption Altar sprite, a brand-new custom tile with no inherited vanilla altar behavior such as hammer-smash hardmode triggering) is the entry point; right-clicking it while holding a registered boss-summon item triggers the redirect, gated by the registry from SUBW-01
-- [ ] **SUBW-03**: The redirect sends the player into the boss-arena subworld as the altar interaction's next step
+- [x] **SUBW-02**: A new placeable portal tile (`BossPortalTile`, working name "Test1" — visually benchmarked off the Corruption Altar sprite, a brand-new custom tile with no inherited vanilla altar behavior such as hammer-smash hardmode triggering) is the entry point; right-clicking it while holding a registered boss-summon item triggers the redirect, gated by the registry from SUBW-01
+- [x] **SUBW-03**: The redirect sends the player into the boss-arena subworld as the altar interaction's next step
 - [x] **SUBW-04**: The boss automatically summons inside the subworld once the player arrives, by reusing (replaying) the same held summon item's own use-effect there — no per-boss spawn logic needed — and the item is not consumed by the round trip
 - [x] **SUBW-05**: The boss-arena subworld has zero placed mod content (custom `GenPass` list, not vanilla/modded worldgen) — this is the actual FPS-avoidance guarantee
 - [x] **SUBW-06**: Player can reliably exit/return from the subworld to the main world
@@ -75,8 +75,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | SUBW-01 | Phase 2 | Complete |
-| SUBW-02 | Phase 2 | Pending |
-| SUBW-03 | Phase 2 | Pending |
+| SUBW-02 | Phase 2 | Complete |
+| SUBW-03 | Phase 2 | Complete |
 | SUBW-04 | Phase 2 | Complete |
 | SUBW-05 | Phase 1 | Complete |
 | SUBW-06 | Phase 1 | Complete |

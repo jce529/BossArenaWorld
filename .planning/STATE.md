@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-08-13T03:25:03.397Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-08-13T03:32:54.825Z"
 last_activity: 2026-08-13
 progress:
   total_phases: 8
   completed_phases: 1
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 75
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-08-12)
 ## Current Position
 
 Phase: 2 (Summon-Item Redirect & Entry Registry) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-08-13
 
@@ -57,6 +57,7 @@ Progress: [████████░░] 75%
 | Phase 01 P03 | 3min | 2 tasks | 2 files |
 | Phase 01 P04 | 20min | 2 tasks | 0 files |
 | Phase 02 P01 | 8min | 2 tasks | 2 files |
+| Phase 02 P02 | 25min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,8 @@ Recent decisions affecting current work:
 - [Phase 01]: CRITICAL: Live King Slime isolation test shows NPC.downedSlimeKing=True after subworld round-trip (expected False) -- isolation premise NOT confirmed, contradicts 01-RESEARCH.md's source-traced expectation; Phase 2 planning blocked pending re-investigation
 - [Phase 02]: Generalized D-09 as calling NPC.SpawnOnPlayer with the mapped boss type (vanilla summon items have no isolated, externally-callable use-effect method)
 - [Phase 02]: Used SubworldSystem.IsActive<BossArenaSubworld>(), not AnyActive, correcting a non-compiling example in 02-RESEARCH.md (AnyActive requires where T : Mod)
+- [Phase 02]: Used ModTile.RightClick, not NewRightClick -- the installed tModLoader.dll only exposes RightClick(int,int)->bool on ModTile, confirmed via MetadataLoadContext reflection against the real local binary
+- [Phase 02]: Gitignored Libs/SubworldLibrary.dll compile-time reference must be manually copied into each fresh git worktree before dotnet build succeeds (not a code gap, a per-worktree setup step)
 
 ### Pending Todos
 
@@ -88,6 +91,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-13T03:24:46.095Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-08-13T03:32:54.819Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
