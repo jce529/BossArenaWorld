@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-08-13T07:35:37.462Z"
-last_activity: 2026-08-13
+last_updated: "2026-08-13T08:03:04.619Z"
+last_activity: 2026-08-13 -- Phase 04 execution started
 progress:
   total_phases: 8
   completed_phases: 3
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 03 — bossregistry-bosscoreitem-globalnpc-pipeline-proof-of-concept
+**Current focus:** Phase 04 — calamity-integration-cross-mod-side-effect-reproduction
 
 ## Current Position
 
-Phase: 4
-Plan: 2 of 2 in current phase
-Status: Ready to execute
-Last activity: 2026-08-13
+Phase: 04 (calamity-integration-cross-mod-side-effect-reproduction) — EXECUTING
+Plan: 1 of 2
+Status: Executing Phase 04
+Last activity: 2026-08-13 -- Phase 04 execution started
 
 Progress: [████████░░] 75%
 
@@ -89,6 +89,7 @@ Recent decisions affecting current work:
 - [Phase 03]: Live King Slime pipeline test confirms full BossRegistry/BossCoreItem/GlobalNPC pipeline end-to-end (DROP-02, DROP-03, APPLY-01, APPLY-04); Test1Item's missing acquisition path is a carried-over Phase 2 gap (D-05), not a Phase 3 defect
 - [Phase 04]: Confirmed installed CalamityMod version (2.2.4) by reading the .tmod's own header field during extraction, matching build.txt's weakReferences declaration exactly
 - [Phase 04]: ApplyHiveMindDowned() deliberately omits CalamityGlobalNPC.SetNewBossJustDowned() per 04-RESEARCH.md correction -- it is player-scoped speedrun-timer bookkeeping already applied live during the subworld kill; replaying it would double-apply
+- [Phase 04]: Resolved debug session `hivemind-zonecorrupt-despawn-corruption-subworld` (was blocking 04-02-PLAN.md's live verification checkpoint) -- Hive Mind despawn traced to missing Corruption biome tiles (player.ZoneCorrupt never true, no corruption tiles in the plain-stone arena); fixed via a new BossArenaCorruptionSubworld + CorruptionPlatformPass (full-width Ebonstone/CorruptGrass platform) and a boss-aware BossArenaRoutingRegistry replacing hardcoded BossArenaSubworld checks in Test1Tile/BossSummonPlayer/BossCoreDropRule. Also confirmed the follow-up "double Sky Ore message" symptom is expected, non-bug behavior (matches PITFALLS.md Pitfall 1's carrier-item architecture exactly) via decompilation, not a state-corruption bug. User confirmed fix live in-game (checklist items 1-5 passed); optional final spot-checks (flag persistence across save/relaunch, no third message on repeat use) explicitly skipped by user as redundant with the already-confirmed mechanism. See .planning/debug/resolved/hivemind-zonecorrupt-despawn-corruption-subworld.md.
 
 ### Pending Todos
 
