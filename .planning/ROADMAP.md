@@ -90,14 +90,18 @@ Plans:
 - [x] 04-02-PLAN.md — Live WorldGen/netcode checkpoint (D-04) + Calamity-disabled load-safety checkpoint (D-05)
 
 ### Phase 5: Spirit Integration
-**Goal**: Spirit bosses' downed state is registered and applied correctly using Spirit's structurally different (raw static-field) API, proving the registry pattern generalizes across API shapes rather than being Calamity-specific.
+**Goal**: Spirit bosses' downed state is registered and applied correctly using Spirit's actual downed-progress API (BossDownedTracker's internal Dictionary<string,bool>, reached via reflection for writes and the public MyWorld property for reads -- corrected from the stale "MyWorld static-field" assumption per 05-CONTEXT.md D-01), proving the registry pattern generalizes across API shapes rather than being Calamity-specific.
 **Depends on**: Phase 4
 **Requirements**: MOD-02
 **Success Criteria** (what must be TRUE):
-  1. Spirit bosses are registered via the `MyWorld` static-field pattern (location re-verified against the installed copy), and their downed flags are set correctly by `BossRegistry.Apply`.
+  1. Spirit bosses are registered via SpiritMod's actual `BossDownedTracker` mechanism (public `MyWorld.DownedInfernon` read + reflection write into the internal `Downed` dictionary, since no public setter exists), and their downed flags are set correctly by `BossRegistry.Apply`.
   2. Player-scoped vs. world-scoped side effects for Spirit bosses are classified explicitly, so applying progress never double-grants anything the player already carries across the subworld boundary.
   3. The mod continues to load and run safely with Spirit disabled.
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md -- SpiritMod weakReferences build wiring + Integrations/SpiritIntegration.cs registering Infernon (MOD-02)
+- [ ] 05-02-PLAN.md -- Live downed-flag/WorldGen checkpoint (D-05) + reflection-failure checkpoint + SpiritMod-disabled load-safety checkpoint (D-05)
 
 ### Phase 6: Redemption & CatalystMod Integration
 **Goal**: Redemption and CatalystMod bosses' downed-progress APIs are researched and both mods' bosses are registered and applied correctly in the main world.
@@ -140,7 +144,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Summon-Item Redirect & Entry Registry | 0/3 | Not started | - |
 | 3. BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) | 3/3 | Complete   | 2026-08-13 |
 | 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 1/2 | In Progress|  |
-| 5. Spirit Integration | 0/TBD | Not started | - |
+| 5. Spirit Integration | 0/2 | Not started | - |
 | 6. Redemption & CatalystMod Integration | 0/TBD | Not started | - |
 | 7. NoxusBoss & ContinentOfJourney/Daybreak Integration | 0/TBD | Not started | - |
 | 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |
