@@ -87,7 +87,7 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md — weakReferences=CalamityMod build wiring + Integrations/CalamityIntegration.cs registering Hive Mind (MOD-01, APPLY-02, APPLY-03)
-- [ ] 04-02-PLAN.md — Live WorldGen/netcode checkpoint (D-04) + Calamity-disabled load-safety checkpoint (D-05)
+- [x] 04-02-PLAN.md — Live WorldGen/netcode checkpoint (D-04) + Calamity-disabled load-safety checkpoint (D-05)
 
 ### Phase 5: Spirit Integration
 **Goal**: Spirit bosses' downed state is registered and applied correctly using Spirit's structurally different (raw static-field) API, proving the registry pattern generalizes across API shapes rather than being Calamity-specific.

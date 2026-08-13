@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-08-13T08:03:04.619Z"
-last_activity: 2026-08-13 -- Phase 04 execution started
+stopped_at: Completed 04-02-PLAN.md -- Phase 04 complete
+last_updated: "2026-08-13T11:07:06.977Z"
+last_activity: 2026-08-13
 progress:
   total_phases: 8
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 12
-  completed_plans: 11
+  completed_plans: 12
   percent: 75
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-08-12)
 ## Current Position
 
 Phase: 04 (calamity-integration-cross-mod-side-effect-reproduction) — EXECUTING
-Plan: 1 of 2
-Status: Executing Phase 04
-Last activity: 2026-08-13 -- Phase 04 execution started
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-08-13
 
 Progress: [████████░░] 75%
 
@@ -63,6 +63,7 @@ Progress: [████████░░] 75%
 | Phase 03 P02 | 4min | 2 tasks | 2 files |
 | Phase 03 P03 | verification-only | 1 tasks | 0 files |
 | Phase 04 P01 | 5min | 2 tasks | 4 files |
+| Phase 04 P02 | 25min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,8 @@ Recent decisions affecting current work:
 - [Phase 04]: Confirmed installed CalamityMod version (2.2.4) by reading the .tmod's own header field during extraction, matching build.txt's weakReferences declaration exactly
 - [Phase 04]: ApplyHiveMindDowned() deliberately omits CalamityGlobalNPC.SetNewBossJustDowned() per 04-RESEARCH.md correction -- it is player-scoped speedrun-timer bookkeeping already applied live during the subworld kill; replaying it would double-apply
 - [Phase 04]: Resolved debug session `hivemind-zonecorrupt-despawn-corruption-subworld` (was blocking 04-02-PLAN.md's live verification checkpoint) -- Hive Mind despawn traced to missing Corruption biome tiles (player.ZoneCorrupt never true, no corruption tiles in the plain-stone arena); fixed via a new BossArenaCorruptionSubworld + CorruptionPlatformPass (full-width Ebonstone/CorruptGrass platform) and a boss-aware BossArenaRoutingRegistry replacing hardcoded BossArenaSubworld checks in Test1Tile/BossSummonPlayer/BossCoreDropRule. Also confirmed the follow-up "double Sky Ore message" symptom is expected, non-bug behavior (matches PITFALLS.md Pitfall 1's carrier-item architecture exactly) via decompilation, not a state-corruption bug. User confirmed fix live in-game (checklist items 1-5 passed); optional final spot-checks (flag persistence across save/relaunch, no third message on repeat use) explicitly skipped by user as redundant with the already-confirmed mechanism. See .planning/debug/resolved/hivemind-zonecorrupt-despawn-corruption-subworld.md.
+- [Phase 04]: [Phase 04]: Delegates/lambdas passed into [JITWhenModsEnabled]-guarded registration calls (BossDefinition's ApplyDowned/IsDowned) must be named, separately-tagged methods -- never inline lambdas -- since the C# compiler hoists inline lambdas into a <>c cache-class method that does NOT inherit the enclosing method's JIT-guard attribute, causing a real JITException when the weak-referenced mod is disabled. Confirmed live: fixed in Integrations/CalamityIntegration.cs (commit 0e19600) after Task 2's CalamityMod-disabled load test crashed. Applies to every future per-boss registration (Spirit, Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak).
+- [Phase 04]: [Phase 04]: Task 1's live WorldGen/netcode verification checkpoint was satisfied by evidence gathered during the immediately-preceding resolved debug session (hivemind-zonecorrupt-despawn-corruption-subworld), not a duplicate live test -- user explicitly confirmed the debug session used a fresh throwaway world with Evil Type = Corruption (not the real save), matching Task 1's exact acceptance criteria.
 
 ### Pending Todos
 
@@ -103,6 +106,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-13T07:35:37.457Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-08-13T11:07:06.971Z
+Stopped at: Completed 04-02-PLAN.md -- Phase 04 complete
 Resume file: None
