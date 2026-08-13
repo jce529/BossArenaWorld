@@ -100,7 +100,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- SpiritMod weakReferences build wiring + Integrations/SpiritIntegration.cs registering Infernon (MOD-02)
+- [x] 05-01-PLAN.md -- SpiritMod weakReferences build wiring + Integrations/SpiritIntegration.cs registering Infernon (MOD-02)
 - [ ] 05-02-PLAN.md -- Live downed-flag/WorldGen checkpoint (D-05) + reflection-failure checkpoint + SpiritMod-disabled load-safety checkpoint (D-05)
 
 ### Phase 6: Redemption & CatalystMod Integration

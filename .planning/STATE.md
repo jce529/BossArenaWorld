@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 5 context gathered
-last_updated: "2026-08-13T12:07:07.021Z"
-last_activity: 2026-08-13
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-08-13T12:41:00.000Z"
+last_activity: 2026-08-13 -- Phase 05 Plan 01 complete
 progress:
   total_phases: 8
   completed_phases: 4
-  total_plans: 12
-  completed_plans: 12
-  percent: 75
+  total_plans: 14
+  completed_plans: 13
+  percent: 93
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 04 — calamity-integration-cross-mod-side-effect-reproduction
+**Current focus:** Phase 05 — spirit-integration
 
 ## Current Position
 
-Phase: 5
-Plan: Not started
+Phase: 05 (spirit-integration) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-08-13
+Last activity: 2026-08-13 -- Phase 05 Plan 01 complete
 
-Progress: [████████░░] 75%
+Progress: [█████████░] 93%
 
 ## Performance Metrics
 
@@ -64,6 +64,7 @@ Progress: [████████░░] 75%
 | Phase 03 P03 | verification-only | 1 tasks | 0 files |
 | Phase 04 P01 | 5min | 2 tasks | 4 files |
 | Phase 04 P02 | 25min | 2 tasks | 1 files |
+| Phase 05 P01 | 7min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,11 @@ Recent decisions affecting current work:
 - [Phase 04]: Resolved debug session `hivemind-zonecorrupt-despawn-corruption-subworld` (was blocking 04-02-PLAN.md's live verification checkpoint) -- Hive Mind despawn traced to missing Corruption biome tiles (player.ZoneCorrupt never true, no corruption tiles in the plain-stone arena); fixed via a new BossArenaCorruptionSubworld + CorruptionPlatformPass (full-width Ebonstone/CorruptGrass platform) and a boss-aware BossArenaRoutingRegistry replacing hardcoded BossArenaSubworld checks in Test1Tile/BossSummonPlayer/BossCoreDropRule. Also confirmed the follow-up "double Sky Ore message" symptom is expected, non-bug behavior (matches PITFALLS.md Pitfall 1's carrier-item architecture exactly) via decompilation, not a state-corruption bug. User confirmed fix live in-game (checklist items 1-5 passed); optional final spot-checks (flag persistence across save/relaunch, no third message on repeat use) explicitly skipped by user as redundant with the already-confirmed mechanism. See .planning/debug/resolved/hivemind-zonecorrupt-despawn-corruption-subworld.md.
 - [Phase 04]: [Phase 04]: Delegates/lambdas passed into [JITWhenModsEnabled]-guarded registration calls (BossDefinition's ApplyDowned/IsDowned) must be named, separately-tagged methods -- never inline lambdas -- since the C# compiler hoists inline lambdas into a <>c cache-class method that does NOT inherit the enclosing method's JIT-guard attribute, causing a real JITException when the weak-referenced mod is disabled. Confirmed live: fixed in Integrations/CalamityIntegration.cs (commit 0e19600) after Task 2's CalamityMod-disabled load test crashed. Applies to every future per-boss registration (Spirit, Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak).
 - [Phase 04]: [Phase 04]: Task 1's live WorldGen/netcode verification checkpoint was satisfied by evidence gathered during the immediately-preceding resolved debug session (hivemind-zonecorrupt-despawn-corruption-subworld), not a duplicate live test -- user explicitly confirmed the debug session used a fresh throwaway world with Evil Type = Corruption (not the real save), matching Task 1's exact acceptance criteria.
+- [Phase 05]: Registered spirit:infernon in Integrations/SpiritIntegration.cs using cached reflection into SpiritMod's internal BossDownedTracker.Downed dictionary (no public setter exists) for the write path, and the public zero-reflection MyWorld.DownedInfernon property for the read path -- first genuine use of runtime reflection in this project, proving BossRegistry generalizes to a dictionary-tracking API shape distinct from Calamity's wrapper-property shape.
+- [Phase 05]: Confirmed live that tModLoader's build.txt weakReferences syntax for multiple entries on one line is comma-separated (CalamityMod@2.2.4, SpiritMod@1.5.0.44), not space-separated -- the plan's illustrative space-separated syntax failed to parse (BuildProperties.ModReference.Parse threw "Invalid mod reference"); fixed inline (05-01, Rule 1).
+- [Phase 05]: Both Infernon and InfernoSkull NPC types registered under one BossDefinition (Pitfall B) since either's OnKill can be the actual downed-trigger depending on Normal vs Expert Mode difficulty.
+- [Phase 05]: D-03 confirmed and documented in-code: Infernon's downed-tracking path (BossDownedTracker.OnKill + Infernon/InfernoSkull.OnKill) is fully world-scoped with no player-scoped side effect, so no exclusion logic is needed (unlike Calamity's Hive Mind SetNewBossJustDowned() case in Phase 4).
+- [Phase 05]: Tooling note (not a project code issue): the `state update-progress`/`state advance-plan` gsd-tools commands have a case-insensitive-regex bug that matches the YAML frontmatter's `progress:` key instead of the body's `Progress:` line, silently no-op-ing the update (the corrupted frontmatter copy gets discarded when syncStateFrontmatter rebuilds frontmatter from the unchanged body). Updated STATE.md's Current Position/Progress/frontmatter fields manually for 05-01 as a workaround.
 
 ### Pending Todos
 
@@ -106,6 +112,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-13T12:07:07.016Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-spirit-integration/05-CONTEXT.md
+Last session: 2026-08-13T12:41:00.000Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: .planning/phases/05-spirit-integration/05-02-PLAN.md
