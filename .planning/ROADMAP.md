@@ -54,7 +54,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — Summon-item registry (SUBW-01) + generic arrival auto-summon hook (SUBW-04 backend)
 - [x] 02-02-PLAN.md — Test1 portal tile + placing item, right-click redirect trigger (SUBW-02, SUBW-03)
-- [ ] 02-03-PLAN.md — Live redirect verification checkpoint + Phase 1/2 debug tooling removal (SUBW-01..04)
+- [x] 02-03-PLAN.md — Live redirect verification checkpoint + Phase 1/2 debug tooling removal (SUBW-01..04)
 
 ### Phase 3: BossRegistry + BossCoreItem + GlobalNPC Pipeline (Proof of Concept)
 **Goal**: Killing a registered boss inside the subworld reliably carries a boss-kill credential back to the main world and applies it exactly once, proven end-to-end with one low-risk vanilla boss before content-mod complexity is introduced.
