@@ -50,6 +50,30 @@
 			<HintPath>Libs\SpiritMod.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
+
+		<!--
+			Compile-time-only weak reference to Redemption, declared as a weak runtime
+			dependency via `weakReferences = ... Redemption@0.8.0.4501` in build.txt (per D-01: the
+			mod must still load with Redemption absent). Libs/Redemption.dll is copied directly from
+			the already-extracted ModReader/Redemption/Redemption.dll (not committed, see .gitignore)
+			and never copied into this mod's own output (Private=false).
+		-->
+		<Reference Include="Redemption" Condition="Exists('Libs\Redemption.dll')">
+			<HintPath>Libs\Redemption.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+
+		<!--
+			Compile-time-only weak reference to CatalystMod, declared as a weak runtime
+			dependency via `weakReferences = ... CatalystMod@1.1.8` in build.txt (per D-01: the
+			mod must still load with CatalystMod absent). Libs/CatalystMod.dll is extracted from the
+			Steam Workshop-cached .tmod via scripts/extract_tmod.py (not committed, see .gitignore)
+			and never copied into this mod's own output (Private=false).
+		-->
+		<Reference Include="CatalystMod" Condition="Exists('Libs\CatalystMod.dll')">
+			<HintPath>Libs\CatalystMod.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
 	</ItemGroup>
 
 </Project>
