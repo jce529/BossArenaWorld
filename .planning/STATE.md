@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: build.txt and BossArenaSubWorld.csproj now declare Redemption@0.8.0.4501 and CatalystMod@1.1.8 as weak references; dotnet build confirmed exit 0 with zero Redemption/CatalystMod code referenced yet. Unblocks Plan 02's Integrations/RedemptionIntegration.cs and Integrations/CatalystIntegration.cs.
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-08-14T06:02:54.478Z"
-last_activity: "2026-08-14 -- Phase 06 Plan 01 complete: Libs/Redemption.dll copied from ModReader/Redemption/Redemption.dll (v0.8.0.4501); Libs/CatalystMod.dll extracted from the Steam Workshop content cache via scripts/extract_tmod.py (v1.1.8, 588,288 bytes, matches 06-RESEARCH.md exactly); build.txt/csproj wired with weak-reference blocks mirroring SpiritMod/CalamityMod precedent; dotnet build confirmed exit 0."
+status: verifying
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-08-14T06:20:04.434Z"
+last_activity: "2026-08-14 -- Phase 06 Plan 02 complete: Integrations/RedemptionIntegration.cs registers redemption:thorn (Redemption.Globals.RedeBossDowned.downedThorn, direct public-static-field write); Integrations/CatalystIntegration.cs registers catalyst:astrageldon (CatalystMod.WorldDefeats.downedAstrageldon, direct public-static-field write, non-standard -Type gameEventId); fixed CatalystMod.MetanovaGenerator's real namespace (CatalystMod.Common.World.MetanovaGenerator) via ilspycmd decompile (Rule 3); user-approved scope addition added an optional canSummon eligibility delegate to SummonItemRegistry, gated in Test1Tile.RightClick, so CatalystMod's real Moon-Lord-lockout CanUseItem() behavior is preserved across the portal-redirect pipeline; dotnet build confirmed exit 0."
 progress:
   total_phases: 9
   completed_phases: 6
   total_plans: 24
-  completed_plans: 22
-  percent: 92
+  completed_plans: 23
+  percent: 96
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 06 (Redemption & CatalystMod Integration) — Plan 06-01 complete (weak-reference wiring). Next: Plan 06-02 (RedemptionIntegration.cs/CatalystIntegration.cs, boss registration for Thorn and Astrageldon), not yet planned.
+**Current focus:** Phase 06 (Redemption & CatalystMod Integration) — Plan 06-02 complete (RedemptionIntegration.cs/CatalystIntegration.cs, boss registration for Thorn and Astrageldon, plus SummonItemRegistry eligibility-delegate extension). Next: Plan 06-03 (live in-game verification), not yet planned.
 
 ## Current Position
 
-Phase: 06 (redemption-catalystmod-integration) — Plan 01 of (at least) 2 complete
-Plan: 06-01 (Libs/Redemption.dll + Libs/CatalystMod.dll wired as compile-time-only weak references) complete. Next: 06-02, not yet planned.
-Status: build.txt and BossArenaSubWorld.csproj now declare Redemption@0.8.0.4501 and CatalystMod@1.1.8 as weak references; dotnet build confirmed exit 0 with zero Redemption/CatalystMod code referenced yet. Unblocks Plan 02's Integrations/RedemptionIntegration.cs and Integrations/CatalystIntegration.cs.
-Last activity: 2026-08-14 -- Phase 06 Plan 01 complete: Libs/Redemption.dll copied from ModReader/Redemption/Redemption.dll (v0.8.0.4501); Libs/CatalystMod.dll extracted from the Steam Workshop content cache via scripts/extract_tmod.py (v1.1.8, 588,288 bytes, matches 06-RESEARCH.md exactly); build.txt/csproj wired with weak-reference blocks mirroring SpiritMod/CalamityMod precedent; dotnet build confirmed exit 0.
+Phase: 06 (redemption-catalystmod-integration) — Plan 02 of (at least) 2 complete
+Plan: 06-02 (Integrations/RedemptionIntegration.cs + Integrations/CatalystIntegration.cs registering redemption:thorn and catalyst:astrageldon into BossRegistry) complete. Next: 06-03 (live in-game verification), not yet planned.
+Status: Integrations/RedemptionIntegration.cs and Integrations/CatalystIntegration.cs register redemption:thorn and catalyst:astrageldon into BossRegistry, plus a user-approved SummonItemRegistry eligibility-delegate extension for Astrageldon's Moon-Lord-lockout. dotnet build confirmed exit 0. Live verification deferred to Plan 06-03.
+Last activity: 2026-08-14 -- Phase 06 Plan 02 complete: Integrations/RedemptionIntegration.cs registers redemption:thorn (Redemption.Globals.RedeBossDowned.downedThorn, direct public-static-field write); Integrations/CatalystIntegration.cs registers catalyst:astrageldon (CatalystMod.WorldDefeats.downedAstrageldon, direct public-static-field write, non-standard -Type gameEventId); fixed CatalystMod.MetanovaGenerator's real namespace (CatalystMod.Common.World.MetanovaGenerator) via ilspycmd decompile (Rule 3); user-approved scope addition added an optional canSummon eligibility delegate to SummonItemRegistry, gated in Test1Tile.RightClick, so CatalystMod's real Moon-Lord-lockout CanUseItem() behavior is preserved across the portal-redirect pipeline; dotnet build confirmed exit 0.
 
-Progress: [█████████░] 92% (22 of 24 currently-planned plans across Phases 1-6 + Phase 9; Phases 7-8 plans not yet created)
+Progress: [██████████] 96% (23 of 24 currently-planned plans across Phases 1-6 + Phase 9; Phases 7-8 plans not yet created)
 
 ## Performance Metrics
 
@@ -74,6 +74,7 @@ Progress: [█████████░] 92% (22 of 24 currently-planned plans
 | Phase 09 P06 | verification-only | 3 tasks | 1 files |
 | Phase 09 P07 | 25min | 2 tasks | 3 files |
 | Phase 06 P01 | 8min | 2 tasks | 2 files |
+| Phase 06 P02 | 10min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -119,6 +120,9 @@ Recent decisions affecting current work:
 - [Phase 09]: [Phase 09 P06] All 7 biome Subworld/GenPass pairs (Hallow, Underworld, Jungle, Space, Desert, Astral, Briar) live-confirmed to generate correctly and satisfy their target Zone/Biome flag across all three mechanism families (vanilla SceneMetrics, height-only, modded ModBiome). ARENA-01 deliberately left unmarked complete in REQUIREMENTS.md -- this plan (and 09-07) only close the arena-construction/JIT-safety half; boss-classification-and-routing across Phases 6-8 remains outstanding.
 - [Phase 09]: [Phase 09 P07]: Live CalamityMod-disabled checkpoint caught a real JITException in AstralPlatformPass.ApplyPass -- lazy construction inside Subworld.Tasks alone is NOT sufficient JIT protection; every method touching a weak-referenced mod's types needs its own [JITWhenModsEnabled] attribute regardless of containing-class laziness. Fixed both AstralPlatformPass.cs and BriarPlatformPass.cs; both mod-disabled checkpoints re-verified clean.
 - [Phase 06]: Plan 06-01: CatalystMod.dll extracted from Steam Workshop content cache via scripts/extract_tmod.py (not in local Mods/ folder); fresh worktree required manually copying pre-existing Libs/SubworldLibrary.dll, CalamityMod.dll, SpiritMod.dll from main working tree to unblock dotnet build verification (known per-worktree setup gap, STATE.md Phase 02)
+- [Phase 06]: Fixed CatalystMod.MetanovaGenerator namespace (Rule 3): real path is CatalystMod.Common.World.MetanovaGenerator, confirmed via ilspycmd decompile
+- [Phase 06]: User-approved scope addition: SummonItemRegistry gained an optional named canSummon eligibility delegate to replicate CatalystMod AstralCommunicator real Moon-Lord-lockout CanUseItem() behavior, gated in Test1Tile.RightClick; Thorn (Redemption) has no equivalent lockout
+- [Phase 06]: Tooling note: state advance-plan again failed with the same STATE.md narrative-format parse error documented in Phase 05/09 (Current Position uses a narrative Plan: line, not Current Plan: N/Total Plans: M); Current Position/frontmatter progress updated manually as workaround, consistent with prior precedent
 
 ### Roadmap Evolution
 
@@ -138,6 +142,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-14T06:02:54.471Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-08-14T06:19:15.690Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None

@@ -116,7 +116,7 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md — Extract Libs/Redemption.dll + Libs/CatalystMod.dll, wire build.txt/csproj weak references
-- [ ] 06-02-PLAN.md — Integrations/RedemptionIntegration.cs (Thorn) + Integrations/CatalystIntegration.cs (Astrageldon) registration
+- [x] 06-02-PLAN.md — Integrations/RedemptionIntegration.cs (Thorn) + Integrations/CatalystIntegration.cs (Astrageldon) registration
 - [ ] 06-03-PLAN.md — Live downed-flag/WorldGen checkpoint (Thorn, Astrageldon) + Redemption/CatalystMod-disabled load-safety checkpoint
 
 ### Phase 7: NoxusBoss & ContinentOfJourney/Daybreak Integration
