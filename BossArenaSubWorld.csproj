@@ -74,6 +74,20 @@
 			<HintPath>Libs\CatalystMod.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
+
+		<!--
+			Compile-time-only weak reference to ContinentOfJourney (Workshop display name "Homeward
+			Journey"; the internal mod name is ContinentOfJourney, confirmed via decompile,
+			07-RESEARCH.md Pitfall 1), declared as a weak runtime dependency via
+			`weakReferences = ... ContinentOfJourney@0.8.70.88` in build.txt (per D-01: the mod must
+			still load with ContinentOfJourney absent). Libs/ContinentOfJourney.dll is extracted from
+			the Steam Workshop-cached .tmod via scripts/extract_tmod.py (not committed, see
+			.gitignore) and never copied into this mod's own output (Private=false).
+		-->
+		<Reference Include="ContinentOfJourney" Condition="Exists('Libs\ContinentOfJourney.dll')">
+			<HintPath>Libs\ContinentOfJourney.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
 	</ItemGroup>
 
 </Project>
