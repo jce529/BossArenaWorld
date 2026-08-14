@@ -541,29 +541,5 @@ namespace BossArenaSubWorld.Integrations
         {
             ModLoader.GetMod("InfernumMode").Call("SetInfernumActive", true);
         }
-
-        // Fix for .planning/debug/resolved/old-duke-immediate-despawn-plain-arena.md:
-        // InfernumMode.CanUseCustomAIs reads InfernumMode's own WorldSaveSystem.InfernumModeEnabled
-        // -- a per-world TagCompound-saved "Infernum Mode" toggle. BossArenaSubworld (and every
-        // other arena subworld in this project) is a freshly-generated, ShouldSave=false throwaway
-        // world; its LoadWorldData() receives an empty tag, so this flag resets to false inside
-        // the arena regardless of the player's real main-world toggle state -- same Pitfall-1
-        // category as hivemind-zonecorrupt-despawn-corruption-subworld.md's downedHiveMind case,
-        // here affecting InfernumMode's state instead of Calamity's. With the flag false, Infernum's
-        // own boss AI overrides don't apply, AND (Old Duke specifically) NoxusBoss's
-        // FUCKYOUOLDDUKESystem hijacks Old Duke into a scripted, harmless "Avatar of Emptiness"
-        // cutscene that disappears after ~4 seconds, whenever it reads InfernumMode as inactive.
-        // Force it true via InfernumMode's own sanctioned Mod.Call("SetInfernumActive", true) API
-        // (not a reflection hack) for the whole arena visit -- called once from
-        // BossSummonPlayer.OnEnterWorld() for every arena entry, not just Old Duke's. No
-        // restore-on-exit needed: the real main world's own save data correctly reloads the real
-        // value when SubworldSystem.Exit() reloads the main .wld (same conclusion as the Hive Mind
-        // precedent -- the arena's forced-true value is discarded with the rest of the throwaway
-        // subworld's state).
-        [JITWhenModsEnabled("InfernumMode")]
-        public static void ForceInfernumModeActiveInArena()
-        {
-            ModLoader.GetMod("InfernumMode").Call("SetInfernumActive", true);
-        }
     }
 }
