@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Phase 10 context gathered
-last_updated: "2026-08-14T06:29:51.377Z"
+stopped_at: Phase 7 context gathered
+last_updated: "2026-08-14T07:06:32.157Z"
 last_activity: "2026-08-14 -- Phase 06 Plan 02 complete: Integrations/RedemptionIntegration.cs registers redemption:thorn (Redemption.Globals.RedeBossDowned.downedThorn, direct public-static-field write); Integrations/CatalystIntegration.cs registers catalyst:astrageldon (CatalystMod.WorldDefeats.downedAstrageldon, direct public-static-field write, non-standard -Type gameEventId); fixed CatalystMod.MetanovaGenerator's real namespace (CatalystMod.Common.World.MetanovaGenerator) via ilspycmd decompile (Rule 3); user-approved scope addition added an optional canSummon eligibility delegate to SummonItemRegistry, gated in Test1Tile.RightClick, so CatalystMod's real Moon-Lord-lockout CanUseItem() behavior is preserved across the portal-redirect pipeline; dotnet build confirmed exit 0."
 progress:
   total_phases: 10
@@ -129,6 +129,7 @@ Recent decisions affecting current work:
 - Phase 9 added: Biome-Dependent Subworld Coverage — user requested during Phase 5 execution (05-02 checkpoint) after confirming Infernon's registration works live end-to-end. Generalizes Phase 4's ad-hoc `BossArenaCorruptionSubworld`/`BossArenaRoutingRegistry` fix (built live for Calamity's Hive Mind ZoneCorrupt despawn bug) into a systematic per-boss audit across all v1 mods, placed after Phase 8 per user's explicit placement choice. New requirement: ARENA-01.
 - Phase 9 scope reduced 9→7 biome variants (D-07, 2026-08-14): Dungeon and Sulphurous Sea removed from Phase 9's build scope mid-execution by user decision, after both had already been built once. See 09-CONTEXT.md D-07 and the Decisions entry above for full detail.
 - Phase 10 added (2026-08-14): Full Calamity/Spirit boss roster registration and biome subworld routing — user requested during Phase 6 execution, after confirming only one worked-example boss per mod (Hive Mind/Calamity, Infernon/Spirit) is currently registered despite Phase 9's 09-ALTAR-BIOME-REFERENCE.md already having biome-classified the full researched roster (Astrum Deus/Aureus, Vinewrath Bane, etc.). This expands v1 scope beyond the "one boss per mod, prove the pattern" discipline used in Phases 3-6 — full-roster registration was previously deferred/unscheduled (see PROJECT.md Out of Scope: "no boss priority ordering"). Needs its own `/gsd:discuss-phase 10` and research/planning pass before execution.
+- Phase 7 rescoped (2026-08-14, discuss-phase): NoxusBoss (Devourer of Universes) removed from v1 scope entirely — user decision, most NoxusBoss bosses are quest-triggered (Solyn's moon-event questline) or already run in their own dedicated subworld/arena mechanic, don't fit the carrier-item pattern; no plan to revisit. MOD-05 marked Removed in REQUIREMENTS.md, moved to PROJECT.md Out of Scope. Phase 7 renamed "ContinentOfJourney/Daybreak (Homeward Journey) Integration", ROADMAP.md Goal/Success Criteria/Requirements trimmed to MOD-06 only. Also resolved during the same discuss-phase: "ContinentOfJourney" identified as **Homeward Journey** (GabeHasWon, Steam Workshop id 2930931197) — user supplied the link directly, confirming the guess that the phase title's "(Homeward series)" parenthetical was the actual pointer (09-ALTAR-BIOME-REFERENCE.md Open Item 1, previously unresolved across two research passes). "Daybreak" reconfirmed as `gold-meridian/daybreak-mod`, a boss-less library dependency of Wrath of the Gods.
 
 ### Pending Todos
 
@@ -137,12 +138,12 @@ None yet.
 ### Blockers/Concerns
 
 - Phase 4 planning should resolve the weak-reference+[JITWhenModsEnabled] vs. pure-reflection disagreement between research files before writing the first Integrations/*.cs file (see research/SUMMARY.md Gaps).
-- Phases 6-7 (Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak) have entirely unresearched APIs — each will likely need a `/gsd:research-phase` pass before detailed planning.
+- Phase 7 (ContinentOfJourney/Daybreak, i.e. Homeward Journey) has an entirely unresearched downed-progress API — will likely need a `/gsd:research-phase`/`/gsd:plan-phase 7` research pass before detailed planning. NoxusBoss removed from v1 scope (2026-08-14, see Roadmap Evolution) — no longer a blocker.
 - Isolation premise NOT empirically confirmed: live King Slime kill test shows NPC.downedSlimeKing=True in the main world after subworld round-trip (expected False per 01-RESEARCH.md/PITFALLS.md, which both explicitly predicted vanilla flags behave the same as modded ones for this bug). Do NOT proceed to Phase 2/3 planning until re-investigated -- see 01-04-SUMMARY.md hypotheses (in-memory-only leak vs. genuine on-disk persistence vs. vanilla-specific behavior difference). Also unconfirmed: inventory-intact check (SUBW-06) was skipped by tester during this run.
 - Dungeon and Sulphurous Sea biome-variant subworlds are deferred, not built (D-07, 2026-08-14, "for now"/일단). Blocks a future biome-safe arena for Polterghast (Spirit, Dungeon, unconditionally assignable) and The Old Duke (Calamity+Infernum, Sulphurous Sea) until a future phase reinstates them. Do not silently resurrect the discarded Wave-1 code (never merged, not reachable from master) -- treat any future request to add these back as new scope requiring its own research/planning pass.
 
 ## Session Continuity
 
-Last session: 2026-08-14T06:29:51.371Z
-Stopped at: Phase 10 context gathered
-Resume file: .planning/phases/10-full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing/10-CONTEXT.md
+Last session: 2026-08-14T07:06:32.151Z
+Stopped at: Phase 7 context gathered
+Resume file: .planning/phases/07-noxusboss-continentofjourney-daybreak-integration/07-CONTEXT.md
