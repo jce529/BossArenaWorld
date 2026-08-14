@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: "Phase 07 Plan 07-02 Task 1 checkpoint:human-verify -- awaiting live Goblin Chariot test (see "PENDING CHECKPOINT" under Current Position for exact resume instructions)"
-last_updated: "2026-08-14T13:45:27.865Z"
+last_updated: "2026-08-14T13:52:46.556Z"
 last_activity: 2026-08-14
 progress:
   total_phases: 10
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 08 — full-pipeline-verification-tracker-confirmation
+**Current focus:** Phase 10 — full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing
 
 ## Current Position
 
-Phase: 08 (full-pipeline-verification-tracker-confirmation) — EXECUTING
-Plan: 1 of 4
-Status: Executing Phase 08
+Phase: 10 (full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing) — EXECUTING
+Plan: 1 of 6
+Status: Executing Phase 10
 
 ### PENDING CHECKPOINT -- resume here
 
