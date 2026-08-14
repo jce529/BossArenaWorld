@@ -174,3 +174,13 @@ Plans:
 - [x] 09-05-PLAN.md — Temporary debug entry mechanism for live verification
 - [x] 09-06-PLAN.md — Live biome-flag verification checkpoints (7 subworlds)
 - [x] 09-07-PLAN.md — CalamityMod/SpiritMod-disabled safety checkpoint + debug hook removal
+
+### Phase 10: Full Calamity/Spirit boss roster registration and biome subworld routing
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 9
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 10 to break down)

@@ -128,6 +128,7 @@ Recent decisions affecting current work:
 
 - Phase 9 added: Biome-Dependent Subworld Coverage — user requested during Phase 5 execution (05-02 checkpoint) after confirming Infernon's registration works live end-to-end. Generalizes Phase 4's ad-hoc `BossArenaCorruptionSubworld`/`BossArenaRoutingRegistry` fix (built live for Calamity's Hive Mind ZoneCorrupt despawn bug) into a systematic per-boss audit across all v1 mods, placed after Phase 8 per user's explicit placement choice. New requirement: ARENA-01.
 - Phase 9 scope reduced 9→7 biome variants (D-07, 2026-08-14): Dungeon and Sulphurous Sea removed from Phase 9's build scope mid-execution by user decision, after both had already been built once. See 09-CONTEXT.md D-07 and the Decisions entry above for full detail.
+- Phase 10 added (2026-08-14): Full Calamity/Spirit boss roster registration and biome subworld routing — user requested during Phase 6 execution, after confirming only one worked-example boss per mod (Hive Mind/Calamity, Infernon/Spirit) is currently registered despite Phase 9's 09-ALTAR-BIOME-REFERENCE.md already having biome-classified the full researched roster (Astrum Deus/Aureus, Vinewrath Bane, etc.). This expands v1 scope beyond the "one boss per mod, prove the pattern" discipline used in Phases 3-6 — full-roster registration was previously deferred/unscheduled (see PROJECT.md Out of Scope: "no boss priority ordering"). Needs its own `/gsd:discuss-phase 10` and research/planning pass before execution.
 
 ### Pending Todos
 
