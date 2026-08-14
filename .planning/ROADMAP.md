@@ -149,7 +149,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. Redemption & CatalystMod Integration | 0/TBD | Not started | - |
 | 7. NoxusBoss & ContinentOfJourney/Daybreak Integration | 0/TBD | Not started | - |
 | 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |
-| 9. Biome-Dependent Subworld Coverage | 0/TBD | Not started | - |
+| 9. Biome-Dependent Subworld Coverage | 0/7 | Not started | - |
 
 ### Phase 9: Biome-Dependent Subworld Coverage
 **Goal**: Every v1-registered boss whose AI depends on a biome/Zone flag (the despawn-bug class found live with Calamity's Hive Mind in Phase 4, fixed there only ad-hoc via `BossArenaCorruptionSubworld`) has a matching routed biome-variant subworld, audited systematically across every integrated mod instead of being discovered live in-game per boss.
@@ -159,4 +159,13 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
   1. Every boss registered in Phases 4-7 (Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak) is explicitly classified via source research as biome/Zone-dependent or not — extending the ad-hoc classification already done for Hive Mind (Phase 4, dependent) and Infernon (Phase 5, independent) to every remaining registered boss.
   2. Every boss classified as biome/Zone-dependent has a matching `BossArenaXSubworld` variant registered via `BossArenaRoutingRegistry` (following the `BossArenaCorruptionSubworld` precedent), preventing the AI despawn/malfunction bug class found with Hive Mind.
   3. Classification and routing coverage is documented per boss, so future (post-v1) mod integrations can extend the same audit instead of re-discovering biome dependencies live in-game.
-**Plans**: TBD
+**Plans**: 7 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Underworld + Space biome subworlds (height-only family)
+- [ ] 09-02-PLAN.md — Hallow + Jungle biome subworlds (vanilla tile-weighted family)
+- [ ] 09-03-PLAN.md — Desert + Dungeon biome subworlds (vanilla tile-weighted family, extra constraints)
+- [ ] 09-04-PLAN.md — Astral + Sulphurous + Briar biome subworlds (modded ModBiome family, JIT-safety discipline)
+- [ ] 09-05-PLAN.md — Temporary debug entry mechanism for live verification
+- [ ] 09-06-PLAN.md — Live biome-flag verification checkpoints (all 9 subworlds)
+- [ ] 09-07-PLAN.md — CalamityMod/SpiritMod-disabled safety checkpoint + debug hook removal
