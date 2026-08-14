@@ -166,6 +166,6 @@ Plans:
 - [x] 09-02-PLAN.md — Hallow + Jungle biome subworlds (vanilla tile-weighted family)
 - [x] 09-03-PLAN.md — Desert biome subworld (vanilla tile-weighted family, extra constraints) — Dungeon descoped, D-07
 - [x] 09-04-PLAN.md — Astral + Briar biome subworlds (modded ModBiome family, JIT-safety discipline) — Sulphurous Sea descoped, D-07
-- [ ] 09-05-PLAN.md — Temporary debug entry mechanism for live verification
+- [x] 09-05-PLAN.md — Temporary debug entry mechanism for live verification
 - [ ] 09-06-PLAN.md — Live biome-flag verification checkpoints (7 subworlds)
 - [ ] 09-07-PLAN.md — CalamityMod/SpiritMod-disabled safety checkpoint + debug hook removal
