@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Phase 9 fully closed out. ARENA-01 confirmed for the arena-construction/JIT-safety half (7 biome-variant subworlds exist, generate correctly, satisfy their target Zone/Biome flag, and load safely with their source mod disabled); boss-classification-and-routing across Phases 6-8 remains the outstanding half.
-stopped_at: Phase 6 context gathered
-last_updated: "2026-08-14T05:24:03.540Z"
-last_activity: "2026-08-14 -- Phase 09 Wave 4 (09-07) complete: live CalamityMod-disabled checkpoint (Part A) caught a real JITException in AstralPlatformPass.ApplyPass (missing [JITWhenModsEnabled("CalamityMod")]); fixed inline (Rule 1), proactively applied the same fix to BriarPlatformPass.ApplyPass ([JITWhenModsEnabled("SpiritMod")]); user re-verified both CalamityMod-disabled and SpiritMod-disabled checkpoints clean ("mod-disabled safety verified"). Debug/BiomeArenaDebugCommands.cs then deleted, restoring D-02; dotnet build confirmed exit 0 with all 18 biome-related files intact."
+status: build.txt and BossArenaSubWorld.csproj now declare Redemption@0.8.0.4501 and CatalystMod@1.1.8 as weak references; dotnet build confirmed exit 0 with zero Redemption/CatalystMod code referenced yet. Unblocks Plan 02's Integrations/RedemptionIntegration.cs and Integrations/CatalystIntegration.cs.
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-08-14T06:02:54.478Z"
+last_activity: "2026-08-14 -- Phase 06 Plan 01 complete: Libs/Redemption.dll copied from ModReader/Redemption/Redemption.dll (v0.8.0.4501); Libs/CatalystMod.dll extracted from the Steam Workshop content cache via scripts/extract_tmod.py (v1.1.8, 588,288 bytes, matches 06-RESEARCH.md exactly); build.txt/csproj wired with weak-reference blocks mirroring SpiritMod/CalamityMod precedent; dotnet build confirmed exit 0."
 progress:
   total_phases: 9
   completed_phases: 6
-  total_plans: 21
-  completed_plans: 21
-  percent: 100
+  total_plans: 24
+  completed_plans: 22
+  percent: 92
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 09 — biome-dependent-subworld-coverage — COMPLETE. Next unplanned work: Phases 6-8 (Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak), per ROADMAP.md ordering (executed out of order per D-01, Phase 9 was pulled ahead of Phases 6-8).
+**Current focus:** Phase 06 (Redemption & CatalystMod Integration) — Plan 06-01 complete (weak-reference wiring). Next: Plan 06-02 (RedemptionIntegration.cs/CatalystIntegration.cs, boss registration for Thorn and Astrageldon), not yet planned.
 
 ## Current Position
 
-Phase: 09 (biome-dependent-subworld-coverage) — COMPLETE (all 7 plans: 09-01 through 09-07)
-Plan: All 7 plans complete. Next: Phases 6-8, not yet planned.
-Status: Phase 9 fully closed out. ARENA-01 confirmed for the arena-construction/JIT-safety half (7 biome-variant subworlds exist, generate correctly, satisfy their target Zone/Biome flag, and load safely with their source mod disabled); boss-classification-and-routing across Phases 6-8 remains the outstanding half.
-Last activity: 2026-08-14 -- Phase 09 Wave 4 (09-07) complete: live CalamityMod-disabled checkpoint (Part A) caught a real JITException in AstralPlatformPass.ApplyPass (missing [JITWhenModsEnabled("CalamityMod")]); fixed inline (Rule 1), proactively applied the same fix to BriarPlatformPass.ApplyPass ([JITWhenModsEnabled("SpiritMod")]); user re-verified both CalamityMod-disabled and SpiritMod-disabled checkpoints clean ("mod-disabled safety verified"). Debug/BiomeArenaDebugCommands.cs then deleted, restoring D-02; dotnet build confirmed exit 0 with all 18 biome-related files intact.
+Phase: 06 (redemption-catalystmod-integration) — Plan 01 of (at least) 2 complete
+Plan: 06-01 (Libs/Redemption.dll + Libs/CatalystMod.dll wired as compile-time-only weak references) complete. Next: 06-02, not yet planned.
+Status: build.txt and BossArenaSubWorld.csproj now declare Redemption@0.8.0.4501 and CatalystMod@1.1.8 as weak references; dotnet build confirmed exit 0 with zero Redemption/CatalystMod code referenced yet. Unblocks Plan 02's Integrations/RedemptionIntegration.cs and Integrations/CatalystIntegration.cs.
+Last activity: 2026-08-14 -- Phase 06 Plan 01 complete: Libs/Redemption.dll copied from ModReader/Redemption/Redemption.dll (v0.8.0.4501); Libs/CatalystMod.dll extracted from the Steam Workshop content cache via scripts/extract_tmod.py (v1.1.8, 588,288 bytes, matches 06-RESEARCH.md exactly); build.txt/csproj wired with weak-reference blocks mirroring SpiritMod/CalamityMod precedent; dotnet build confirmed exit 0.
 
-Progress: [██████████] 100% (21 of 21 currently-planned plans across Phases 1-5 + Phase 9; Phases 6-8 plans not yet created, executed out of order per D-01)
+Progress: [█████████░] 92% (22 of 24 currently-planned plans across Phases 1-6 + Phase 9; Phases 7-8 plans not yet created)
 
 ## Performance Metrics
 
@@ -73,6 +73,7 @@ Progress: [██████████] 100% (21 of 21 currently-planned plan
 | Phase 09 P05 | 15min | 2 tasks | 1 files |
 | Phase 09 P06 | verification-only | 3 tasks | 1 files |
 | Phase 09 P07 | 25min | 2 tasks | 3 files |
+| Phase 06 P01 | 8min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,7 @@ Recent decisions affecting current work:
 - [Phase 09]: [Phase 09 P06] Fixed Desert platform mid-checkpoint (Rule 1): full-depth falling-Sand fill caused a native stack-overflow via infinite WorldGen.SquareTileFrame/TileFrame/SpawnFallingBlockProjectile recursion; changed to a 3-row real-Sand cosmetic layer over solid Sandstone base (same SceneMetrics weight-1 per tile), mirroring UnderworldPlatformPass's established pattern. User re-tested live and confirmed no crash, ZoneDesert=True.
 - [Phase 09]: [Phase 09 P06] All 7 biome Subworld/GenPass pairs (Hallow, Underworld, Jungle, Space, Desert, Astral, Briar) live-confirmed to generate correctly and satisfy their target Zone/Biome flag across all three mechanism families (vanilla SceneMetrics, height-only, modded ModBiome). ARENA-01 deliberately left unmarked complete in REQUIREMENTS.md -- this plan (and 09-07) only close the arena-construction/JIT-safety half; boss-classification-and-routing across Phases 6-8 remains outstanding.
 - [Phase 09]: [Phase 09 P07]: Live CalamityMod-disabled checkpoint caught a real JITException in AstralPlatformPass.ApplyPass -- lazy construction inside Subworld.Tasks alone is NOT sufficient JIT protection; every method touching a weak-referenced mod's types needs its own [JITWhenModsEnabled] attribute regardless of containing-class laziness. Fixed both AstralPlatformPass.cs and BriarPlatformPass.cs; both mod-disabled checkpoints re-verified clean.
+- [Phase 06]: Plan 06-01: CatalystMod.dll extracted from Steam Workshop content cache via scripts/extract_tmod.py (not in local Mods/ folder); fresh worktree required manually copying pre-existing Libs/SubworldLibrary.dll, CalamityMod.dll, SpiritMod.dll from main working tree to unblock dotnet build verification (known per-worktree setup gap, STATE.md Phase 02)
 
 ### Roadmap Evolution
 
@@ -136,6 +138,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-14T05:24:03.534Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-redemption-catalystmod-integration/06-CONTEXT.md
+Last session: 2026-08-14T06:02:54.471Z
+Stopped at: Completed 06-01-PLAN.md
+Resume file: None

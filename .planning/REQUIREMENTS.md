@@ -31,8 +31,8 @@
 
 - [x] **MOD-01**: Calamity bosses registered via the `DownedBossSystem` wrapper-property pattern
 - [x] **MOD-02**: Spirit bosses registered via the `MyWorld` static-field pattern
-- [ ] **MOD-03**: Redemption bosses researched (downed-progress API) and registered
-- [ ] **MOD-04**: CatalystMod bosses researched (downed-progress API) and registered
+- [x] **MOD-03**: Redemption bosses researched (downed-progress API) and registered
+- [x] **MOD-04**: CatalystMod bosses researched (downed-progress API) and registered
 - [ ] **MOD-05**: NoxusBoss (Devourer of Universes) researched (downed-progress API) and registered
 - [ ] **MOD-06**: ContinentOfJourney / Daybreak (Homeward series) bosses researched (downed-progress API) and registered
 
@@ -93,8 +93,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | APPLY-04 | Phase 3 | Complete |
 | MOD-01 | Phase 4 | Complete |
 | MOD-02 | Phase 5 | Complete |
-| MOD-03 | Phase 6 | Pending |
-| MOD-04 | Phase 6 | Pending |
+| MOD-03 | Phase 6 | Complete |
+| MOD-04 | Phase 6 | Complete |
 | MOD-05 | Phase 7 | Pending |
 | MOD-06 | Phase 7 | Pending |
 | VERIFY-01 | Phase 8 | Pending |
