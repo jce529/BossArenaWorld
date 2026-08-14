@@ -111,7 +111,9 @@ Use these entry points:
 Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
 <!-- GSD:workflow-end -->
 
+## Communication Language
 
+항상 한국어로 응답할 것. 사용자와의 모든 대화, 상태 보고, 체크포인트 안내 등은 한국어로 작성한다. (코드, 커밋 메시지, 파일 내 주석 등 코드베이스 산출물은 기존 영어 관례를 유지한다.)
 
 <!-- GSD:profile-start -->
 ## Developer Profile
