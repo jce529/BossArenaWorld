@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 9 context gathered
-last_updated: "2026-08-13T14:49:35.645Z"
-last_activity: "2026-08-13 -- Phase 05 verified complete (05-VERIFICATION.md, status: passed)"
+status: executing
+stopped_at: Phase 9 Wave 1 complete (4/7 plans), scope reduced to 7 biomes (D-07)
+last_updated: "2026-08-14T00:00:00.000Z"
+last_activity: "2026-08-14 -- Phase 09 Wave 1 complete: 09-01/09-02/09-03/09-04 merged to master (Underworld, Space, Hallow, Jungle, Desert, Astral, Briar); Dungeon and Sulphurous Sea descoped mid-execution (D-07) and discarded"
 progress:
   total_phases: 9
   completed_phases: 5
-  total_plans: 14
-  completed_plans: 14
-  percent: 100
+  total_plans: 21
+  completed_plans: 18
+  percent: 86
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 06 — redemption-catalystmod-integration
+**Current focus:** Phase 09 — biome-dependent-subworld-coverage (Wave 2 next: 09-05 debug tool)
 
 ## Current Position
 
-Phase: 06 (redemption-catalystmod-integration) — NOT PLANNED
-Plan: Not started
-Status: Phase 5 verified complete — ready to plan Phase 6
-Last activity: 2026-08-13 -- Phase 05 verified complete (05-VERIFICATION.md, status: passed)
+Phase: 09 (biome-dependent-subworld-coverage) — EXECUTING (out of ROADMAP order, per D-01 — ahead of Phases 6-8)
+Plan: Wave 1 complete (09-01, 09-02, 09-03, 09-04). Wave 2 (09-05) next.
+Status: 7 of 9 originally-planned biome variants built and merged to master; Dungeon and Sulphurous Sea descoped mid-execution by user decision (09-CONTEXT.md D-07) — their code was built once, then discarded before merging. Waves 2-4 (09-05 debug tool, 09-06/09-07 live checkpoints) remain, revised to reference only the 7 kept biomes.
+Last activity: 2026-08-14 -- Phase 09 Wave 1 complete, scope reduced 9→7 biomes (D-07)
 
-Progress: [██████████] 100% (of 14 currently-planned plans across Phases 1-5; Phases 6-9 plans not yet created)
+Progress: [█████████░] 86% (18 of 21 currently-planned plans across Phases 1-5 + Phase 9; Phases 6-8 plans not yet created, executed out of order per D-01)
 
 ## Performance Metrics
 
@@ -66,6 +66,10 @@ Progress: [██████████] 100% (of 14 currently-planned plans a
 | Phase 04 P02 | 25min | 2 tasks | 1 files |
 | Phase 05 P01 | 7min | 2 tasks | 3 files |
 | Phase 05 P02 | verification-only | 3 tasks | 0 files |
+| Phase 09 P01 | 10min | 2 tasks | 4 files |
+| Phase 09 P02 | 12min | 2 tasks | 4 files |
+| Phase 09 P03 | n/a | 1 task kept (of 2 built) | 2 files (Dungeon discarded) |
+| Phase 09 P04 | n/a | 2 tasks kept (of 3 built) | 4 files (Sulphurous discarded) |
 
 ## Accumulated Context
 
@@ -102,11 +106,14 @@ Recent decisions affecting current work:
 - [Phase 05]: Tooling note (not a project code issue): the `state update-progress`/`state advance-plan` gsd-tools commands have a case-insensitive-regex bug that matches the YAML frontmatter's `progress:` key instead of the body's `Progress:` line, silently no-op-ing the update (the corrupted frontmatter copy gets discarded when syncStateFrontmatter rebuilds frontmatter from the unchanged body). Updated STATE.md's Current Position/Progress/frontmatter fields manually for 05-01 as a workaround.
 - [Phase 05]: [Phase 05]: Task 2 (reflection-failure graceful-degradation checkpoint) was explicitly skipped by user decision -- it is not one of Phase 5's formal ROADMAP.md Success Criteria (only registration correctness, player/world-scope classification, and safe-disabled-load are), only an untested implementation-robustness path already confirmed via code review in 05-01. Precedent: future first-reflection-integration checkpoints (Phase 6/7) should be scoped strictly to formal Success Criteria unless the user asks for broader robustness coverage.
 - [Phase 05]: [Phase 05]: Live-verification lesson -- a summon item's in-game display name can differ from its underlying ModItem class name (SpiritMod's CursedCloth displayed in-game as 'Pain Caller' during Task 1's checkpoint). Do not treat a display-name mismatch alone as a verification failure; cross-check by ModItem class/type for all future mods' live-verification checkpoints (Phases 6-9).
-- [Phase 05]: Tooling note: `gsd-tools phase complete "05"` reported `roadmap_updated: true` but made zero changes to ROADMAP.md (verified via git diff), and set STATE.md's Current Position to "Phase: 09" instead of the actual next unplanned phase (Phase 6) -- likely picking the highest-numbered phase in the file rather than the next sequential incomplete one, now that Phase 9 exists past the still-unplanned Phases 6-8. Manually fixed ROADMAP.md's Phase 5 checkbox/Progress row and STATE.md's Current Position as a workaround. Re-verify `phase complete`'s output against `git diff` every time, don't trust its `*_updated` flags at face value.
+- [Phase 05]: Tooling note: `gsd-tools phase complete "05"` reported `roadmap_updated: true` but made zero changes to ROADMAP.md (verified via git diff), and set STATE.md's Current Position to "Phase: 09" instead of the actual next unplanned phase (Phase 6) -- likely picking the highest-numbered phase in the file rather than the next sequential incomplete one, now that Phase 9 exists past the still-unplanned Phases 6-8. Manually fixed ROADMAP.md's Phase 5 checkbox/Progress row and STATE.md's Current Position as a workaround.
+- [Phase 09]: D-07 (2026-08-14) -- Mid-Wave-1 execution, after Plans 09-03 (Desert+Dungeon) and 09-04 (Astral+Sulphurous+Briar) had already fully built and committed all 9 originally-planned biome pairs in their isolated worktrees, the user instructed: do not build separate subworlds (or, looking ahead, altars) for Dungeon or Sulphurous Sea. The orchestrator stopped both affected executor agents, cherry-picked only the wanted commits (Underworld, Space, Hallow, Jungle, Desert, Astral, Briar -- 7 of 9) onto master, and left Dungeon's and Sulphurous Sea's commits unmerged in their now-deleted worktree branches (discarded, not recoverable from master's history). Downstream plans 09-05/09-06/09-07 were revised in place to reference only the 7 kept biomes. See 09-CONTEXT.md D-07 for full rationale, and ROADMAP.md Phase 9 Success Criterion 2 for the resulting explicit exception (Polterghast/Dungeon, The Old Duke/Sulphurous Sea blocked until a future phase reinstates coverage).
+- [Phase 09]: Parallel-worktree merge pattern used for Wave 1: rather than `git merge`-ing each worktree branch (which would conflict on STATE.md/ROADMAP.md/REQUIREMENTS.md since all 4 parallel executors independently modified those shared files from the same base commit), the orchestrator cherry-picked only each plan's `feat` commits onto master and hand-wrote/reconciled STATE.md/ROADMAP.md/REQUIREMENTS.md/SUMMARY.md once, centrally, after all four worktrees' code was extracted. Precedent for any future phase using `isolation: worktree` parallel execution with >1 wave-1 plan. Re-verify `phase complete`'s output against `git diff` every time, don't trust its `*_updated` flags at face value.
 
 ### Roadmap Evolution
 
 - Phase 9 added: Biome-Dependent Subworld Coverage — user requested during Phase 5 execution (05-02 checkpoint) after confirming Infernon's registration works live end-to-end. Generalizes Phase 4's ad-hoc `BossArenaCorruptionSubworld`/`BossArenaRoutingRegistry` fix (built live for Calamity's Hive Mind ZoneCorrupt despawn bug) into a systematic per-boss audit across all v1 mods, placed after Phase 8 per user's explicit placement choice. New requirement: ARENA-01.
+- Phase 9 scope reduced 9→7 biome variants (D-07, 2026-08-14): Dungeon and Sulphurous Sea removed from Phase 9's build scope mid-execution by user decision, after both had already been built once. See 09-CONTEXT.md D-07 and the Decisions entry above for full detail.
 
 ### Pending Todos
 
@@ -117,9 +124,10 @@ None yet.
 - Phase 4 planning should resolve the weak-reference+[JITWhenModsEnabled] vs. pure-reflection disagreement between research files before writing the first Integrations/*.cs file (see research/SUMMARY.md Gaps).
 - Phases 6-7 (Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak) have entirely unresearched APIs — each will likely need a `/gsd:research-phase` pass before detailed planning.
 - Isolation premise NOT empirically confirmed: live King Slime kill test shows NPC.downedSlimeKing=True in the main world after subworld round-trip (expected False per 01-RESEARCH.md/PITFALLS.md, which both explicitly predicted vanilla flags behave the same as modded ones for this bug). Do NOT proceed to Phase 2/3 planning until re-investigated -- see 01-04-SUMMARY.md hypotheses (in-memory-only leak vs. genuine on-disk persistence vs. vanilla-specific behavior difference). Also unconfirmed: inventory-intact check (SUBW-06) was skipped by tester during this run.
+- Dungeon and Sulphurous Sea biome-variant subworlds are deferred, not built (D-07, 2026-08-14, "for now"/일단). Blocks a future biome-safe arena for Polterghast (Spirit, Dungeon, unconditionally assignable) and The Old Duke (Calamity+Infernum, Sulphurous Sea) until a future phase reinstates them. Do not silently resurrect the discarded Wave-1 code (never merged, not reachable from master) -- treat any future request to add these back as new scope requiring its own research/planning pass.
 
 ## Session Continuity
 
-Last session: 2026-08-13T14:49:35.640Z
-Stopped at: Phase 9 context gathered
-Resume file: .planning/phases/09-biome-dependent-subworld-coverage/09-CONTEXT.md
+Last session: 2026-08-14T00:00:00.000Z
+Stopped at: Phase 9 Wave 1 complete (4/7 plans, 7/9 biomes kept per D-07). Wave 2 (09-05) not yet executed.
+Resume file: .planning/phases/09-biome-dependent-subworld-coverage/09-05-PLAN.md
