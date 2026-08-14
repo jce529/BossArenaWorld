@@ -2,7 +2,7 @@
 
 ## Overview
 
-The journey starts by proving the subworld itself works in isolation — an empty, content-free dimension the player can reliably enter and exit, with the founding premise (downed flags don't cross the world boundary automatically) verified empirically rather than assumed. From there, the real player-facing entry mechanism is built: intercepting an existing boss-summon item, cancelling its main-world effect, and redirecting the player into the arena where the boss auto-summons. With entry solid, the core value proposition — the BossRegistry/BossCoreItem/GlobalNPC carrier-item pipeline — is proven end-to-end against one low-risk vanilla boss before any content-mod complexity is introduced. Calamity is then integrated first (its API is best-understood and its bosses exercise the hardest side-effect categories: netcode sync and WorldGen triggers), establishing the safe cross-mod access pattern and side-effect-reproduction discipline that every subsequent mod integration reuses. Spirit follows to prove the pattern generalizes to a structurally different (raw static-field) API. The remaining four mods (Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak) are then researched and integrated in two paired phases, since each is a bounded, similarly-shaped unit of work once the pattern is proven. The roadmap closes with a dedicated full-pipeline verification phase confirming every registered mod's bosses work end-to-end and that applied progress is actually recognized by external tracker mods, not just internally consistent.
+The journey starts by proving the subworld itself works in isolation — an empty, content-free dimension the player can reliably enter and exit, with the founding premise (downed flags don't cross the world boundary automatically) verified empirically rather than assumed. From there, the real player-facing entry mechanism is built: intercepting an existing boss-summon item, cancelling its main-world effect, and redirecting the player into the arena where the boss auto-summons. With entry solid, the core value proposition — the BossRegistry/BossCoreItem/GlobalNPC carrier-item pipeline — is proven end-to-end against one low-risk vanilla boss before any content-mod complexity is introduced. Calamity is then integrated first (its API is best-understood and its bosses exercise the hardest side-effect categories: netcode sync and WorldGen triggers), establishing the safe cross-mod access pattern and side-effect-reproduction discipline that every subsequent mod integration reuses. Spirit follows to prove the pattern generalizes to a structurally different (raw static-field) API. The remaining three mods (Redemption, CatalystMod, ContinentOfJourney/Daybreak — identified as Homeward Journey, GabeHasWon, Steam Workshop id 2930931197) are then researched and integrated, since each is a bounded, similarly-shaped unit of work once the pattern is proven. NoxusBoss was removed from v1 scope during Phase 7 discuss-phase (2026-08-14) — most of its bosses are quest-triggered or already run in their own dedicated subworld mechanic, so they don't fit this project's carrier-item pattern. The roadmap closes with a dedicated full-pipeline verification phase confirming every registered mod's bosses work end-to-end and that applied progress is actually recognized by external tracker mods, not just internally consistent.
 
 ## Phases
 
@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction** - Calamity bosses are registered with full flag + netcode + WorldGen side-effect reproduction, establishing the safe cross-mod access pattern
 - [x] **Phase 5: Spirit Integration** - Spirit bosses are registered via their structurally different static-field API, proving the registry pattern generalizes (completed 2026-08-13)
 - [ ] **Phase 6: Redemption & CatalystMod Integration** - Both mods' downed-progress APIs are researched and their bosses registered
-- [ ] **Phase 7: NoxusBoss & ContinentOfJourney/Daybreak Integration** - Both mods' downed-progress APIs are researched and their bosses registered, completing v1 mod coverage
+- [ ] **Phase 7: ContinentOfJourney/Daybreak (Homeward Journey) Integration** - Homeward Journey's downed-progress API is researched and at least one of its bosses is registered, completing v1 mod coverage (NoxusBoss removed from scope, see Phase 7 discuss-phase decision)
 - [ ] **Phase 8: Full Pipeline Verification & Tracker Confirmation** - The complete pipeline is verified end-to-end for every registered mod and confirmed recognized by external tracker mods
 - [ ] **Phase 9: Biome-Dependent Subworld Coverage** - Every biome/Zone-dependent boss across all integrated mods has a matching routed subworld variant, audited systematically instead of discovered live in-game
 
@@ -119,22 +119,23 @@ Plans:
 - [x] 06-02-PLAN.md — Integrations/RedemptionIntegration.cs (Thorn) + Integrations/CatalystIntegration.cs (Astrageldon) registration
 - [ ] 06-03-PLAN.md — Live downed-flag/WorldGen checkpoint (Thorn, Astrageldon) + Redemption/CatalystMod-disabled load-safety checkpoint
 
-### Phase 7: NoxusBoss & ContinentOfJourney/Daybreak Integration
-**Goal**: NoxusBoss (Devourer of Universes) and ContinentOfJourney/Daybreak (Homeward series) bosses' downed-progress APIs are researched and registered, completing v1 mod coverage.
+### Phase 7: ContinentOfJourney/Daybreak (Homeward Journey) Integration
+**Goal**: ContinentOfJourney/Daybreak's downed-progress API is researched and at least one of its bosses is registered, completing v1 mod coverage.
 **Depends on**: Phase 6
-**Requirements**: MOD-05, MOD-06
+**Requirements**: MOD-06
 **Success Criteria** (what must be TRUE):
-  1. NoxusBoss's downed-progress API is identified via research, and the Devourer of Universes is registered with its downed state correctly applied in the main world.
-  2. ContinentOfJourney/Daybreak's downed-progress API is identified via research, and at least one of its bosses is registered with its downed state correctly applied in the main world.
-  3. Both integrations continue to load and run safely when their respective source mod is disabled.
+  1. ContinentOfJourney/Daybreak's downed-progress API is identified via research, and at least one of its bosses is registered with its downed state correctly applied in the main world.
+  2. The integration continues to load and run safely when the source mod is disabled.
 **Plans**: TBD
+
+> **Scope note (2026-08-14 discuss-phase):** "ContinentOfJourney" was identified as **Homeward Journey** by GabeHasWon (Steam Workshop id 2930931197) — two prior research passes (Phase 9 prep) could not resolve the name "ContinentOfJourney" directly; the user supplied this link during discussion, confirming the "(Homeward series)" phrase in this phase's original title was the actual pointer. "Daybreak" is confirmed to be `gold-meridian/daybreak-mod`, a boss-less library dependency of Wrath of the Gods — not a separate registration target. **NoxusBoss (Devourer of Universes) was removed from this phase's scope entirely** (was MOD-05/Success Criterion 1) — see `.planning/phases/07-*/07-CONTEXT.md` and `PROJECT.md` Key Decisions for rationale (quest-triggered/self-contained-subworld bosses don't fit the carrier-item pattern; no plan to revisit).
 
 ### Phase 8: Full Pipeline Verification & Tracker Confirmation
 **Goal**: The complete subworld-kill-to-main-world-apply pipeline is verified end-to-end for every registered mod, and applied progress is confirmed recognized by external tracking tools, not just internally consistent.
 **Depends on**: Phase 7
 **Requirements**: VERIFY-01, VERIFY-03
 **Success Criteria** (what must be TRUE):
-  1. For at least one boss per registered mod (vanilla, Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak), the full pipeline is verified end-to-end in singleplayer.
+  1. For at least one boss per registered mod (vanilla, Calamity, Spirit, Redemption, CatalystMod, ContinentOfJourney/Daybreak i.e. Homeward Journey), the full pipeline is verified end-to-end in singleplayer.
   2. Applied downed flags are confirmed recognized by Boss Checklist (or an equivalent tracker mod) after application.
   3. All verification runs are performed against a backed-up world save, per the guidance established in Phase 1.
 **Plans**: TBD
@@ -152,7 +153,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 2/2 | Complete | 2026-08-13 |
 | 5. Spirit Integration | 2/2 | Complete | 2026-08-13 |
 | 6. Redemption & CatalystMod Integration | 0/3 | Not started | - |
-| 7. NoxusBoss & ContinentOfJourney/Daybreak Integration | 0/TBD | Not started | - |
+| 7. ContinentOfJourney/Daybreak (Homeward Journey) Integration | 0/TBD | Not started | - |
 | 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |
 | 9. Biome-Dependent Subworld Coverage | 4/7 | In Progress|  |
 
@@ -161,7 +162,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 **Depends on**: Phase 8
 **Requirements**: ARENA-01
 **Success Criteria** (what must be TRUE):
-  1. Every boss registered in Phases 4-7 (Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak) is explicitly classified via source research as biome/Zone-dependent or not — extending the ad-hoc classification already done for Hive Mind (Phase 4, dependent) and Infernon (Phase 5, independent) to every remaining registered boss.
+  1. Every boss registered in Phases 4-7 (Calamity, Spirit, Redemption, CatalystMod, ContinentOfJourney/Daybreak i.e. Homeward Journey) is explicitly classified via source research as biome/Zone-dependent or not — extending the ad-hoc classification already done for Hive Mind (Phase 4, dependent) and Infernon (Phase 5, independent) to every remaining registered boss. (NoxusBoss removed from v1 scope in Phase 7 discuss-phase, 2026-08-14 — no longer applicable here. In practice, Phase 9's execution scoped its research to Calamity/Spirit/Redemption only; see `09-ALTAR-BIOME-REFERENCE.md` Scope note — Homeward Journey classification is Phase 7's own responsibility.)
   2. Every boss classified as biome/Zone-dependent has a matching `BossArenaXSubworld` variant registered via `BossArenaRoutingRegistry` (following the `BossArenaCorruptionSubworld` precedent), preventing the AI despawn/malfunction bug class found with Hive Mind. **Exception (D-07, user decision 2026-08-14):** Dungeon and Sulphurous Sea variants were built once then descoped and discarded mid-phase; Polterghast (Spirit, Dungeon) and The Old Duke (Calamity+Infernum, Sulphurous Sea) remain without a biome-safe arena until a future phase reinstates them.
   3. Classification and routing coverage is documented per boss, so future (post-v1) mod integrations can extend the same audit instead of re-discovering biome dependencies live in-game.
 **Plans**: 7 plans (scope reduced from 9 to 7 biome variants mid-execution, 2026-08-14 — see 09-CONTEXT.md D-07)

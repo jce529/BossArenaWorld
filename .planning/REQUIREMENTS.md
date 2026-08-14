@@ -33,8 +33,8 @@
 - [x] **MOD-02**: Spirit bosses registered via the `MyWorld` static-field pattern
 - [x] **MOD-03**: Redemption bosses researched (downed-progress API) and registered
 - [x] **MOD-04**: CatalystMod bosses researched (downed-progress API) and registered
-- [ ] **MOD-05**: NoxusBoss (Devourer of Universes) researched (downed-progress API) and registered
-- [ ] **MOD-06**: ContinentOfJourney / Daybreak (Homeward series) bosses researched (downed-progress API) and registered
+- [~] ~~**MOD-05**: NoxusBoss (Devourer of Universes) researched (downed-progress API) and registered~~ — **Removed** during Phase 7 discuss-phase (2026-08-14); see Out of Scope table
+- [ ] **MOD-06**: ContinentOfJourney / Daybreak (identified as Homeward Journey, GabeHasWon, Steam Workshop id 2930931197) bosses researched (downed-progress API) and registered
 
 ### Verification & Safety (VERIFY)
 
@@ -44,7 +44,7 @@
 
 ### Arena Biome Coverage (ARENA)
 
-- [ ] **ARENA-01**: Every v1-registered boss across all integrated mods is explicitly classified (via source research) as biome/Zone-flag-dependent or not, and every boss classified as dependent has a matching routed biome-variant subworld (via `BossArenaRoutingRegistry`) — generalizing the ad-hoc `BossArenaCorruptionSubworld` fix built for Calamity's Hive Mind in Phase 4. Phase 9 (09-01..09-07) closes the arena-construction/JIT-safety half: 7 biome-variant subworlds built, live-verified to satisfy their target Zone/Biome flag, and live-confirmed JIT-safe with their source mod disabled. Boss-classification-and-routing across Phases 6-8 (Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak) remains outstanding before this requirement is fully complete.
+- [ ] **ARENA-01**: Every v1-registered boss across all integrated mods is explicitly classified (via source research) as biome/Zone-flag-dependent or not, and every boss classified as dependent has a matching routed biome-variant subworld (via `BossArenaRoutingRegistry`) — generalizing the ad-hoc `BossArenaCorruptionSubworld` fix built for Calamity's Hive Mind in Phase 4. Phase 9 (09-01..09-07) closes the arena-construction/JIT-safety half: 7 biome-variant subworlds built, live-verified to satisfy their target Zone/Biome flag, and live-confirmed JIT-safe with their source mod disabled. Boss-classification-and-routing across Phase 7 (ContinentOfJourney/Daybreak, i.e. Homeward Journey) and Phase 10 (full Calamity/Spirit roster) remains outstanding before this requirement is fully complete. NoxusBoss dropped from scope entirely (Phase 7 discuss-phase), so it no longer contributes to this requirement.
 
 ## v2 Requirements
 
@@ -71,6 +71,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | Boss-priority ordering / phased mod rollout by "worst offender" | Marginal registration cost is uniform once the BossRegistry/BossCoreItem/GlobalNPC skeleton exists; no benefit to special-casing specific bosses first |
 | Full arena-building/decoration toolkit (auto-platforms, campfires, aesthetics) | Out of scope for the progress-sync core value; duplicates existing dedicated arena-builder mods (e.g. Luiafk) |
 | Generic full player-state mirroring (health/buffs/position) | SubworldLibrary already carries the live player object across the subworld boundary; a parallel mirroring layer would be redundant |
+| NoxusBoss (Devourer of Universes and its other bosses) — was MOD-05 | Removed during Phase 7 discuss-phase (2026-08-14). Most NoxusBoss bosses are quest-triggered (Solyn's moon-event questline) or already run in their own dedicated subworld/arena mechanic, so they don't fit this project's plain-summon-item carrier-item redirect pattern. No plan to revisit |
 
 ## Traceability
 
@@ -95,7 +96,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOD-02 | Phase 5 | Complete |
 | MOD-03 | Phase 6 | Complete |
 | MOD-04 | Phase 6 | Complete |
-| MOD-05 | Phase 7 | Pending |
+| MOD-05 | — | Removed (Phase 7 discuss-phase, 2026-08-14) |
 | MOD-06 | Phase 7 | Pending |
 | VERIFY-01 | Phase 8 | Pending |
 | VERIFY-02 | Phase 1 | Complete |
@@ -103,10 +104,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ARENA-01 | Phase 9 | Partial (arena-construction/JIT-safety half complete; boss-classification-and-routing awaits Phases 6-8) |
 
 **Coverage:**
-- v1 requirements: 23 total
-- Mapped to phases: 23 (100%)
+- v1 requirements: 23 total (22 active, 1 removed — MOD-05)
+- Mapped to phases: 22 (100% of active requirements)
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-08-12*
-*Last updated: 2026-08-13 after adding Phase 9 (ARENA-01)*
+*Last updated: 2026-08-14 — Phase 7 discuss-phase: MOD-05 (NoxusBoss) removed from scope, MOD-06 target identified as Homeward Journey*

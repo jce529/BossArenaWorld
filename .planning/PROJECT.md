@@ -20,23 +20,22 @@ The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegis
 - [x] World-altering bosses also trigger their WorldGen side effects (ore generation, dungeon activation, etc.) when the item is used in the main world — Validated in Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction (live in-game test confirmed: Hive Mind's AerialiteOreGen.Enchant() converted real Aerialite Ore tiles on BossCoreItem use, 2026-08-13)
 - [x] Calamity bosses registered via `DownedBossSystem` pattern — Validated in Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction (Hive Mind registered end-to-end via `Integrations/CalamityIntegration.cs`; `[JITWhenModsEnabled("CalamityMod")]` isolation confirmed safe live with CalamityMod disabled, 2026-08-13)
 - [x] Spirit bosses registered via their actual `BossDownedTracker` API (an internal `Dictionary<string,bool>`, not the plain `MyWorld` static-field pattern originally assumed) — Validated in Phase 5: Spirit Integration (Infernon/InfernoSkull registered end-to-end via `Integrations/SpiritIntegration.cs`: public `MyWorld.DownedInfernon` read + cached-reflection write into the internal `Downed` dictionary; live in-game test confirmed downed-flag application, WorldGen tile-ring replay, and BossChecklist recognition; `[JITWhenModsEnabled("SpiritMod")]` isolation confirmed safe live with SpiritMod disabled, 2026-08-13)
+- [x] Redemption bosses (Thorn) and CatalystMod bosses (Astrageldon) researched and registered — Validated in Phase 6: Redemption & CatalystMod Integration (`Integrations/RedemptionIntegration.cs`/`Integrations/CatalystIntegration.cs`, direct public-static-field writes; live in-game verification pending final 06-03 checkpoint but code-level pipeline confirmed via `dotnet build`)
 
 ### Active
 
-- [ ] Redemption bosses researched and registered
-- [ ] CatalystMod bosses researched and registered
-- [ ] NoxusBoss (Devourer of Universes) researched and registered
-- [ ] ContinentOfJourney / Daybreak (Homeward) bosses researched and registered
+- [ ] ContinentOfJourney / Daybreak (identified as Homeward Journey, GabeHasWon, Steam Workshop id 2930931197) bosses researched and registered
 
 ### Out of Scope
 
 - Multiplayer / dedicated server support — netcode complexity deferred; v1 targets singleplayer only
 - Automatic subworld entry based on game-state heuristics (e.g. auto-detecting an imminent boss fight) — v1 redirects only on explicit use of an existing boss-summon item, still a deliberate player action
 - Boss priority ordering / phased rollout by "worst offender" — registration cost is uniform per boss once the BossRegistry/BossCoreItem/GlobalNPC skeleton exists, so there's no value in special-casing specific bosses first
+- NoxusBoss (Devourer of Universes and its other bosses) — removed from v1 scope entirely during Phase 7 discuss-phase (2026-08-14). User's rationale: most NoxusBoss bosses are quest-triggered (Solyn's moon-event questline) or already run in their own dedicated subworld/arena mechanic, so they don't fit this project's carrier-item redirect pattern the way a plain summon-item boss does. No plan to revisit.
 
 ## Context
 
-Player runs several large Terraria content mods together (Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak, Infernum, Wrath of the Gods) plus QoL/library mods (SubworldLibrary, StructureHelper, Luminance, etc.). Heavy boss fights (Moon Lord, Infernum/Wrath-reworked bosses) combine projectile-spam with the elevated background load these content mods introduce even when idle, causing GC stalls and collision-detection bottlenecks that crash framerate to 1-2 FPS.
+Player runs several large Terraria content mods together (Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak, Infernum, Wrath of the Gods) plus QoL/library mods (SubworldLibrary, StructureHelper, Luminance, etc.). Heavy boss fights (Moon Lord, Infernum/Wrath-reworked bosses) combine projectile-spam with the elevated background load these content mods introduce even when idle, causing GC stalls and collision-detection bottlenecks that crash framerate to 1-2 FPS. NoxusBoss remains installed/enabled for gameplay but is out of this mod's v1 registration scope (see Out of Scope).
 
 Disabling content mods outright risks crashes because their content is already placed in the world. The adopted fix: keep all mods enabled, but run the heaviest boss fights in a subworld (via SubworldLibrary) that has never had any content placed in it.
 
@@ -48,7 +47,10 @@ Mod-specific research completed so far (see `DESIGN_1.md` for full detail, origi
 - **Calamity**: `CalamityMod.DownedBossSystem`, wrapper properties whose setters call `NPC.SetEventFlagCleared`; requires `CalamityNetcode.SyncWorld()` and `CalamityGlobalNPC.SetNewBossJustDowned()` side effects.
 - **Spirit** (corrected in Phase 5, see `05-RESEARCH.md`): `SpiritMod.MyWorld.DownedInfernon` is a public read-only property backed by `SpiritMod.NPCs.BossDownedTracker` — an `internal` class wrapping a static `Dictionary<string,bool>`. No public setter exists (the original "plain public static bool fields" assumption above was wrong); writes require cached reflection into the internal `Downed` dictionary, replicating exactly what `BossDownedTracker.OnKill()` itself does.
 - **Infernum / Wrath of the Gods**: rework existing boss AI only, no separate flags — covered automatically once the underlying Calamity/vanilla boss is registered (Wrath's own boss status needs a recheck — enabled.json only shows the KR localization file, base mod presence unconfirmed).
-- **Not yet researched**: Redemption (`Hallam9K/RedemptionAlpha` on GitHub), CatalystMod, NoxusBoss, ContinentOfJourney, Daybreak, and the HomewardSubworld bridge module (useful as reference for subworld data-sync patterns).
+- **Redemption** (Phase 6): `Redemption.Globals.RedeBossDowned.downedThorn`, direct public-static-field write (Thorn).
+- **CatalystMod** (Phase 6): `CatalystMod.WorldDefeats.downedAstrageldon`, direct public-static-field write, non-standard `-Type` `gameEventId` (Astrageldon).
+- **Not yet researched**: ContinentOfJourney/Daybreak (identified in Phase 7 discuss-phase as Homeward Journey, GabeHasWon, Steam Workshop id 2930931197 — "Daybreak" itself confirmed a boss-less library dependency of Wrath of the Gods, not a separate boss-bearing mod). The HomewardSubworld bridge module (`GabeHasWon/HomewardSubworld`) remains useful as a reference for subworld data-sync patterns.
+- **NoxusBoss**: out of v1 scope — not researched, no plan to research (see Out of Scope).
 
 ## Constraints
 
@@ -62,7 +64,7 @@ Mod-specific research completed so far (see `DESIGN_1.md` for full detail, origi
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Carrier-item pattern (BossCoreItem) instead of trying to sync subworld state directly | SubworldLibrary doesn't reliably propagate downed flags across worlds; item-use on return is a known, controllable workaround | Validated (Phase 3) |
-| Research all target mods (Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, Homeward) before writing implementation code | User explicitly chose full-research-first over incremental research+build | — Pending |
+| Research all target mods (Calamity, Spirit, Redemption, CatalystMod, Homeward Journey) before writing implementation code | User explicitly chose full-research-first over incremental research+build; NoxusBoss dropped from this list (see Phase 7 removal decision below) | — Pending |
 | No boss priority ordering in v1 | Once the BossRegistry/BossCoreItem/GlobalNPC skeleton exists, registering any individual boss costs the same — no benefit to special-casing "worst offenders" like Moon Lord first | — Pending |
 | Singleplayer-only for v1 | Netcode/dedicated-server sync adds significant complexity; explicitly deferred | — Pending |
 | ~~Existing boss-summon items are the subworld entry trigger, not a new dedicated portal item~~ — **SUPERSEDED in Phase 2 discuss-phase (2026-08-13)** | Original rationale: simpler for the player, less new content to maintain. Superseded because the user explicitly requested a dedicated portal tile instead — see next row | Superseded |
@@ -73,6 +75,8 @@ Mod-specific research completed so far (see `DESIGN_1.md` for full detail, origi
 | When a content mod's downed-progress backing field has no public setter (only a public read property), write via cached `FieldInfo` reflection into the internal field, wrapped in try/catch + `Mod.Logger.Warn` on failure, rather than skipping the write or crashing | SpiritMod's `BossDownedTracker` is declared `internal`, so even its individually-`public static` members are compile-time unreachable; no `Mod.Call` "set downed" context exists either — reflection is the only path that still replicates the mod's own `OnKill()` write exactly, per this project's "call the mod's actual setter" intent | Validated (Phase 5) |
 | Player-scoped vs. world-scoped side-effect classification (to avoid double-granting across the subworld boundary) can be satisfied by explicit in-code documentation instead of exclusion logic, when research confirms no player-scoped effect actually exists for that boss | Investigated for Spirit's Infernon: `BossDownedTracker.OnKill()`/`Infernon.OnKill()`/`InfernoSkull.OnKill()` are all fully world-scoped (dictionary write, singleplayer-no-op netcode, world-scoped tile mutation) — building exclusion logic for a risk that doesn't exist would be unnecessary complexity | Validated (Phase 5, D-03) |
 | Phase 9 (Biome-Dependent Subworld Coverage) added after Phase 8, generalizing the ad-hoc `BossArenaCorruptionSubworld`/`BossArenaRoutingRegistry` fix from Phase 4 into a systematic per-boss audit across all v1 mods | User requested during Phase 5 execution, after seeing Phase 4's Hive Mind biome-despawn bug get fixed ad-hoc and confirming Phase 5's Infernon needed no such fix — wanted a dedicated phase to audit the remaining Phase 6/7 bosses systematically rather than discovering dependencies live in-game each time | New requirement ARENA-01 — Pending |
+| NoxusBoss removed from v1 scope entirely (was Phase 7 MOD-05/Success Criterion 1) | User decision during Phase 7 discuss-phase (2026-08-14): most NoxusBoss bosses are quest-triggered (Solyn's moon-event questline) or already run in their own dedicated subworld/arena mechanic, so they don't fit this project's plain-summon-item carrier-item redirect pattern. No plan to revisit — moved to PROJECT.md Out of Scope, not backlogged | Locked (Phase 7 discuss-phase) |
+| ContinentOfJourney identified as Homeward Journey (GabeHasWon, Steam Workshop id 2930931197); Daybreak confirmed as a boss-less library dependency of Wrath of the Gods, not a separate target | Two prior research passes (Phase 9 prep) could not identify "ContinentOfJourney" by that literal name; user supplied the Workshop link directly during Phase 7 discuss-phase, confirming the "(Homeward series)" parenthetical in ROADMAP.md Phase 7's title was the actual pointer | Locked (Phase 7 discuss-phase) |
 
 ## Evolution
 
