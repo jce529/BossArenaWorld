@@ -16,6 +16,8 @@ namespace BossArenaSubWorld.Integrations
             RegisterYharon();
             RegisterSupremeCalamitas();
             RegisterDragonfolly();
+            RegisterProvidence();
+            RegisterProfanedGuardians();
         }
 
         // D-01/Pitfall 2: every method below this point may reference CalamityMod
@@ -269,6 +271,85 @@ namespace BossArenaSubWorld.Integrations
             // not part of the downed-state contract -- matches Hive Mind's precedent of
             // skipping seed-specific effects).
             CalamityMod.DownedBossSystem.downedDragonfolly = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-04, Task 1: Providence -- D-02: register ONLY when InfernumMode is
+        // absent. With InfernumMode present, this item must fall through untouched to
+        // Infernum's own structure-gated CanUseItem/UseItem (registering anyway would
+        // produce a silent soft-lock).
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterProvidence()
+        {
+            if (ModLoader.HasMod("InfernumMode")) return;
+
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.ProfanedCore>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.Providence.Providence>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // D-02 discretion: Providence is valid under either Hallow or Underworld per
+            // vanilla Calamity (its own biomeType branch is a purely cosmetic effect-theme
+            // choice, no functional Zone dependency -- confirmed via full OnKill/AI decompile,
+            // 10-RESEARCH.md). Hallow chosen for both Providence and Profaned Guardians to
+            // spread registered bosses across arenas more evenly (Underworld already hosts
+            // Signus) -- zero functional cost either way.
+            BossArenaRoutingRegistry.Register<BossArenaHallowSubworld>(npcType);
+
+            BossRegistry.Register("calamity:providence", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyProvidenceDowned,
+                IsDowned: IsProvidenceDowned));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsProvidenceDowned() => CalamityMod.DownedBossSystem.downedProvidence;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyProvidenceDowned()
+        {
+            // Faithful replay of Providence.OnKill()'s side effects. Excludes
+            // SetNewBossJustDowned() (player-scoped, Pitfall 5), the particle/screenshake
+            // visuals (cosmetic, live-kill-only), and the Main.netMode==0 "challenge" chat line
+            // (challenge-mode-specific, unrelated to downed state).
+            if (!CalamityMod.DownedBossSystem.downedProvidence)
+            {
+                CalamityMod.CalamityUtils.SpawnOre(ModContent.TileType<CalamityMod.Tiles.Ores.UelibloomOre>(), 0.00017, 0.55f, 0.9f, 8, 14, 59);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.ProfanedBossText3", Color.Orange);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.TreeOreText", Color.LightGreen);
+            }
+            CalamityMod.DownedBossSystem.downedProvidence = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-04, Task 1: Profaned Guardians -- D-02, same InfernumMode-absent gate as
+        // Providence above.
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterProfanedGuardians()
+        {
+            if (ModLoader.HasMod("InfernumMode")) return; // D-02, same rationale as Providence
+
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.ProfanedShard>();
+            // Only ProfanedGuardianCommander sets downedGuardians in OnKill() -- Defender/Healer
+            // have no OnKill override at all (confirmed via decompile of all 3 classes,
+            // 10-RESEARCH.md Open Question 5). NPC.SpawnOnPlayer(Commander) matches vanilla's
+            // own SpawnBossUsingItem<ProfanedGuardianCommander>() call in ProfanedShard.
+            // UseItem() -- same single-type spawn this project already does for every other boss.
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.ProfanedGuardians.ProfanedGuardianCommander>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaHallowSubworld>(npcType); // D-02 discretion, same as Providence
+
+            BossRegistry.Register("calamity:profaned_guardians", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyProfanedGuardiansDowned,
+                IsDowned: IsProfanedGuardiansDowned));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsProfanedGuardiansDowned() => CalamityMod.DownedBossSystem.downedGuardians;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyProfanedGuardiansDowned()
+        {
+            // Faithful replay of ProfanedGuardianCommander.OnKill() -- excludes
+            // SetNewBossJustDowned() (player-scoped, Pitfall 5).
+            CalamityMod.DownedBossSystem.downedGuardians = true;
             CalamityMod.CalamityNetcode.SyncWorld();
         }
     }
