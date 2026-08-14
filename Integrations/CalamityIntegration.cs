@@ -21,6 +21,7 @@ namespace BossArenaSubWorld.Integrations
             RegisterProfanedGuardians();
             RegisterAstrumDeus();
             RegisterAstrumAureus();
+            RegisterMarkOfProvidenceBosses();
         }
 
         // D-01/Pitfall 2: every method below this point may reference CalamityMod
@@ -428,6 +429,88 @@ namespace BossArenaSubWorld.Integrations
             }
             ThreadPool.QueueUserWorkItem(_ => CalamityMod.World.AstralBiome.PlaceAstralMeteor());
             CalamityMod.DownedBossSystem.downedAstrumAureus = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-04, Task 3: MarkofProvidence -- ONE item that summons THREE different
+        // bosses depending on the player's Zone at use-time (Pitfall 2, 10-RESEARCH.md).
+        // Uses the polymorphic resolver extension built in Plan 10-01 instead of the
+        // single-item Register() (which would silently break two of the three bosses).
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterMarkOfProvidenceBosses()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.MarkofProvidence>();
+            int ceaselessVoidType = ModContent.NPCType<CalamityMod.NPCs.CeaselessVoid.CeaselessVoid>();
+            int signusType = ModContent.NPCType<CalamityMod.NPCs.Signus.Signus>();
+            int stormWeaverType = ModContent.NPCType<CalamityMod.NPCs.StormWeaver.StormWeaverHead>();
+
+            SummonItemRegistry.RegisterPolymorphic(itemType, ResolveMarkOfProvidenceBoss);
+
+            // Signus/Storm Weaver are thematic-only (no Zone dependency, unconditional under
+            // Infernum). Ceaseless Void's Infernum-off gate is enforced INSIDE the resolver
+            // (returns -1 when InfernumMode is loaded and the player is in the Dungeon), not
+            // here -- the item itself is always registered.
+            BossArenaRoutingRegistry.Register<BossArenaUnderworldSubworld>(signusType);
+            BossArenaRoutingRegistry.Register<BossArenaSpaceSubworld>(stormWeaverType);
+            // No BossArenaRoutingRegistry call for Ceaseless Void -- confirmed no Zone
+            // dependency (10-RESEARCH.md), and BossArenaDungeonSubworld does not exist
+            // (discarded, D-07, Phase 9). Falls back to the default BossArenaSubworld
+            // automatically.
+
+            BossRegistry.Register("calamity:ceaseless_void", new BossDefinition(
+                NpcTypes: new[] { ceaselessVoidType },
+                ApplyDowned: ApplyCeaselessVoidDowned,
+                IsDowned: IsCeaselessVoidDowned));
+            BossRegistry.Register("calamity:signus", new BossDefinition(
+                NpcTypes: new[] { signusType },
+                ApplyDowned: ApplySignusDowned,
+                IsDowned: IsSignusDowned));
+            BossRegistry.Register("calamity:storm_weaver", new BossDefinition(
+                NpcTypes: new[] { stormWeaverType },
+                ApplyDowned: ApplyStormWeaverDowned,
+                IsDowned: IsStormWeaverDowned));
+        }
+
+        // Faithful replay of MarkofProvidence.UseItem()'s own branch order (Dungeon checked
+        // first, matching decompiled source exactly -- do not reorder). D-02: Ceaseless Void
+        // unreachable via this item when InfernumMode is loaded (falls through to -1 == "no
+        // redirect", matching Infernum's own structure-gated summon flow untouched).
+        [JITWhenModsEnabled("CalamityMod")]
+        private static int ResolveMarkOfProvidenceBoss(Player player)
+        {
+            if (player.ZoneDungeon && !ModLoader.HasMod("InfernumMode"))
+                return ModContent.NPCType<CalamityMod.NPCs.CeaselessVoid.CeaselessVoid>();
+            if (player.ZoneUnderworldHeight)
+                return ModContent.NPCType<CalamityMod.NPCs.Signus.Signus>();
+            if (player.ZoneSkyHeight)
+                return ModContent.NPCType<CalamityMod.NPCs.StormWeaver.StormWeaverHead>();
+            return -1;
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsCeaselessVoidDowned() => CalamityMod.DownedBossSystem.downedCeaselessVoid;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyCeaselessVoidDowned()
+        {
+            CalamityMod.DownedBossSystem.downedCeaselessVoid = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsSignusDowned() => CalamityMod.DownedBossSystem.downedSignus;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplySignusDowned()
+        {
+            CalamityMod.DownedBossSystem.downedSignus = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsStormWeaverDowned() => CalamityMod.DownedBossSystem.downedStormWeaver;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyStormWeaverDowned()
+        {
+            CalamityMod.DownedBossSystem.downedStormWeaver = true;
             CalamityMod.CalamityNetcode.SyncWorld();
         }
     }
