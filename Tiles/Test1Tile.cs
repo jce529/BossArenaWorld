@@ -43,7 +43,12 @@ namespace BossArenaSubWorld.Tiles
         {
             Player player = Main.LocalPlayer; // singleplayer-only project
 
-            if (!SummonItemRegistry.TryGetBoss(player.HeldItem.type, out int bossNpcType))
+            // 10-01: player-aware overload -- resolves polymorphic items (e.g. MarkofProvidence) via
+            // their registered resolver delegate, falls back to the plain single-item lookup for
+            // every other boss unchanged. Returns false (no interaction) if the item isn't
+            // registered at all, OR if a polymorphic item's resolver returns -1 for the player's
+            // current Zone state (mirrors the real item's CanUseItem() == false outcome).
+            if (!SummonItemRegistry.TryGetBoss(player, player.HeldItem.type, out int bossNpcType))
                 return false; // not a registered summon item -- no interaction (SUBW-01 gate)
 
             // 06-02 user-requested scope addition: mirrors the real source item's
@@ -57,6 +62,13 @@ namespace BossArenaSubWorld.Tiles
             Main.NewText("보스 아레나로 입장합니다. 도착하면 보스가 자동으로 소환됩니다.", 220, 180, 255); // D-11
 
             BossSummonPlayer.PendingBossNpcType = bossNpcType;
+            // D-04 (10-CONTEXT.md): tracks which boss this arena visit is for, for the WHOLE visit
+            // (unlike BossSummonPlayer.PendingBossNpcType, which is consumed once the boss spawns).
+            // Lets ForcedTimeSystem.PreUpdateWorld keep re-asserting forced night every tick for
+            // bosses that need it (Moon Jelly Wizard, Dusking unconditionally; Astrum Deus/Astrum
+            // Aureus only when InfernumMode is loaded). No-op for every boss not registered via
+            // ForcedTimeSystem.RegisterForceNight (i.e. every boss before Plan 10-03/10-04).
+            ForcedTimeSystem.ActiveArenaBossNpcType = bossNpcType;
             // SUBW-boss-aware: routes to the correct arena subworld for this boss (plain
             // BossArenaSubworld by default, or a boss-specific biome arena if one was
             // registered -- see Systems/BossArenaRoutingRegistry.cs and

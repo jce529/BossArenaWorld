@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 07 Plan 07-02 Task 1 checkpoint:human-verify -- awaiting live Goblin Chariot test (see "PENDING CHECKPOINT" under Current Position for exact resume instructions)"
-last_updated: "2026-08-14T13:52:46.556Z"
+stopped_at: "Phase 07 Plan 07-02 Task 1 checkpoint:human-verify -- awaiting live Goblin Chariot test (see "PENDING CHECKPOINT" under Current Position for exact resume instructions); Phase 10 Plan 10-01 also complete this session, 10-02 next"
+last_updated: "2026-08-14T13:56:11.420Z"
 last_activity: 2026-08-14
 progress:
   total_phases: 10
   completed_phases: 6
   total_plans: 36
-  completed_plans: 24
-  percent: 67
+  completed_plans: 25
+  percent: 69
 ---
 
 # Project State
@@ -38,6 +38,15 @@ Status: Executing Phase 10
 **After Task 1 resolves:** Plan 07-02 continues to Task 2 (ContinentOfJourney-disabled load-safety checkpoint, 5 steps, resume-signal `"mod-disabled safety verified"`), then creates `07-02-SUMMARY.md` and updates STATE.md/ROADMAP.md/REQUIREMENTS.md, closing Phase 7.
 **Verification steps (full text) are in the assistant's last message to the user in this session, and in `07-02-PLAN.md` Task 1 `<action>` directly.**
 
+### Phase 10 Plan 01 -- COMPLETE (2026-08-14, this session)
+
+`10-01-PLAN.md` (SummonItemRegistry polymorphic resolver + ForcedTimeSystem + Test1Tile wiring)
+executed autonomously (no checkpoints), all 3 tasks committed, `dotnet build` passed with 0
+warnings/0 errors after each task. See `.planning/phases/10-full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing/10-01-SUMMARY.md`.
+Next entry point for this track: `10-02-PLAN.md` (Calamity Tier 1: Devourer of Gods, Yharon,
+Supreme Witch Calamitas, Dragonfolly). ARENA-01 stays open in REQUIREMENTS.md -- 10-01 only
+built the shared foundation, not real boss registrations.
+
 Last activity: 2026-08-14
 
 ### Phase 08 and Phase 10 plan-checker re-verification -- RESOLVED (2026-08-14, this session)
@@ -47,7 +56,7 @@ The prior session's two `gsd-plan-checker` background agents never reported back
 - **Phase 08 plans** (`08-01`..`08-04-PLAN.md`, committed `e1494a2`) -- `VERIFICATION PASSED`, zero issues. Ready to execute (`/gsd:execute-phase 8`); Wave 1 (`08-01`) has no dependency and is immediately executable, Waves 2-3 self-gate on Phase 6/7/10 live-verification status.
 - **Phase 10 plans** (`10-01`..`10-06-PLAN.md`, committed `44e043f`) -- first pass found **1 real blocker**: `10-05-PLAN.md`'s `RegisterOldDuke()` guarded on `HasMod("CalamityMod")` instead of `HasMod("InfernumMode")`, which would have caused a live `TypeLoadException`/JIT crash the moment CalamityMod is present without InfernumMode (breaking Phase 10 Success Criterion 2). Also 1 warning: a stale `build.txt` snippet risked dropping Phase 7's `ContinentOfJourney@0.8.70.88` weakReferences entry on literal find/replace. Both fixed by a `gsd-planner` revision pass, committed `0c90ffa`. Re-verification after the fix: `VERIFICATION PASSED`, zero remaining issues. Ready to execute (`/gsd:execute-phase 10`).
 
-Progress: [███████░░░] 67% (24 of 36 currently-planned plans across Phases 1-8, 9-10; Phase 8/10 plans created but not yet executed)
+Progress: [███████░░░] 69% (25 of 36 currently-planned plans across Phases 1-8, 9-10; Phase 10 Plan 01 executed this session, Phase 8 plans created but not yet executed)
 
 ## Performance Metrics
 
@@ -93,6 +102,7 @@ Progress: [███████░░░] 67% (24 of 36 currently-planned plans
 | Phase 06 P01 | 8min | 2 tasks | 2 files |
 | Phase 06 P02 | 10min | 3 tasks | 4 files |
 | Phase 07 P01 | 12min | 2 tasks | 3 files |
+| Phase 10 P01 | 12min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -144,6 +154,8 @@ Recent decisions affecting current work:
 - [Phase 07]: [Phase 07]: Fixed compile-blocking XML comment double-dash (Rule 3) in BossArenaSubWorld.csproj's new ContinentOfJourney Reference block doc comment (MSB4025) before dotnet restore/build could succeed
 - [Phase 07]: [Phase 07]: Registered continentofjourney:goblin_chariot via Integrations/HomewardJourneyIntegration.cs, direct public-static-field write to ContinentOfJourney.DownedBossSystem.downedGoblinChariot, no reflection, no BossArenaRoutingRegistry needed (no biome dependency), closing MOD-06 code-level registration -- live verification deferred to Plan 02
 - [Phase 07]: [Phase 07]: Tooling note: state update-progress silently wrote a stale percent (96 instead of the correct 75 for 24/32) into STATE.md frontmatter, matching the known case-insensitive-regex bug documented in Phase 05/09/06 notes (matches frontmatter progress: key instead of body Progress: line); fixed both the frontmatter percent and body Progress line manually as workaround
+- [Phase 10]: Kept existing single-item TryGetBoss(int, out int) overload untouched; added a separate player-aware TryGetBoss(Player, int, out int) overload and RegisterPolymorphic for multi-boss summon items, zero regression to existing boss registrations
+- [Phase 10]: ForcedTimeSystem.ActiveArenaBossNpcType intentionally never cleared on arena exit -- PreUpdateWorld's IsAnyArenaActive() guard alone makes this safe, avoiding a consume-once pattern that would break the every-tick re-assertion needed for multi-minute fights (10-RESEARCH.md Pitfall 6)
 
 ### Roadmap Evolution
 
@@ -161,20 +173,21 @@ None yet.
 - Phase 4 planning should resolve the weak-reference+[JITWhenModsEnabled] vs. pure-reflection disagreement between research files before writing the first Integrations/*.cs file (see research/SUMMARY.md Gaps).
 - Phase 7 research/planning/Wave-1-execution are all complete (2026-08-14) — Goblin Chariot registered in `Integrations/HomewardJourneyIntegration.cs`, `dotnet build` passes. Only Plan 07-02's live in-game checkpoint remains (see "PENDING CHECKPOINT" under Current Position). NoxusBoss removed from v1 scope (2026-08-14, see Roadmap Evolution) — no longer a blocker.
 - Phase 8 fully planned (2026-08-14): 4 plans in 3 waves (`08-01` Boss Checklist sanity + King Slime/Hive Mind closure, `08-02` Thorn/Astrageldon, `08-03` Goblin Chariot, `08-04` blocked stub for Phase 10's roster). Note `08-03` and `07-02` both cover Goblin Chariot's live verification by design (`08-03` is written to close `07-02` "if not already done" rather than duplicate blindly) — when executing Phase 8, check whether `07-02-SUMMARY.md` already exists before treating `08-03` as fresh work.
-- Phase 10 fully planned (2026-08-14) and plan-checker-verified clean (2026-08-14, this session, after a real `RegisterOldDuke()` Infernum-guard bug was caught and fixed -- see Decisions/Session-continuity above), zero execution yet. `Integrations/CalamityIntegration.cs`/`SpiritIntegration.cs` still register only the Phase 4/5 baseline (Hive Mind, Infernon) as of this session.
+- Phase 10 fully planned (2026-08-14) and plan-checker-verified clean (2026-08-14, after a real `RegisterOldDuke()` Infernum-guard bug was caught and fixed -- see Decisions/Session-continuity above). Plan 10-01 executed and complete (2026-08-14, this session): `Systems/SummonItemRegistry.cs` gained `RegisterPolymorphic`/player-aware `TryGetBoss`, new `Systems/ForcedTimeSystem.cs` added, `Tiles/Test1Tile.cs` wired to both -- these are the shared contracts 10-02..10-06 build real boss registrations against. `Integrations/CalamityIntegration.cs`/`SpiritIntegration.cs` still register only the Phase 4/5 baseline (Hive Mind, Infernon) as of this session -- 10-02..10-06 remain unexecuted.
 - Isolation premise NOT empirically confirmed: live King Slime kill test shows NPC.downedSlimeKing=True in the main world after subworld round-trip (expected False per 01-RESEARCH.md/PITFALLS.md, which both explicitly predicted vanilla flags behave the same as modded ones for this bug). Do NOT proceed to Phase 2/3 planning until re-investigated -- see 01-04-SUMMARY.md hypotheses (in-memory-only leak vs. genuine on-disk persistence vs. vanilla-specific behavior difference). Also unconfirmed: inventory-intact check (SUBW-06) was skipped by tester during this run.
 - Dungeon and Sulphurous Sea biome-variant subworlds are deferred, not built (D-07, 2026-08-14, "for now"/일단). Blocks a future biome-safe arena for Polterghast (Spirit, Dungeon, unconditionally assignable) and The Old Duke (Calamity+Infernum, Sulphurous Sea) until a future phase reinstates them. Do not silently resurrect the discarded Wave-1 code (never merged, not reachable from master) -- treat any future request to add these back as new scope requiring its own research/planning pass.
 
 ## Session Continuity
 
-Last session: 2026-08-14T08:25:00.000Z (ended by user, mid-verification -- see below)
-Stopped at: Phase 07 Plan 07-02 Task 1 checkpoint:human-verify -- awaiting live Goblin Chariot test (see "PENDING CHECKPOINT" under Current Position for exact resume instructions)
-Resume file: .planning/phases/07-noxusboss-continentofjourney-daybreak-integration/07-02-PLAN.md
+Last session: 2026-08-14T13:56:11.412Z
+Stopped at: Completed 10-01-PLAN.md
+Resume file: None
 
-**Three things in flight when this session ended:**
+**Four things in flight when this session ended:**
 
 1. Phase 07 -- blocked on the user actually playing Goblin Chariot live in-game (see PENDING CHECKPOINT above). This is the primary resume point.
 2. Phase 08 -- fully planned (4 plans, committed `e1494a2`), plan-checker verification was mid-run in the background, result never received by the orchestrator.
-3. Phase 10 -- fully planned (6 plans, committed `44e043f`), plan-checker verification was mid-run in the background, result never received by the orchestrator.
+3. Phase 10 -- fully planned (6 plans, committed `44e043f`, checker-verified clean after a fix, committed `0c90ffa`). Plan 10-01 (SummonItemRegistry polymorphic resolver + ForcedTimeSystem + Test1Tile wiring) executed and complete this session, all 3 tasks committed (`942d067`, `05819dd`, `37b3c34`), `10-01-SUMMARY.md` written, `dotnet build` clean. 10-02..10-06 remain unexecuted -- ARENA-01 stays open until they land.
+4. Worktree setup note: this worktree's `Libs/*.dll` compile-time references were missing at session start (known per-worktree gap) and were copied from the main working tree before the first build; they remain gitignored, not committed.
 
-All planning artifacts (CONTEXT/RESEARCH/VALIDATION/PLAN/ROADMAP/REQUIREMENTS/PROJECT/STATE) through this point are committed to git -- nothing is lost. Only the two plan-checker verdicts for Phase 08/10 are unknown; they are a quality gate, not a correctness requirement (both plan sets already passed `frontmatter validate --schema plan` and `verify plan-structure` with zero errors per their planners' own reports).
+All planning artifacts (CONTEXT/RESEARCH/VALIDATION/PLAN/ROADMAP/REQUIREMENTS/PROJECT/STATE) through this point are committed to git -- nothing is lost. The plan-checker verdict for Phase 08 is still unknown (quality gate, not a correctness requirement -- Phase 08's plan set already passed `frontmatter validate --schema plan` and `verify plan-structure` with zero errors).
