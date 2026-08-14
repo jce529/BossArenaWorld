@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 07 Plan 07-02 Task 1 checkpoint:human-verify -- awaiting live Goblin Chariot test (see "PENDING CHECKPOINT" under Current Position for exact resume instructions); Phase 10 Plan 10-01 also complete this session, 10-02 next"
-last_updated: "2026-08-14T13:56:11.420Z"
+stopped_at: Completed 10-03-PLAN.md
+last_updated: "2026-08-14T14:03:56.691Z"
 last_activity: 2026-08-14
 progress:
   total_phases: 10
   completed_phases: 6
   total_plans: 36
-  completed_plans: 25
-  percent: 69
+  completed_plans: 26
+  percent: 72
 ---
 
 # Project State
@@ -47,6 +47,19 @@ Next entry point for this track: `10-02-PLAN.md` (Calamity Tier 1: Devourer of G
 Supreme Witch Calamitas, Dragonfolly). ARENA-01 stays open in REQUIREMENTS.md -- 10-01 only
 built the shared foundation, not real boss registrations.
 
+### Phase 10 Plan 03 -- COMPLETE (2026-08-14, this session, parallel worktree execution)
+
+`10-03-PLAN.md` (Spirit full roster: Ancient Avian, Scarabeus, Vinewrath Bane, Moon Jelly
+Wizard, Dusking, Atlas) executed autonomously (no checkpoints), all 3 tasks committed
+(`baeb553`, `7e2c7cb`, `5f8ea8b`), `dotnet build` passed with 0 warnings/0 errors after each
+task. Ran as a parallel executor in an isolated worktree alongside sibling plan 10-02
+(`Integrations/CalamityIntegration.cs`, disjoint file) -- all commits used `--no-verify` per
+orchestrator instructions to avoid pre-commit hook contention; orchestrator validates hooks
+once after both complete. See
+`.planning/phases/10-full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing/10-03-SUMMARY.md`.
+Spirit's full 7-boss roster (Infernon from Phase 5 + these 6) is now code-complete; live
+in-game verification deferred to Plan 10-06 per the plan's own verification scope.
+
 Last activity: 2026-08-14
 
 ### Phase 08 and Phase 10 plan-checker re-verification -- RESOLVED (2026-08-14, this session)
@@ -56,7 +69,7 @@ The prior session's two `gsd-plan-checker` background agents never reported back
 - **Phase 08 plans** (`08-01`..`08-04-PLAN.md`, committed `e1494a2`) -- `VERIFICATION PASSED`, zero issues. Ready to execute (`/gsd:execute-phase 8`); Wave 1 (`08-01`) has no dependency and is immediately executable, Waves 2-3 self-gate on Phase 6/7/10 live-verification status.
 - **Phase 10 plans** (`10-01`..`10-06-PLAN.md`, committed `44e043f`) -- first pass found **1 real blocker**: `10-05-PLAN.md`'s `RegisterOldDuke()` guarded on `HasMod("CalamityMod")` instead of `HasMod("InfernumMode")`, which would have caused a live `TypeLoadException`/JIT crash the moment CalamityMod is present without InfernumMode (breaking Phase 10 Success Criterion 2). Also 1 warning: a stale `build.txt` snippet risked dropping Phase 7's `ContinentOfJourney@0.8.70.88` weakReferences entry on literal find/replace. Both fixed by a `gsd-planner` revision pass, committed `0c90ffa`. Re-verification after the fix: `VERIFICATION PASSED`, zero remaining issues. Ready to execute (`/gsd:execute-phase 10`).
 
-Progress: [███████░░░] 69% (25 of 36 currently-planned plans across Phases 1-8, 9-10; Phase 10 Plan 01 executed this session, Phase 8 plans created but not yet executed)
+Progress: [███████░░░] 72% (26 of 36 currently-planned plans across Phases 1-8, 9-10; Phase 10 Plans 01 and 03 executed this session, Phase 8 plans created but not yet executed)
 
 ## Performance Metrics
 
@@ -103,6 +116,7 @@ Progress: [███████░░░] 69% (25 of 36 currently-planned plans
 | Phase 06 P02 | 10min | 3 tasks | 4 files |
 | Phase 07 P01 | 12min | 2 tasks | 3 files |
 | Phase 10 P01 | 12min | 3 tasks | 3 files |
+| Phase 10 P03 | 4min | 3 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -156,6 +170,7 @@ Recent decisions affecting current work:
 - [Phase 07]: [Phase 07]: Tooling note: state update-progress silently wrote a stale percent (96 instead of the correct 75 for 24/32) into STATE.md frontmatter, matching the known case-insensitive-regex bug documented in Phase 05/09/06 notes (matches frontmatter progress: key instead of body Progress: line); fixed both the frontmatter percent and body Progress line manually as workaround
 - [Phase 10]: Kept existing single-item TryGetBoss(int, out int) overload untouched; added a separate player-aware TryGetBoss(Player, int, out int) overload and RegisterPolymorphic for multi-boss summon items, zero regression to existing boss registrations
 - [Phase 10]: ForcedTimeSystem.ActiveArenaBossNpcType intentionally never cleared on arena exit -- PreUpdateWorld's IsAnyArenaActive() guard alone makes this safe, avoiding a consume-once pattern that would break the every-tick re-assertion needed for multi-minute fights (10-RESEARCH.md Pitfall 6)
+- [Phase 10]: Spirit full roster: ApplyGenericSpiritDowned<T>() shared reflection helper generalizes Infernon's write path across 6 bosses; Vinewrath Bane registers dual ReachBoss/ReachBoss1 NPC types (DownedVinewrath reads ReachBoss1 specifically)
 
 ### Roadmap Evolution
 
@@ -179,8 +194,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-14T13:56:11.412Z
-Stopped at: Completed 10-01-PLAN.md
+Last session: 2026-08-14T14:03:56.683Z
+Stopped at: Completed 10-03-PLAN.md
 Resume file: None
 
 **Four things in flight when this session ended:**
