@@ -149,7 +149,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. Redemption & CatalystMod Integration | 0/TBD | Not started | - |
 | 7. NoxusBoss & ContinentOfJourney/Daybreak Integration | 0/TBD | Not started | - |
 | 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |
-| 9. Biome-Dependent Subworld Coverage | 0/7 | Not started | - |
+| 9. Biome-Dependent Subworld Coverage | 4/7 | In Progress|  |
 
 ### Phase 9: Biome-Dependent Subworld Coverage
 **Goal**: Every v1-registered boss whose AI depends on a biome/Zone flag (the despawn-bug class found live with Calamity's Hive Mind in Phase 4, fixed there only ad-hoc via `BossArenaCorruptionSubworld`) has a matching routed biome-variant subworld, audited systematically across every integrated mod instead of being discovered live in-game per boss.
@@ -157,15 +157,15 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 **Requirements**: ARENA-01
 **Success Criteria** (what must be TRUE):
   1. Every boss registered in Phases 4-7 (Calamity, Spirit, Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak) is explicitly classified via source research as biome/Zone-dependent or not — extending the ad-hoc classification already done for Hive Mind (Phase 4, dependent) and Infernon (Phase 5, independent) to every remaining registered boss.
-  2. Every boss classified as biome/Zone-dependent has a matching `BossArenaXSubworld` variant registered via `BossArenaRoutingRegistry` (following the `BossArenaCorruptionSubworld` precedent), preventing the AI despawn/malfunction bug class found with Hive Mind.
+  2. Every boss classified as biome/Zone-dependent has a matching `BossArenaXSubworld` variant registered via `BossArenaRoutingRegistry` (following the `BossArenaCorruptionSubworld` precedent), preventing the AI despawn/malfunction bug class found with Hive Mind. **Exception (D-07, user decision 2026-08-14):** Dungeon and Sulphurous Sea variants were built once then descoped and discarded mid-phase; Polterghast (Spirit, Dungeon) and The Old Duke (Calamity+Infernum, Sulphurous Sea) remain without a biome-safe arena until a future phase reinstates them.
   3. Classification and routing coverage is documented per boss, so future (post-v1) mod integrations can extend the same audit instead of re-discovering biome dependencies live in-game.
-**Plans**: 7 plans
+**Plans**: 7 plans (scope reduced from 9 to 7 biome variants mid-execution, 2026-08-14 — see 09-CONTEXT.md D-07)
 
 Plans:
-- [ ] 09-01-PLAN.md — Underworld + Space biome subworlds (height-only family)
-- [ ] 09-02-PLAN.md — Hallow + Jungle biome subworlds (vanilla tile-weighted family)
-- [ ] 09-03-PLAN.md — Desert + Dungeon biome subworlds (vanilla tile-weighted family, extra constraints)
-- [ ] 09-04-PLAN.md — Astral + Sulphurous + Briar biome subworlds (modded ModBiome family, JIT-safety discipline)
+- [x] 09-01-PLAN.md — Underworld + Space biome subworlds (height-only family)
+- [x] 09-02-PLAN.md — Hallow + Jungle biome subworlds (vanilla tile-weighted family)
+- [x] 09-03-PLAN.md — Desert biome subworld (vanilla tile-weighted family, extra constraints) — Dungeon descoped, D-07
+- [x] 09-04-PLAN.md — Astral + Briar biome subworlds (modded ModBiome family, JIT-safety discipline) — Sulphurous Sea descoped, D-07
 - [ ] 09-05-PLAN.md — Temporary debug entry mechanism for live verification
-- [ ] 09-06-PLAN.md — Live biome-flag verification checkpoints (all 9 subworlds)
+- [ ] 09-06-PLAN.md — Live biome-flag verification checkpoints (7 subworlds)
 - [ ] 09-07-PLAN.md — CalamityMod/SpiritMod-disabled safety checkpoint + debug hook removal
