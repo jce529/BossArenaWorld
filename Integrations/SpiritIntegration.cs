@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using BossArenaSubWorld.Systems;
+using BossArenaSubWorld.Subworlds;
 
 namespace BossArenaSubWorld.Integrations
 {
@@ -20,6 +21,8 @@ namespace BossArenaSubWorld.Integrations
         {
             if (!ModLoader.HasMod("SpiritMod")) return;
             RegisterInfernon();
+            RegisterAncientAvian();
+            RegisterScarabeus();
         }
 
         // D-01/Pitfall 2 (carried from Phase 4): every method below this point may reference
@@ -159,5 +162,77 @@ namespace BossArenaSubWorld.Integrations
                 }
             }
         }
+
+        // Architecture Pattern 3 (10-RESEARCH.md): generalizes Infernon's write-path reflection
+        // to every Spirit boss whose downed-tracking flows through the generic
+        // BossDownedTracker.OnKill(NPC) hook (confirmed: none of the 6 bosses below override
+        // OnKill() themselves, and none have any WorldGen/player-scoped side effect beyond the
+        // flag write -- unlike Infernon's own Hellstone tile-ring, which stays
+        // Infernon-specific). Reuses the SAME cached _downedField FieldInfo established in
+        // RegisterInfernon() -- do not re-reflect per boss.
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyGenericSpiritDowned<T>() where T : ModNPC
+        {
+            try
+            {
+                var downed = (Dictionary<string, bool>)_downedField.GetValue(null);
+                var instance = ModContent.GetInstance<T>();
+                string key = instance.Mod.Name + "/" + instance.Name;
+                downed[key] = true;
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    NetMessage.SendData(MessageID.WorldData);
+            }
+            catch (Exception e)
+            {
+                // Same swallow-and-log discipline as ApplyInfernonDowned (05-RESEARCH.md Open
+                // Question 1) -- a broken reflection lookup must never crash BossCoreItem.UseItem.
+                ModContent.GetInstance<BossArenaSubWorld>().Logger.Warn(
+                    "SpiritIntegration: failed to set " + typeof(T).Name + " downed flag via reflection: " + e);
+            }
+        }
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterAncientAvian()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.JewelCrown>();
+            int npcType = ModContent.NPCType<SpiritMod.NPCs.Boss.AncientFlyer>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // Thematic only (no Zone check in AncientFlyer's AI, 10-RESEARCH.md) -- routed to
+            // Space altar per 09-ALTAR-BIOME-REFERENCE.md wiki-thematic assignment (D-01).
+            BossArenaRoutingRegistry.Register<BossArenaSpaceSubworld>(npcType);
+
+            BossRegistry.Register("spirit:ancient_avian", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyAncientAvianDowned,
+                IsDowned: IsAncientAvianDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsAncientAvianDowned() => SpiritMod.MyWorld.DownedAncientAvian;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyAncientAvianDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.AncientFlyer>();
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterScarabeus()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.ScarabIdol>();
+            int npcType = ModContent.NPCType<SpiritMod.NPCs.Boss.Scarabeus.Scarabeus>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // FUNCTIONAL (10-RESEARCH.md, confirmed via decompile): ModifyHitByItem/hit-modifier
+            // code divides FinalDamage by 3 in both directions when !player.ZoneDesert -- fight
+            // is technically completable outside Desert but heavily unbalanced. Route to the
+            // real Desert biome for genuine balance reasons, not just theme.
+            BossArenaRoutingRegistry.Register<BossArenaDesertSubworld>(npcType);
+
+            BossRegistry.Register("spirit:scarabeus", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyScarabeusDowned,
+                IsDowned: IsScarabeusDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsScarabeusDowned() => SpiritMod.MyWorld.DownedScarabeus;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyScarabeusDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.Scarabeus.Scarabeus>();
     }
 }
