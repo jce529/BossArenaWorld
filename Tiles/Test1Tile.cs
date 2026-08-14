@@ -46,6 +46,14 @@ namespace BossArenaSubWorld.Tiles
             if (!SummonItemRegistry.TryGetBoss(player.HeldItem.type, out int bossNpcType))
                 return false; // not a registered summon item -- no interaction (SUBW-01 gate)
 
+            // 06-02 user-requested scope addition: mirrors the real source item's
+            // CanUseItem() lockout (e.g. CatalystMod's AstralCommunicator becoming
+            // permanently unusable once Moon Lord is downed before Astrageldon). Silent
+            // no-op (no chat message), matching vanilla's own CanUseItem() == false
+            // behavior -- item is not consumed, no subworld entry happens.
+            if (!SummonItemRegistry.CanSummon(player.HeldItem.type))
+                return false;
+
             Main.NewText("보스 아레나로 입장합니다. 도착하면 보스가 자동으로 소환됩니다.", 220, 180, 255); // D-11
 
             BossSummonPlayer.PendingBossNpcType = bossNpcType;

@@ -31,7 +31,16 @@ namespace BossArenaSubWorld.Integrations
             // NPC.NewNPC(...); our SUBW-04 pipeline bypasses UseItem() entirely and calls
             // NPC.SpawnOnPlayer directly (Phase 2 D-09), a purely cosmetic difference
             // (no ritual animation) -- already-precedented, not a new risk.
-            SummonItemRegistry.Register(itemType, npcType);
+            //
+            // User-requested scope addition (confirmed with user this session, decompiled
+            // and verified directly against Libs/CatalystMod.dll via ilspycmd): the real
+            // item's CanUseItem() becomes permanently unusable once NPC.downedMoonlord is
+            // true and WorldDefeats.downedAstrageldon is still false (a Moon-Lord-lockout
+            // gate; source mod shows a "broken" texture variant for this exact state). Our
+            // portal-redirect pipeline bypasses CanUseItem()/UseItem() entirely by design
+            // (Phase 2 D-09), so without this eligibility delegate the lockout would be
+            // silently ignored. See CanSummonAstrageldon below.
+            SummonItemRegistry.Register(itemType, npcType, CanSummonAstrageldon);
 
             // No BossArenaRoutingRegistry.Register<T>() call -- Astrageldon.CheckActive()
             // explicitly returns false (never auto-despawns), and no player.Zone* reference
@@ -46,6 +55,29 @@ namespace BossArenaSubWorld.Integrations
 
         [JITWhenModsEnabled("CatalystMod")]
         private static bool IsAstrageldonDowned() => CatalystMod.WorldDefeats.downedAstrageldon;
+
+        // User-requested scope addition (this session): replicates only the
+        // Moon-Lord-lockout branch of the real AstralCommunicator.CanUseItem()
+        // (decompiled and confirmed against Libs/CatalystMod.dll via ilspycmd this
+        // session):
+        //   if (Player.ZoneOverworldHeight && (calamityPlayer.ZoneAstral || catalystPlayer.ZoneBlight)
+        //       && !NPC.AnyNPCs(ModContent.NPCType<Astrageldon>()) && <no active AstrageldonSpawner projectile>)
+        //   {
+        //       if (NPC.downedMoonlord) return WorldDefeats.downedAstrageldon;
+        //       return true;
+        //   }
+        //   return false;
+        // Once Moon Lord is downed, the real item becomes permanently unusable until
+        // Astrageldon is actually defeated. Our portal-redirect pipeline
+        // (Tiles/Test1Tile.cs) bypasses CanUseItem()/UseItem() entirely (Phase 2 D-09), so
+        // this named delegate (registered via SummonItemRegistry.Register's optional
+        // canSummon parameter above) is the only way to preserve that source-mod lockout
+        // behavior. Deliberately NOT replicating the biome/location/anti-duplicate-spawn
+        // checks -- those govern where/when the real item can be physically used in the
+        // overworld, which has no equivalent in this project's portal-redirect flow.
+        [JITWhenModsEnabled("CatalystMod")]
+        private static bool CanSummonAstrageldon() =>
+            !NPC.downedMoonlord || CatalystMod.WorldDefeats.downedAstrageldon;
 
         // D-03 (this phase): Astrageldon's downed-tracking path is world-scoped (ore-vein
         // WorldGen + vanilla's own SetEventFlagCleared helper), no player-scoped live-state
