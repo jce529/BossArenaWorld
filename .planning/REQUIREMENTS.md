@@ -34,7 +34,7 @@
 - [x] **MOD-03**: Redemption bosses researched (downed-progress API) and registered
 - [x] **MOD-04**: CatalystMod bosses researched (downed-progress API) and registered
 - [~] ~~**MOD-05**: NoxusBoss (Devourer of Universes) researched (downed-progress API) and registered~~ — **Removed** during Phase 7 discuss-phase (2026-08-14); see Out of Scope table
-- [ ] **MOD-06**: ContinentOfJourney / Daybreak (identified as Homeward Journey, GabeHasWon, Steam Workshop id 2930931197) bosses researched (downed-progress API) and registered
+- [x] **MOD-06**: ContinentOfJourney / Daybreak (identified as Homeward Journey, GabeHasWon, Steam Workshop id 2930931197) bosses researched (downed-progress API) and registered
 
 ### Verification & Safety (VERIFY)
 
@@ -97,7 +97,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MOD-03 | Phase 6 | Complete |
 | MOD-04 | Phase 6 | Complete |
 | MOD-05 | — | Removed (Phase 7 discuss-phase, 2026-08-14) |
-| MOD-06 | Phase 7 | Pending |
+| MOD-06 | Phase 7 | Complete |
 | VERIFY-01 | Phase 8 | Pending |
 | VERIFY-02 | Phase 1 | Complete |
 | VERIFY-03 | Phase 8 | Pending |

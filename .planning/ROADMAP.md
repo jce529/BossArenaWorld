@@ -129,7 +129,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 07-01-PLAN.md — Wire ContinentOfJourney weak reference (build.txt/.csproj) + register Goblin Chariot into BossRegistry/SummonItemRegistry
+- [x] 07-01-PLAN.md — Wire ContinentOfJourney weak reference (build.txt/.csproj) + register Goblin Chariot into BossRegistry/SummonItemRegistry
 - [ ] 07-02-PLAN.md — Live Goblin Chariot downed-flag/Boss Checklist verification + ContinentOfJourney-disabled load-safety checkpoint
 
 > **Scope note (2026-08-14 discuss-phase):** "ContinentOfJourney" was identified as **Homeward Journey** by GabeHasWon (Steam Workshop id 2930931197) — two prior research passes (Phase 9 prep) could not resolve the name "ContinentOfJourney" directly; the user supplied this link during discussion, confirming the "(Homeward series)" phrase in this phase's original title was the actual pointer. "Daybreak" is confirmed to be `gold-meridian/daybreak-mod`, a boss-less library dependency of Wrath of the Gods — not a separate registration target. **NoxusBoss (Devourer of Universes) was removed from this phase's scope entirely** (was MOD-05/Success Criterion 1) — see `.planning/phases/07-*/07-CONTEXT.md` and `PROJECT.md` Key Decisions for rationale (quest-triggered/self-contained-subworld bosses don't fit the carrier-item pattern; no plan to revisit).
