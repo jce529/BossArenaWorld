@@ -44,7 +44,7 @@
 
 ### Arena Biome Coverage (ARENA)
 
-- [ ] **ARENA-01**: Every v1-registered boss across all integrated mods is explicitly classified (via source research) as biome/Zone-flag-dependent or not, and every boss classified as dependent has a matching routed biome-variant subworld (via `BossArenaRoutingRegistry`) — generalizing the ad-hoc `BossArenaCorruptionSubworld` fix built for Calamity's Hive Mind in Phase 4
+- [ ] **ARENA-01**: Every v1-registered boss across all integrated mods is explicitly classified (via source research) as biome/Zone-flag-dependent or not, and every boss classified as dependent has a matching routed biome-variant subworld (via `BossArenaRoutingRegistry`) — generalizing the ad-hoc `BossArenaCorruptionSubworld` fix built for Calamity's Hive Mind in Phase 4. Phase 9 (09-01..09-07) closes the arena-construction/JIT-safety half: 7 biome-variant subworlds built, live-verified to satisfy their target Zone/Biome flag, and live-confirmed JIT-safe with their source mod disabled. Boss-classification-and-routing across Phases 6-8 (Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak) remains outstanding before this requirement is fully complete.
 
 ## v2 Requirements
 
@@ -100,7 +100,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VERIFY-01 | Phase 8 | Pending |
 | VERIFY-02 | Phase 1 | Complete |
 | VERIFY-03 | Phase 8 | Pending |
-| ARENA-01 | Phase 9 | Pending |
+| ARENA-01 | Phase 9 | Partial (arena-construction/JIT-safety half complete; boss-classification-and-routing awaits Phases 6-8) |
 
 **Coverage:**
 - v1 requirements: 23 total

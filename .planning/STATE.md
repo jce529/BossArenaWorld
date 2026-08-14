@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: All 7 kept biome variants live-verified across all 3 mechanism families (Wave 3 / 09-06 complete). Wave 4 (09-07 -- CalamityMod/SpiritMod-disabled JIT-safety checkpoint + debug-tool cleanup) remains, the last plan in Phase 9.
-stopped_at: Completed 09-06-PLAN.md
-last_updated: "2026-08-14T04:16:49.769Z"
-last_activity: "2026-08-14 -- Phase 09 Wave 3 (09-06) complete: all 7 biome subworlds live-confirmed to satisfy their target Zone/Biome flag; Desert falling-Sand crash fixed mid-checkpoint"
+status: Phase 9 fully closed out. ARENA-01 confirmed for the arena-construction/JIT-safety half (7 biome-variant subworlds exist, generate correctly, satisfy their target Zone/Biome flag, and load safely with their source mod disabled); boss-classification-and-routing across Phases 6-8 remains the outstanding half.
+stopped_at: Completed 09-07-PLAN.md
+last_updated: "2026-08-14T04:39:23.182Z"
+last_activity: "2026-08-14 -- Phase 09 Wave 4 (09-07) complete: live CalamityMod-disabled checkpoint (Part A) caught a real JITException in AstralPlatformPass.ApplyPass (missing [JITWhenModsEnabled("CalamityMod")]); fixed inline (Rule 1), proactively applied the same fix to BriarPlatformPass.ApplyPass ([JITWhenModsEnabled("SpiritMod")]); user re-verified both CalamityMod-disabled and SpiritMod-disabled checkpoints clean ("mod-disabled safety verified"). Debug/BiomeArenaDebugCommands.cs then deleted, restoring D-02; dotnet build confirmed exit 0 with all 18 biome-related files intact."
 progress:
   total_phases: 9
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 21
-  completed_plans: 20
-  percent: 95
+  completed_plans: 21
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 09 — biome-dependent-subworld-coverage (Wave 4 next: 09-07 mod-disabled safety checkpoint + debug-tool cleanup)
+**Current focus:** Phase 09 — biome-dependent-subworld-coverage — COMPLETE. Next unplanned work: Phases 6-8 (Redemption, CatalystMod, NoxusBoss, ContinentOfJourney/Daybreak), per ROADMAP.md ordering (executed out of order per D-01, Phase 9 was pulled ahead of Phases 6-8).
 
 ## Current Position
 
-Phase: 09 (biome-dependent-subworld-coverage) — EXECUTING (out of ROADMAP order, per D-01 — ahead of Phases 6-8)
-Plan: Wave 1 complete (09-01, 09-02, 09-03, 09-04). Wave 2 complete (09-05). Wave 3 complete (09-06). Wave 4 (09-07) next -- last plan in Phase 9.
-Status: All 7 kept biome-variant subworlds (Hallow, Underworld, Jungle, Space, Desert, Astral, Briar) are now live-confirmed, across all 3 checkpoints of 09-06, to generate correctly and satisfy their target Zone/Biome flag on entry. One mid-checkpoint fix: Desert's platform crashed via falling-Sand recursion, fixed to a thin real-Sand-over-Sandstone layer (same SceneMetrics weight), re-verified live. ARENA-01 remains open pending Phases 6-8's boss-classification-and-routing half. 09-07 (Wave 4) remains: CalamityMod/SpiritMod-disabled JIT-safety checkpoint for Astral/Briar, then deletion of Debug/BiomeArenaDebugCommands.cs per D-02.
-Last activity: 2026-08-14 -- Phase 09 Wave 3 (09-06) complete: all 7 biome subworlds live-confirmed to satisfy their target Zone/Biome flag; Desert falling-Sand crash fixed mid-checkpoint
+Phase: 09 (biome-dependent-subworld-coverage) — COMPLETE (all 7 plans: 09-01 through 09-07)
+Plan: All 7 plans complete. Next: Phases 6-8, not yet planned.
+Status: Phase 9 fully closed out. ARENA-01 confirmed for the arena-construction/JIT-safety half (7 biome-variant subworlds exist, generate correctly, satisfy their target Zone/Biome flag, and load safely with their source mod disabled); boss-classification-and-routing across Phases 6-8 remains the outstanding half.
+Last activity: 2026-08-14 -- Phase 09 Wave 4 (09-07) complete: live CalamityMod-disabled checkpoint (Part A) caught a real JITException in AstralPlatformPass.ApplyPass (missing [JITWhenModsEnabled("CalamityMod")]); fixed inline (Rule 1), proactively applied the same fix to BriarPlatformPass.ApplyPass ([JITWhenModsEnabled("SpiritMod")]); user re-verified both CalamityMod-disabled and SpiritMod-disabled checkpoints clean ("mod-disabled safety verified"). Debug/BiomeArenaDebugCommands.cs then deleted, restoring D-02; dotnet build confirmed exit 0 with all 18 biome-related files intact.
 
-Progress: [██████████] 95% (20 of 21 currently-planned plans across Phases 1-5 + Phase 9; Phases 6-8 plans not yet created, executed out of order per D-01)
+Progress: [██████████] 100% (21 of 21 currently-planned plans across Phases 1-5 + Phase 9; Phases 6-8 plans not yet created, executed out of order per D-01)
 
 ## Performance Metrics
 
@@ -72,6 +72,7 @@ Progress: [██████████] 95% (20 of 21 currently-planned plans
 | Phase 09 P04 | n/a | 2 tasks kept (of 3 built) | 4 files (Sulphurous discarded) |
 | Phase 09 P05 | 15min | 2 tasks | 1 files |
 | Phase 09 P06 | verification-only | 3 tasks | 1 files |
+| Phase 09 P07 | 25min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -115,6 +116,7 @@ Recent decisions affecting current work:
 - [Phase 09 P05]: Tooling note: `gsd-tools state advance-plan` failed with `"Cannot parse Current Plan or Total Plans in Phase from STATE.md"` (this project's STATE.md uses a narrative "Plan:" line, not the `Current Plan: N/Total Plans: M` format the tool expects) -- `state update-progress`/`state record-metric`/`state record-session` all worked correctly, but `advance-plan`'s Current Position narrative update was done manually instead, consistent with the Phase 05 tooling-note precedent above.
 - [Phase 09]: [Phase 09 P06] Fixed Desert platform mid-checkpoint (Rule 1): full-depth falling-Sand fill caused a native stack-overflow via infinite WorldGen.SquareTileFrame/TileFrame/SpawnFallingBlockProjectile recursion; changed to a 3-row real-Sand cosmetic layer over solid Sandstone base (same SceneMetrics weight-1 per tile), mirroring UnderworldPlatformPass's established pattern. User re-tested live and confirmed no crash, ZoneDesert=True.
 - [Phase 09]: [Phase 09 P06] All 7 biome Subworld/GenPass pairs (Hallow, Underworld, Jungle, Space, Desert, Astral, Briar) live-confirmed to generate correctly and satisfy their target Zone/Biome flag across all three mechanism families (vanilla SceneMetrics, height-only, modded ModBiome). ARENA-01 deliberately left unmarked complete in REQUIREMENTS.md -- this plan (and 09-07) only close the arena-construction/JIT-safety half; boss-classification-and-routing across Phases 6-8 remains outstanding.
+- [Phase 09]: [Phase 09 P07]: Live CalamityMod-disabled checkpoint caught a real JITException in AstralPlatformPass.ApplyPass -- lazy construction inside Subworld.Tasks alone is NOT sufficient JIT protection; every method touching a weak-referenced mod's types needs its own [JITWhenModsEnabled] attribute regardless of containing-class laziness. Fixed both AstralPlatformPass.cs and BriarPlatformPass.cs; both mod-disabled checkpoints re-verified clean.
 
 ### Roadmap Evolution
 
@@ -134,6 +136,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-14T04:16:42.158Z
-Stopped at: Completed 09-06-PLAN.md
-Resume file: .planning/phases/09-biome-dependent-subworld-coverage/09-07-PLAN.md
+Last session: 2026-08-14T04:39:23.175Z
+Stopped at: Completed 09-07-PLAN.md
+Resume file: None
