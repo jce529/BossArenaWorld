@@ -2,4 +2,4 @@ displayName = 보스 진행도 동기화되는 서브월드
 author = HiPoDEV
 version = 0.1
 modReferences = SubworldLibrary
-weakReferences = CalamityMod@2.2.4, SpiritMod@1.5.0.44, Redemption@0.8.0.4501, CatalystMod@1.1.8, ContinentOfJourney@0.8.70.88
+weakReferences = CalamityMod@2.2.4, SpiritMod@1.5.0.44, Redemption@0.8.0.4501, CatalystMod@1.1.8, ContinentOfJourney@0.8.70.88, InfernumMode@2.0.1.35

@@ -88,6 +88,25 @@
 			<HintPath>Libs\ContinentOfJourney.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
+
+		<!--
+			Compile-time-only weak reference to InfernumMode, declared as a weak runtime
+			dependency via `weakReferences = ... InfernumMode@2.0.1.35` in build.txt (per D-01:
+			the mod must still load with InfernumMode absent). Libs/InfernumMode.dll is copied
+			directly from tModLoader's local ModAssemblies build cache (not extracted from a
+			.tmod, same source pattern originally used for Libs/SpiritMod.dll in Phase 5) and
+			never copied into this mod's own output (Private=false). InfernumMode itself hard-
+			depends on CalamityMod (modReferences = CalamityMod, SubworldLibrary, Luminance in
+			its own build.txt); this is expected and does not change our own
+			weakReferences/[JITWhenModsEnabled] requirements (CalamityMod is already a weak
+			reference from Phase 4); [JITWhenModsEnabled("InfernumMode")] alone is sufficient
+			guard for any method referencing both InfernumMode and CalamityMod types, mirroring
+			CatalystIntegration.cs's identical reasoning for its own CalamityMod dependency.
+		-->
+		<Reference Include="InfernumMode" Condition="Exists('Libs\InfernumMode.dll')">
+			<HintPath>Libs\InfernumMode.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
 	</ItemGroup>
 
 </Project>
