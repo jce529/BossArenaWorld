@@ -1,3 +1,4 @@
+using System.Threading;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -16,6 +17,11 @@ namespace BossArenaSubWorld.Integrations
             RegisterYharon();
             RegisterSupremeCalamitas();
             RegisterDragonfolly();
+            RegisterProvidence();
+            RegisterProfanedGuardians();
+            RegisterAstrumDeus();
+            RegisterAstrumAureus();
+            RegisterMarkOfProvidenceBosses();
         }
 
         // D-01/Pitfall 2: every method below this point may reference CalamityMod
@@ -269,6 +275,242 @@ namespace BossArenaSubWorld.Integrations
             // not part of the downed-state contract -- matches Hive Mind's precedent of
             // skipping seed-specific effects).
             CalamityMod.DownedBossSystem.downedDragonfolly = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-04, Task 1: Providence -- D-02: register ONLY when InfernumMode is
+        // absent. With InfernumMode present, this item must fall through untouched to
+        // Infernum's own structure-gated CanUseItem/UseItem (registering anyway would
+        // produce a silent soft-lock).
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterProvidence()
+        {
+            if (ModLoader.HasMod("InfernumMode")) return;
+
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.ProfanedCore>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.Providence.Providence>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // D-02 discretion: Providence is valid under either Hallow or Underworld per
+            // vanilla Calamity (its own biomeType branch is a purely cosmetic effect-theme
+            // choice, no functional Zone dependency -- confirmed via full OnKill/AI decompile,
+            // 10-RESEARCH.md). Hallow chosen for both Providence and Profaned Guardians to
+            // spread registered bosses across arenas more evenly (Underworld already hosts
+            // Signus) -- zero functional cost either way.
+            BossArenaRoutingRegistry.Register<BossArenaHallowSubworld>(npcType);
+
+            BossRegistry.Register("calamity:providence", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyProvidenceDowned,
+                IsDowned: IsProvidenceDowned));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsProvidenceDowned() => CalamityMod.DownedBossSystem.downedProvidence;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyProvidenceDowned()
+        {
+            // Faithful replay of Providence.OnKill()'s side effects. Excludes
+            // SetNewBossJustDowned() (player-scoped, Pitfall 5), the particle/screenshake
+            // visuals (cosmetic, live-kill-only), and the Main.netMode==0 "challenge" chat line
+            // (challenge-mode-specific, unrelated to downed state).
+            if (!CalamityMod.DownedBossSystem.downedProvidence)
+            {
+                CalamityMod.CalamityUtils.SpawnOre(ModContent.TileType<CalamityMod.Tiles.Ores.UelibloomOre>(), 0.00017, 0.55f, 0.9f, 8, 14, 59);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.ProfanedBossText3", Color.Orange);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.TreeOreText", Color.LightGreen);
+            }
+            CalamityMod.DownedBossSystem.downedProvidence = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-04, Task 1: Profaned Guardians -- D-02, same InfernumMode-absent gate as
+        // Providence above.
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterProfanedGuardians()
+        {
+            if (ModLoader.HasMod("InfernumMode")) return; // D-02, same rationale as Providence
+
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.ProfanedShard>();
+            // Only ProfanedGuardianCommander sets downedGuardians in OnKill() -- Defender/Healer
+            // have no OnKill override at all (confirmed via decompile of all 3 classes,
+            // 10-RESEARCH.md Open Question 5). NPC.SpawnOnPlayer(Commander) matches vanilla's
+            // own SpawnBossUsingItem<ProfanedGuardianCommander>() call in ProfanedShard.
+            // UseItem() -- same single-type spawn this project already does for every other boss.
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.ProfanedGuardians.ProfanedGuardianCommander>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaHallowSubworld>(npcType); // D-02 discretion, same as Providence
+
+            BossRegistry.Register("calamity:profaned_guardians", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyProfanedGuardiansDowned,
+                IsDowned: IsProfanedGuardiansDowned));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsProfanedGuardiansDowned() => CalamityMod.DownedBossSystem.downedGuardians;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyProfanedGuardiansDowned()
+        {
+            // Faithful replay of ProfanedGuardianCommander.OnKill() -- excludes
+            // SetNewBossJustDowned() (player-scoped, Pitfall 5).
+            CalamityMod.DownedBossSystem.downedGuardians = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-04, Task 2: Astrum Deus -- routes to BossArenaAstralSubworld
+        // unconditionally, forces night in its arena ONLY when InfernumMode is loaded
+        // (D-02/D-04).
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterAstrumDeus()
+        {
+            // Recommended over TitanHeart (also used for unrelated armor crafting), 10-RESEARCH.md Discretion.
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.Starcore>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.AstrumDeus.AstrumDeusHead>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaAstralSubworld>(npcType); // thematic (no Zone dependency in AI, 10-RESEARCH.md)
+
+            // D-02: Astrum Deus additionally needs forced night in its arena ONLY when
+            // InfernumMode is loaded (Infernum reworks its AI to require night).
+            // Unconditional (no forced night) under base Calamity.
+            if (ModLoader.HasMod("InfernumMode"))
+                ForcedTimeSystem.RegisterForceNight(npcType);
+
+            BossRegistry.Register("calamity:astrum_deus", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyAstrumDeusDowned,
+                IsDowned: IsAstrumDeusDowned));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsAstrumDeusDowned() => CalamityMod.DownedBossSystem.downedAstrumDeus;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyAstrumDeusDowned()
+        {
+            // Faithful replay of AstrumDeusHead.OnKill()'s downed-state side effects. Excludes
+            // the ShouldNotDropThings()-gated "kill all active NPCs of this type" cleanup
+            // (live-fight multi-segment-worm bookkeeping) and SetNewBossJustDowned()
+            // (player-scoped, Pitfall 5).
+            if (!CalamityMod.DownedBossSystem.downedAstrumDeus)
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.AstralBossText", Color.Gold);
+            CalamityMod.DownedBossSystem.downedAstrumDeus = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-04, Task 2: Astrum Aureus -- same arena/night rules as Astrum Deus.
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterAstrumAureus()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.AstralChunk>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.AstrumAureus.AstrumAureus>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaAstralSubworld>(npcType);
+
+            if (ModLoader.HasMod("InfernumMode"))
+                ForcedTimeSystem.RegisterForceNight(npcType);
+
+            BossRegistry.Register("calamity:astrum_aureus", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyAstrumAureusDowned,
+                IsDowned: IsAstrumAureusDowned));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsAstrumAureusDowned() => CalamityMod.DownedBossSystem.downedAstrumAureus;
+        // Pitfall 4 (10-RESEARCH.md): PlaceAstralMeteor() is dispatched on a background thread
+        // in the real OnKill() -- replicate that exact ThreadPool.QueueUserWorkItem dispatch,
+        // do NOT simplify to a synchronous call.
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyAstrumAureusDowned()
+        {
+            if (!CalamityMod.DownedBossSystem.downedAstrumAureus)
+            {
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.AureusBossText", Color.Gold);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.AureusBossText2", Color.Gold);
+            }
+            ThreadPool.QueueUserWorkItem(_ => CalamityMod.World.AstralBiome.PlaceAstralMeteor());
+            CalamityMod.DownedBossSystem.downedAstrumAureus = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-04, Task 3: MarkofProvidence -- ONE item that summons THREE different
+        // bosses depending on the player's Zone at use-time (Pitfall 2, 10-RESEARCH.md).
+        // Uses the polymorphic resolver extension built in Plan 10-01 instead of the
+        // single-item Register() (which would silently break two of the three bosses).
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterMarkOfProvidenceBosses()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.MarkofProvidence>();
+            int ceaselessVoidType = ModContent.NPCType<CalamityMod.NPCs.CeaselessVoid.CeaselessVoid>();
+            int signusType = ModContent.NPCType<CalamityMod.NPCs.Signus.Signus>();
+            int stormWeaverType = ModContent.NPCType<CalamityMod.NPCs.StormWeaver.StormWeaverHead>();
+
+            SummonItemRegistry.RegisterPolymorphic(itemType, ResolveMarkOfProvidenceBoss);
+
+            // Signus/Storm Weaver are thematic-only (no Zone dependency, unconditional under
+            // Infernum). Ceaseless Void's Infernum-off gate is enforced INSIDE the resolver
+            // (returns -1 when InfernumMode is loaded and the player is in the Dungeon), not
+            // here -- the item itself is always registered.
+            BossArenaRoutingRegistry.Register<BossArenaUnderworldSubworld>(signusType);
+            BossArenaRoutingRegistry.Register<BossArenaSpaceSubworld>(stormWeaverType);
+            // No BossArenaRoutingRegistry call for Ceaseless Void -- confirmed no Zone
+            // dependency (10-RESEARCH.md), and BossArenaDungeonSubworld does not exist
+            // (discarded, D-07, Phase 9). Falls back to the default BossArenaSubworld
+            // automatically.
+
+            BossRegistry.Register("calamity:ceaseless_void", new BossDefinition(
+                NpcTypes: new[] { ceaselessVoidType },
+                ApplyDowned: ApplyCeaselessVoidDowned,
+                IsDowned: IsCeaselessVoidDowned));
+            BossRegistry.Register("calamity:signus", new BossDefinition(
+                NpcTypes: new[] { signusType },
+                ApplyDowned: ApplySignusDowned,
+                IsDowned: IsSignusDowned));
+            BossRegistry.Register("calamity:storm_weaver", new BossDefinition(
+                NpcTypes: new[] { stormWeaverType },
+                ApplyDowned: ApplyStormWeaverDowned,
+                IsDowned: IsStormWeaverDowned));
+        }
+
+        // Faithful replay of MarkofProvidence.UseItem()'s own branch order (Dungeon checked
+        // first, matching decompiled source exactly -- do not reorder). D-02: Ceaseless Void
+        // unreachable via this item when InfernumMode is loaded (falls through to -1 == "no
+        // redirect", matching Infernum's own structure-gated summon flow untouched).
+        [JITWhenModsEnabled("CalamityMod")]
+        private static int ResolveMarkOfProvidenceBoss(Player player)
+        {
+            if (player.ZoneDungeon && !ModLoader.HasMod("InfernumMode"))
+                return ModContent.NPCType<CalamityMod.NPCs.CeaselessVoid.CeaselessVoid>();
+            if (player.ZoneUnderworldHeight)
+                return ModContent.NPCType<CalamityMod.NPCs.Signus.Signus>();
+            if (player.ZoneSkyHeight)
+                return ModContent.NPCType<CalamityMod.NPCs.StormWeaver.StormWeaverHead>();
+            return -1;
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsCeaselessVoidDowned() => CalamityMod.DownedBossSystem.downedCeaselessVoid;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyCeaselessVoidDowned()
+        {
+            CalamityMod.DownedBossSystem.downedCeaselessVoid = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsSignusDowned() => CalamityMod.DownedBossSystem.downedSignus;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplySignusDowned()
+        {
+            CalamityMod.DownedBossSystem.downedSignus = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsStormWeaverDowned() => CalamityMod.DownedBossSystem.downedStormWeaver;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyStormWeaverDowned()
+        {
+            CalamityMod.DownedBossSystem.downedStormWeaver = true;
             CalamityMod.CalamityNetcode.SyncWorld();
         }
     }

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 10-02-PLAN.md and 10-03-PLAN.md (parallel worktrees)
-last_updated: "2026-08-14T14:04:51.271Z"
+stopped_at: Completed 10-04-PLAN.md
+last_updated: "2026-08-14T14:14:49.058Z"
 last_activity: 2026-08-14
 progress:
   total_phases: 10
   completed_phases: 6
   total_plans: 36
-  completed_plans: 27
+  completed_plans: 28
   percent: 75
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-08-12)
 ## Current Position
 
 Phase: 10 (full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing) — EXECUTING
-Plan: 3 of 6 (10-01, 10-02, 10-03 COMPLETE this session; 10-04 next)
+Plan: 4 of 6 (10-01, 10-02, 10-03, 10-04 COMPLETE this session; 10-05 next)
 Status: Executing Phase 10
 
 ### PENDING CHECKPOINT -- resume here
@@ -76,6 +76,25 @@ ARENA-01 stays open in REQUIREMENTS.md until the full roster (10-04..10-06) land
 10-06's live in-game verification confirms behavior. Next entry point for this track:
 `10-04-PLAN.md` (Infernum-gated/polymorphic Calamity tier).
 
+### Phase 10 Plan 04 -- COMPLETE (2026-08-14, this session)
+
+`10-04-PLAN.md` (Infernum-gated + polymorphic Calamity tier: Providence, Profaned Guardians,
+Astrum Deus, Astrum Aureus, Ceaseless Void, Signus, Storm Weaver) executed autonomously (no
+checkpoints), all 3 tasks committed (`95567b9`, `cfc0342`, `add81c6`), `dotnet build` passed
+with 0 warnings/0 errors after each task. No deviations -- plan's illustrative code compiled
+against `Libs/CalamityMod.dll` v2.2.4 exactly as written. See
+`.planning/phases/10-full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing/10-04-SUMMARY.md`.
+`Integrations/CalamityIntegration.cs` now registers 12 of 12 Calamity bosses this phase covers
+directly (Hive Mind + 4 from 10-02 + these 7). Only The Old Duke (Plan 10-05, needs a new
+external DLL) remains to finish Calamity's full roster. Providence/Profaned Guardians registered
+only when InfernumMode is absent (D-02); Astrum Deus/Astrum Aureus force night only when
+InfernumMode is loaded; MarkofProvidence resolved polymorphically via Plan 10-01's
+`SummonItemRegistry.RegisterPolymorphic` -- first real exercise of both Plan 10-01 capabilities.
+
+ARENA-01 stays open in REQUIREMENTS.md until 10-05/10-06 land and Plan 10-06's live
+in-game verification confirms behavior. Next entry point: `10-05-PLAN.md` (The Old Duke,
+needs a new external DLL).
+
 Last activity: 2026-08-14
 
 ### Phase 08 and Phase 10 plan-checker re-verification -- RESOLVED (2026-08-14, this session)
@@ -85,7 +104,7 @@ The prior session's two `gsd-plan-checker` background agents never reported back
 - **Phase 08 plans** (`08-01`..`08-04-PLAN.md`, committed `e1494a2`) -- `VERIFICATION PASSED`, zero issues. Ready to execute (`/gsd:execute-phase 8`); Wave 1 (`08-01`) has no dependency and is immediately executable, Waves 2-3 self-gate on Phase 6/7/10 live-verification status.
 - **Phase 10 plans** (`10-01`..`10-06-PLAN.md`, committed `44e043f`) -- first pass found **1 real blocker**: `10-05-PLAN.md`'s `RegisterOldDuke()` guarded on `HasMod("CalamityMod")` instead of `HasMod("InfernumMode")`, which would have caused a live `TypeLoadException`/JIT crash the moment CalamityMod is present without InfernumMode (breaking Phase 10 Success Criterion 2). Also 1 warning: a stale `build.txt` snippet risked dropping Phase 7's `ContinentOfJourney@0.8.70.88` weakReferences entry on literal find/replace. Both fixed by a `gsd-planner` revision pass, committed `0c90ffa`. Re-verification after the fix: `VERIFICATION PASSED`, zero remaining issues. Ready to execute (`/gsd:execute-phase 10`).
 
-Progress: [███████░░░] 75% (27 of 36 currently-planned plans across Phases 1-8, 9-10; Phase 10 Plans 01-03 executed this session, Phase 8 plans created but not yet executed)
+Progress: [████████░░] 78% (28 of 36 currently-planned plans across Phases 1-8, 9-10; Phase 10 Plans 01-04 executed this session, Phase 8 plans created but not yet executed)
 
 ## Performance Metrics
 
@@ -134,6 +153,7 @@ Progress: [███████░░░] 75% (27 of 36 currently-planned plans
 | Phase 10 P01 | 12min | 3 tasks | 3 files |
 | Phase 10 P02 | 15min | 2 tasks | 1 files |
 | Phase 10 P03 | 4min | 3 tasks | 1 files |
+| Phase 10 P04 | 8min | 3 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -189,6 +209,7 @@ Recent decisions affecting current work:
 - [Phase 10]: ForcedTimeSystem.ActiveArenaBossNpcType intentionally never cleared on arena exit -- PreUpdateWorld's IsAnyArenaActive() guard alone makes this safe, avoiding a consume-once pattern that would break the every-tick re-assertion needed for multi-minute fights (10-RESEARCH.md Pitfall 6)
 - [Phase 10]: [Phase 10]: Fixed compile-blocking namespace bug in 10-02-PLAN.md's illustrative code (Rule 3): CalamityGlobalTownNPC lives in CalamityMod.NPCs, not CalamityMod directly -- confirmed via ilspycmd decompile of installed CalamityMod.dll, corrected in Integrations/CalamityIntegration.cs before Task 1 would compile.
 - [Phase 10]: Spirit full roster: ApplyGenericSpiritDowned<T>() shared reflection helper generalizes Infernon's write path across 6 bosses; Vinewrath Bane registers dual ReachBoss/ReachBoss1 NPC types (DownedVinewrath reads ReachBoss1 specifically)
+- [Phase 10]: [Phase 10]: Plan 10-04 registered 7 more Calamity bosses (Providence, Profaned Guardians, Astrum Deus, Astrum Aureus, Ceaseless Void, Signus, Storm Weaver) -- Providence/Profaned Guardians gated to InfernumMode-absent, Astrum Deus/Aureus force night only when InfernumMode is loaded, MarkofProvidence resolved polymorphically (first real exercise of Plan 10-01's polymorphic resolver + forced-night capabilities). Integrations/CalamityIntegration.cs now registers 12 of 12 Calamity bosses this phase covers directly (The Old Duke remains, Plan 10-05).
 
 ### Roadmap Evolution
 
@@ -206,21 +227,21 @@ None yet.
 - Phase 4 planning should resolve the weak-reference+[JITWhenModsEnabled] vs. pure-reflection disagreement between research files before writing the first Integrations/*.cs file (see research/SUMMARY.md Gaps).
 - Phase 7 research/planning/Wave-1-execution are all complete (2026-08-14) — Goblin Chariot registered in `Integrations/HomewardJourneyIntegration.cs`, `dotnet build` passes. Only Plan 07-02's live in-game checkpoint remains (see "PENDING CHECKPOINT" under Current Position). NoxusBoss removed from v1 scope (2026-08-14, see Roadmap Evolution) — no longer a blocker.
 - Phase 8 fully planned (2026-08-14): 4 plans in 3 waves (`08-01` Boss Checklist sanity + King Slime/Hive Mind closure, `08-02` Thorn/Astrageldon, `08-03` Goblin Chariot, `08-04` blocked stub for Phase 10's roster). Note `08-03` and `07-02` both cover Goblin Chariot's live verification by design (`08-03` is written to close `07-02` "if not already done" rather than duplicate blindly) — when executing Phase 8, check whether `07-02-SUMMARY.md` already exists before treating `08-03` as fresh work.
-- Phase 10 fully planned (2026-08-14) and plan-checker-verified clean (2026-08-14, after a real `RegisterOldDuke()` Infernum-guard bug was caught and fixed -- see Decisions/Session-continuity above). Plan 10-01 executed and complete (2026-08-14, this session): `Systems/SummonItemRegistry.cs` gained `RegisterPolymorphic`/player-aware `TryGetBoss`, new `Systems/ForcedTimeSystem.cs` added, `Tiles/Test1Tile.cs` wired to both -- these are the shared contracts 10-02..10-06 build real boss registrations against. Plans 10-02 and 10-03 executed and complete (2026-08-14, this session, parallel worktrees): `Integrations/CalamityIntegration.cs` now registers 5 Calamity bosses total (Hive Mind + Devourer of Gods/Yharon/Supreme Witch Calamitas/Dragonfolly), `Integrations/SpiritIntegration.cs` now registers the full 7-boss Spirit roster (Infernon + Ancient Avian/Scarabeus/Vinewrath Bane/Moon Jelly Wizard/Dusking/Atlas). 10-04..10-06 remain unexecuted, ARENA-01 stays open.
+- Phase 10 fully planned (2026-08-14) and plan-checker-verified clean (2026-08-14, after a real `RegisterOldDuke()` Infernum-guard bug was caught and fixed -- see Decisions/Session-continuity above). Plan 10-01 executed and complete (2026-08-14, this session): `Systems/SummonItemRegistry.cs` gained `RegisterPolymorphic`/player-aware `TryGetBoss`, new `Systems/ForcedTimeSystem.cs` added, `Tiles/Test1Tile.cs` wired to both -- these are the shared contracts 10-02..10-06 build real boss registrations against. Plans 10-02 and 10-03 executed and complete (2026-08-14, this session, parallel worktrees): `Integrations/CalamityIntegration.cs` now registers 5 Calamity bosses total (Hive Mind + Devourer of Gods/Yharon/Supreme Witch Calamitas/Dragonfolly), `Integrations/SpiritIntegration.cs` now registers the full 7-boss Spirit roster (Infernon + Ancient Avian/Scarabeus/Vinewrath Bane/Moon Jelly Wizard/Dusking/Atlas). Plan 10-04 executed and complete (2026-08-14, this session): `Integrations/CalamityIntegration.cs` now registers 12 of 12 Calamity bosses this phase covers directly (adds Providence, Profaned Guardians, Astrum Deus, Astrum Aureus, Ceaseless Void, Signus, Storm Weaver). 10-05..10-06 remain unexecuted, ARENA-01 stays open.
 - Isolation premise NOT empirically confirmed: live King Slime kill test shows NPC.downedSlimeKing=True in the main world after subworld round-trip (expected False per 01-RESEARCH.md/PITFALLS.md, which both explicitly predicted vanilla flags behave the same as modded ones for this bug). Do NOT proceed to Phase 2/3 planning until re-investigated -- see 01-04-SUMMARY.md hypotheses (in-memory-only leak vs. genuine on-disk persistence vs. vanilla-specific behavior difference). Also unconfirmed: inventory-intact check (SUBW-06) was skipped by tester during this run.
 - Dungeon and Sulphurous Sea biome-variant subworlds are deferred, not built (D-07, 2026-08-14, "for now"/일단). Blocks a future biome-safe arena for Polterghast (Spirit, Dungeon, unconditionally assignable) and The Old Duke (Calamity+Infernum, Sulphurous Sea) until a future phase reinstates them. Do not silently resurrect the discarded Wave-1 code (never merged, not reachable from master) -- treat any future request to add these back as new scope requiring its own research/planning pass.
 
 ## Session Continuity
 
-Last session: 2026-08-14T14:04:51.271Z
-Stopped at: Completed 10-02-PLAN.md and 10-03-PLAN.md (parallel worktrees)
+Last session: 2026-08-14T14:14:43.346Z
+Stopped at: Completed 10-04-PLAN.md
 Resume file: None
 
 **Four things in flight when this session ended:**
 
 1. Phase 07 -- blocked on the user actually playing Goblin Chariot live in-game (see PENDING CHECKPOINT above). This is the primary resume point.
 2. Phase 08 -- fully planned (4 plans, committed `e1494a2`), plan-checker verification was mid-run in the background, result never received by the orchestrator.
-3. Phase 10 -- fully planned (6 plans, committed `44e043f`, checker-verified clean after a fix, committed `0c90ffa`). Plan 10-01 (SummonItemRegistry polymorphic resolver + ForcedTimeSystem + Test1Tile wiring) executed and complete this session, all 3 tasks committed (`942d067`, `05819dd`, `37b3c34`), `10-01-SUMMARY.md` written, `dotnet build` clean. Plan 10-02 (Calamity Tier 1: Devourer of Gods, Yharon, Supreme Witch Calamitas, Dragonfolly) and Plan 10-03 (Spirit full roster) also executed and complete this session (parallel worktrees), tasks committed (`56bc0bc`, `21d145d`; `baeb553`, `7e2c7cb`, `5f8ea8b`), `10-02-SUMMARY.md`/`10-03-SUMMARY.md` written, `dotnet build` clean. 10-04..10-06 remain unexecuted -- ARENA-01 stays open until they land.
+3. Phase 10 -- fully planned (6 plans, committed `44e043f`, checker-verified clean after a fix, committed `0c90ffa`). Plan 10-01 (SummonItemRegistry polymorphic resolver + ForcedTimeSystem + Test1Tile wiring) executed and complete this session, all 3 tasks committed (`942d067`, `05819dd`, `37b3c34`), `10-01-SUMMARY.md` written, `dotnet build` clean. Plan 10-02 (Calamity Tier 1: Devourer of Gods, Yharon, Supreme Witch Calamitas, Dragonfolly) and Plan 10-03 (Spirit full roster) also executed and complete this session (parallel worktrees), tasks committed (`56bc0bc`, `21d145d`; `baeb553`, `7e2c7cb`, `5f8ea8b`), `10-02-SUMMARY.md`/`10-03-SUMMARY.md` written, `dotnet build` clean. Plan 10-04 (Infernum-gated + polymorphic Calamity tier: Providence, Profaned Guardians, Astrum Deus, Astrum Aureus, Ceaseless Void, Signus, Storm Weaver) also executed and complete this session, all 3 tasks committed (`95567b9`, `cfc0342`, `add81c6`), `10-04-SUMMARY.md` written, `dotnet build` clean. 10-05..10-06 remain unexecuted -- ARENA-01 stays open until they land.
 4. Worktree setup note: this worktree's `Libs/*.dll` compile-time references were missing at session start (known per-worktree gap) and were copied from the main working tree before the first build; they remain gitignored, not committed.
 
 All planning artifacts (CONTEXT/RESEARCH/VALIDATION/PLAN/ROADMAP/REQUIREMENTS/PROJECT/STATE) through this point are committed to git -- nothing is lost. The plan-checker verdict for Phase 08 is still unknown (quality gate, not a correctness requirement -- Phase 08's plan set already passed `frontmatter validate --schema plan` and `verify plan-structure` with zero errors).
