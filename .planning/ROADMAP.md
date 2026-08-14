@@ -18,9 +18,9 @@ Decimal phases appear between their surrounding integers in numeric order.
  (completed 2026-08-13)
 - [x] **Phase 4: Calamity Integration & Cross-Mod Side-Effect Reproduction** - Calamity bosses are registered with full flag + netcode + WorldGen side-effect reproduction, establishing the safe cross-mod access pattern
 - [x] **Phase 5: Spirit Integration** - Spirit bosses are registered via their structurally different static-field API, proving the registry pattern generalizes (completed 2026-08-13)
-- [ ] **Phase 6: Redemption & CatalystMod Integration** - Both mods' downed-progress APIs are researched and their bosses registered
-- [ ] **Phase 7: ContinentOfJourney/Daybreak (Homeward Journey) Integration** - Homeward Journey's downed-progress API is researched and at least one of its bosses is registered, completing v1 mod coverage (NoxusBoss removed from scope, see Phase 7 discuss-phase decision)
-- [ ] **Phase 8: Full Pipeline Verification & Tracker Confirmation** - The complete pipeline is verified end-to-end for every registered mod and confirmed recognized by external tracker mods
+- [x] **Phase 6: Redemption & CatalystMod Integration** - Both mods' downed-progress APIs are researched and their bosses registered (completed 2026-08-14)
+- [x] **Phase 7: ContinentOfJourney/Daybreak (Homeward Journey) Integration** - Homeward Journey's downed-progress API is researched and at least one of its bosses is registered, completing v1 mod coverage (NoxusBoss removed from scope, see Phase 7 discuss-phase decision) (completed 2026-08-14)
+- [ ] **Phase 8: Full Pipeline Verification & Tracker Confirmation** - The complete pipeline is verified end-to-end for every registered mod and confirmed recognized by external tracker mods (3/4 plans complete 2026-08-14; 08-04 blocked on Phase 10's live verification)
 - [ ] **Phase 9: Biome-Dependent Subworld Coverage** - Every biome/Zone-dependent boss across all integrated mods has a matching routed subworld variant, audited systematically instead of discovered live in-game
 - [ ] **Phase 10: Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing** - Every researched Calamity and Spirit boss not already registered is registered end-to-end and routed to its correct arena subworld, with Infernum-conditional gating and forced-night mechanics correctly implemented
 
@@ -118,7 +118,7 @@ Plans:
 Plans:
 - [x] 06-01-PLAN.md — Extract Libs/Redemption.dll + Libs/CatalystMod.dll, wire build.txt/csproj weak references
 - [x] 06-02-PLAN.md — Integrations/RedemptionIntegration.cs (Thorn) + Integrations/CatalystIntegration.cs (Astrageldon) registration
-- [ ] 06-03-PLAN.md — Live downed-flag/WorldGen checkpoint (Thorn, Astrageldon) + Redemption/CatalystMod-disabled load-safety checkpoint
+- [x] 06-03-PLAN.md — Live downed-flag/WorldGen checkpoint (Thorn, Astrageldon) + Redemption/CatalystMod-disabled load-safety checkpoint (closed by citation of 08-02-SUMMARY.md, 2026-08-14)
 
 ### Phase 7: ContinentOfJourney/Daybreak (Homeward Journey) Integration
 **Goal**: ContinentOfJourney/Daybreak's downed-progress API is researched and at least one of its bosses is registered, completing v1 mod coverage.
@@ -131,7 +131,7 @@ Plans:
 
 Plans:
 - [x] 07-01-PLAN.md — Wire ContinentOfJourney weak reference (build.txt/.csproj) + register Goblin Chariot into BossRegistry/SummonItemRegistry
-- [ ] 07-02-PLAN.md — Live Goblin Chariot downed-flag/Boss Checklist verification + ContinentOfJourney-disabled load-safety checkpoint
+- [x] 07-02-PLAN.md — Live Goblin Chariot downed-flag/Boss Checklist verification + ContinentOfJourney-disabled load-safety checkpoint (2026-08-14)
 
 > **Scope note (2026-08-14 discuss-phase):** "ContinentOfJourney" was identified as **Homeward Journey** by GabeHasWon (Steam Workshop id 2930931197) — two prior research passes (Phase 9 prep) could not resolve the name "ContinentOfJourney" directly; the user supplied this link during discussion, confirming the "(Homeward series)" phrase in this phase's original title was the actual pointer. "Daybreak" is confirmed to be `gold-meridian/daybreak-mod`, a boss-less library dependency of Wrath of the Gods — not a separate registration target. **NoxusBoss (Devourer of Universes) was removed from this phase's scope entirely** (was MOD-05/Success Criterion 1) — see `.planning/phases/07-*/07-CONTEXT.md` and `PROJECT.md` Key Decisions for rationale (quest-triggered/self-contained-subworld bosses don't fit the carrier-item pattern; no plan to revisit).
 
@@ -146,10 +146,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — King Slime + Hive Mind Boss Checklist tracker-UI recognition closure, Infernon citation, Boss Checklist sanity check
-- [ ] 08-02-PLAN.md — Thorn + Astrageldon live pipeline/Boss Checklist/Moon-Lord-lockout verification, Redemption/CatalystMod-disabled safety
-- [ ] 08-03-PLAN.md — Goblin Chariot live pipeline/Boss Checklist verification, ContinentOfJourney-disabled safety
-- [ ] 08-04-PLAN.md — Full Phase 10 Calamity/Spirit roster verification (blocked stub, gated on Phase 10 execution)
+- [x] 08-01-PLAN.md — King Slime + Hive Mind Boss Checklist tracker-UI recognition closure, Infernon citation, Boss Checklist sanity check (2026-08-14)
+- [x] 08-02-PLAN.md — Thorn + Astrageldon live pipeline/Boss Checklist/Moon-Lord-lockout verification, Redemption/CatalystMod-disabled safety (2026-08-14, also closes Phase 6's 06-03)
+- [x] 08-03-PLAN.md — Goblin Chariot live pipeline/Boss Checklist verification, ContinentOfJourney-disabled safety (closed by citation of 07-02-SUMMARY.md, 2026-08-14)
+- [ ] 08-04-PLAN.md — Full Phase 10 Calamity/Spirit roster verification (blocked stub, gated on Phase 10 execution -- Phase 10 code registration complete 2026-08-14 but its own live-verification checkpoint 10-06 is not yet closed, see below)
 
 > **Scope note (2026-08-14 discuss-phase):** Originally scoped to "at least one boss per registered mod" before Phase 9 (biome routing) and Phase 10 (full Calamity/Spirit roster) were added to the roadmap. User explicitly expanded Phase 8 to cover every registered boss, reasoning that each mod-integration phase already proved its one-worked-example boss works — so Phase 8's remaining job is full-roster breadth, not re-proving the mechanism. See `.planning/phases/08-*/08-CONTEXT.md` for full rationale.
 
@@ -165,9 +165,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 3. BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) | 3/3 | Complete   | 2026-08-13 |
 | 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 2/2 | Complete | 2026-08-13 |
 | 5. Spirit Integration | 2/2 | Complete | 2026-08-13 |
-| 6. Redemption & CatalystMod Integration | 0/3 | Not started | - |
-| 7. ContinentOfJourney/Daybreak (Homeward Journey) Integration | 0/2 | Not started | - |
-| 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |
+| 6. Redemption & CatalystMod Integration | 3/3 | Complete | 2026-08-14 |
+| 7. ContinentOfJourney/Daybreak (Homeward Journey) Integration | 2/2 | Complete | 2026-08-14 |
+| 8. Full Pipeline Verification & Tracker Confirmation | 3/4 | In Progress|  |
 | 9. Biome-Dependent Subworld Coverage | 4/7 | In Progress|  |
 | 10. Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing | 5/6 | In Progress|  |
 

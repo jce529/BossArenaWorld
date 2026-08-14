@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 10-05-PLAN.md
-last_updated: "2026-08-14T14:22:35.110Z"
+stopped_at: "Live verification round: 07-02/08-01/08-02/08-03/06-03 all confirmed passed; Phase 10-06 blocked on Old Duke despawn bug, debug session in progress"
+last_updated: "2026-08-14T14:45:00.000Z"
 last_activity: 2026-08-14
 progress:
   total_phases: 10
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 36
-  completed_plans: 29
-  percent: 81
+  completed_plans: 34
+  percent: 94
 ---
 
 # Project State
@@ -21,22 +21,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 10 — full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing
+**Current focus:** Phase 10 — full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing (blocked on Old Duke live-verification bug, debug session in progress)
 
 ## Current Position
 
 Phase: 10 (full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing) — EXECUTING
-Plan: 5 of 6 (10-01, 10-02, 10-03, 10-04, 10-05 COMPLETE this session; 10-06 next)
-Status: Executing Phase 10
+Plan: 5 of 6 code-complete (10-01..10-05 COMPLETE); 10-06 (live verification) IN PROGRESS -- 17/18 bosses + all matrix/idempotency/JIT-safety items confirmed live, The Old Duke fails (immediate despawn after spawn) -- see PENDING BUG below
+Status: Executing Phase 10, blocked on debug session `old-duke-immediate-despawn-plain-arena`
 
-### PENDING CHECKPOINT -- resume here
+### PENDING BUG -- resume here
 
-**Plan:** `.planning/phases/07-noxusboss-continentofjourney-daybreak-integration/07-02-PLAN.md`
-**Task:** 1 of 2 ("Live Goblin Chariot downed-flag application + Boss Checklist recognition checkpoint")
-**What to do when resuming:** Do NOT re-spawn a fresh 07-02 executor from scratch -- ask the user for the live-test result first, then spawn a *continuation* agent (per `execute-phase.md`'s `checkpoint_handling` step) with that result as `{user_response}`.
-**Expected resume-signal:** `"goblin chariot verified"` if all 10 steps in Task 1's checklist passed, or a description of exactly which step failed and what was observed instead.
-**After Task 1 resolves:** Plan 07-02 continues to Task 2 (ContinentOfJourney-disabled load-safety checkpoint, 5 steps, resume-signal `"mod-disabled safety verified"`), then creates `07-02-SUMMARY.md` and updates STATE.md/ROADMAP.md/REQUIREMENTS.md, closing Phase 7.
-**Verification steps (full text) are in the assistant's last message to the user in this session, and in `07-02-PLAN.md` Task 1 `<action>` directly.**
+**Debug session:** `.planning/debug/old-duke-immediate-despawn-plain-arena.md` (spawned via `/gsd:debug` this session, `gsd-debugger` agent running in background)
+**Symptom:** The Old Duke auto-summons correctly via `BloodwormPlatter` -> Test1 redirect, but despawns immediately after spawning in the default (plain-stone) `BossArenaSubworld` -- no fight is possible. Contradicts `10-RESEARCH.md`'s decompile conclusion ("OldDuke.cs has zero references to any Sulphurous-Sea Zone flag" -> concluded safe on plain arena, no biome routing built for it in `10-05-PLAN.md`).
+**User's own hypothesis (2026-08-14):** The wiki-documented Sulphurous Sea dependency was probably correct after all -- some other AI/biome-check code path (missed by the prior research pass's decompile) likely causes the despawn, not necessarily a "Zone" flag by that exact name.
+**What to do when resuming:** Do NOT re-run 10-06's live checklist from scratch. Wait for the `gsd-debugger` agent's `## ROOT CAUSE FOUND` / `## CHECKPOINT REACHED` / `## INVESTIGATION INCONCLUSIVE` return, handle per `/gsd:debug`'s workflow (offer fix-now/plan-fix, or spawn a continuation agent on user checkpoint response). Once fixed and the user re-confirms The Old Duke survives a normal fight, `10-06-SUMMARY.md` can finally close Task 1's Old Duke sub-item -- all its other items (Dragonfolly, Scarabeus, Ancient Avian, MarkofProvidence polymorphic resolution across all 3 Zones, the full Infernum-conditional gating matrix apart from Old Duke's own AI, Astrum Deus/Aureus forced night, Task 2's Moon Jelly Wizard/Dusking full-duration forced-night persistence, and Task 3's CalamityMod/SpiritMod-disabled JIT safety) are already user-confirmed passing this session (see check.md section ④ and Decisions below).
+**Downstream blocked on this:** `08-04-PLAN.md` (Phase 8's Phase-10-roster verification stub) cannot close until Phase 10 (specifically 10-06) closes.
 
 ### Phase 10 Plan 01 -- COMPLETE (2026-08-14, this session)
 
@@ -117,6 +116,18 @@ verification confirms behavior (including Phase 7's still-pending Goblin Chariot
 Next entry point: `10-06-PLAN.md` (live verification checkpoint + mod-disabled safety
 checkpoint) -- the final plan in Phase 10.
 
+### Phase 06/07/08 live-verification round -- RESOLVED except Phase 10-06's Old Duke item (2026-08-14, this session)
+
+In one round of live in-game testing, the user worked through `check.md`'s consolidated checklist (sections ①-④) covering four separate plans' checkpoints:
+
+- **08-01** (Boss Checklist sanity + King Slime/Hive Mind tracker-UI recognition + Infernon citation): all items passed. See `08-01-SUMMARY.md`.
+- **07-02** (Goblin Chariot pipeline + Boss Checklist recognition + ContinentOfJourney-disabled safety): all items passed. Closes Phase 7 (MOD-06 fully satisfied end-to-end). See `07-02-SUMMARY.md`.
+- **08-02** (Thorn/Astrageldon pipeline + Boss Checklist + Moon-Lord-lockout + Redemption/CatalystMod-disabled safety): all items passed, including the two new-this-session Moon Lord lockout cases. Since `06-03-SUMMARY.md` did not exist prior to this session, this result also closes Phase 6's own outstanding `06-03` checkpoint by design (see `06-03-SUMMARY.md`, which cites this file). See `08-02-SUMMARY.md`.
+- **08-03** (Goblin Chariot, Phase 8's own copy of the same checkpoint): closed by citation of `07-02-SUMMARY.md` (executed first this session) rather than a duplicate live test, per `08-03-PLAN.md`'s own "if not already done" design. See `08-03-SUMMARY.md`.
+- **10-06** (Phase 10's full-roster live verification): every item passed EXCEPT The Old Duke, which despawns immediately after spawning in the default arena -- see PENDING BUG above. `10-06-SUMMARY.md` has NOT been written yet; it is blocked on the Old Duke fix + re-verification.
+
+Net effect: Phase 6 complete (3/3), Phase 7 complete (2/2), Phase 8 at 3/4 (only `08-04` remains, itself blocked on Phase 10 fully closing), Phase 10 at 5/6 code-complete with 10-06 blocked on one bug.
+
 Last activity: 2026-08-14
 
 ### Phase 08 and Phase 10 plan-checker re-verification -- RESOLVED (2026-08-14, this session)
@@ -126,7 +137,7 @@ The prior session's two `gsd-plan-checker` background agents never reported back
 - **Phase 08 plans** (`08-01`..`08-04-PLAN.md`, committed `e1494a2`) -- `VERIFICATION PASSED`, zero issues. Ready to execute (`/gsd:execute-phase 8`); Wave 1 (`08-01`) has no dependency and is immediately executable, Waves 2-3 self-gate on Phase 6/7/10 live-verification status.
 - **Phase 10 plans** (`10-01`..`10-06-PLAN.md`, committed `44e043f`) -- first pass found **1 real blocker**: `10-05-PLAN.md`'s `RegisterOldDuke()` guarded on `HasMod("CalamityMod")` instead of `HasMod("InfernumMode")`, which would have caused a live `TypeLoadException`/JIT crash the moment CalamityMod is present without InfernumMode (breaking Phase 10 Success Criterion 2). Also 1 warning: a stale `build.txt` snippet risked dropping Phase 7's `ContinentOfJourney@0.8.70.88` weakReferences entry on literal find/replace. Both fixed by a `gsd-planner` revision pass, committed `0c90ffa`. Re-verification after the fix: `VERIFICATION PASSED`, zero remaining issues. Ready to execute (`/gsd:execute-phase 10`).
 
-Progress: [████████░░] 81% (29 of 36 currently-planned plans across Phases 1-8, 9-10; Phase 10 Plans 01-05 executed this session, Phase 8 plans created but not yet executed)
+Progress: [█████████░] 94% (34 of 36 currently-planned plans across Phases 1-10; only 08-04 and 10-06 remain, both blocked on the same Old Duke debug session resolving)
 
 ## Performance Metrics
 
@@ -234,6 +245,7 @@ Recent decisions affecting current work:
 - [Phase 10]: Spirit full roster: ApplyGenericSpiritDowned<T>() shared reflection helper generalizes Infernon's write path across 6 bosses; Vinewrath Bane registers dual ReachBoss/ReachBoss1 NPC types (DownedVinewrath reads ReachBoss1 specifically)
 - [Phase 10]: [Phase 10]: Plan 10-04 registered 7 more Calamity bosses (Providence, Profaned Guardians, Astrum Deus, Astrum Aureus, Ceaseless Void, Signus, Storm Weaver) -- Providence/Profaned Guardians gated to InfernumMode-absent, Astrum Deus/Aureus force night only when InfernumMode is loaded, MarkofProvidence resolved polymorphically (first real exercise of Plan 10-01's polymorphic resolver + forced-night capabilities). Integrations/CalamityIntegration.cs now registers 12 of 12 Calamity bosses this phase covers directly (The Old Duke remains, Plan 10-05).
 - [Phase 10]: [Phase 10]: Plan 10-05 wired InfernumMode as a new weak reference and registered The Old Duke (Calamity+Infernum AND-gate). Internal guard checks HasMod("InfernumMode"), not HasMod("CalamityMod") -- avoids a no-op guard that would crash via lazy JIT in the CalamityMod-only configuration. Fixed a Rule 3 MSB4025 XML-comment double-dash bug in the new csproj Reference block (same class of bug as Phase 7's ContinentOfJourney fix). All 12 Calamity boss registrations this phase covers are now code-complete.
+- [Phase 10]: Live 10-06 checkpoint (2026-08-14) confirmed 17 of 18 registered bosses correct end-to-end, including: Dragonfolly's no-despawn Jungle fight, Scarabeus's normal (non-scaled) damage in Desert, Ancient Avian's normal Space fight, MarkofProvidence's polymorphic resolution to Ceaseless Void/Signus/Storm Weaver across all 3 reachable Zones with no item consumption, the full Infernum-conditional gating matrix in BOTH configurations (Providence/Profaned Guardians/Ceaseless Void redirect only when InfernumMode absent, Astrum Deus/Aureus force night only when InfernumMode present), APPLY-04 re-use idempotency, Moon Jelly Wizard/Dusking full-duration forced-night persistence with no mid-fight daytime despawn (Pitfall 6 confirmed non-issue), and CalamityMod/SpiritMod-disabled JIT safety. The ONE failure: The Old Duke despawns immediately after spawning in the default plain-stone arena -- contradicts 10-RESEARCH.md's decompile conclusion that OldDuke.cs has no Sulphurous-Sea Zone-flag dependency. User hypothesizes the wiki's Sulphurous Sea requirement was correct and some other AI/biome-check mechanism (missed by the prior decompile pass) is the real cause. Debug session `old-duke-immediate-despawn-plain-arena` spawned via `/gsd:debug` to investigate via fresh decompile of the live `CalamityMod.NPCs.OldDuke.OldDuke` AI (and check InfernumMode's own AI override, since Infernum reworks many Calamity bosses) -- see PENDING BUG under Current Position. This closely mirrors the Phase 4 Hive Mind/ZoneCorrupt precedent: a research pass's decompile conclusion turned out incomplete once tested live.
 
 ### Roadmap Evolution
 
@@ -249,23 +261,26 @@ None yet.
 ### Blockers/Concerns
 
 - Phase 4 planning should resolve the weak-reference+[JITWhenModsEnabled] vs. pure-reflection disagreement between research files before writing the first Integrations/*.cs file (see research/SUMMARY.md Gaps).
-- Phase 7 research/planning/Wave-1-execution are all complete (2026-08-14) — Goblin Chariot registered in `Integrations/HomewardJourneyIntegration.cs`, `dotnet build` passes. Only Plan 07-02's live in-game checkpoint remains (see "PENDING CHECKPOINT" under Current Position). NoxusBoss removed from v1 scope (2026-08-14, see Roadmap Evolution) — no longer a blocker.
-- Phase 8 fully planned (2026-08-14): 4 plans in 3 waves (`08-01` Boss Checklist sanity + King Slime/Hive Mind closure, `08-02` Thorn/Astrageldon, `08-03` Goblin Chariot, `08-04` blocked stub for Phase 10's roster). Note `08-03` and `07-02` both cover Goblin Chariot's live verification by design (`08-03` is written to close `07-02` "if not already done" rather than duplicate blindly) — when executing Phase 8, check whether `07-02-SUMMARY.md` already exists before treating `08-03` as fresh work.
-- Phase 10 fully planned (2026-08-14) and plan-checker-verified clean (2026-08-14, after a real `RegisterOldDuke()` Infernum-guard bug was caught and fixed -- see Decisions/Session-continuity above). Plan 10-01 executed and complete (2026-08-14, this session): `Systems/SummonItemRegistry.cs` gained `RegisterPolymorphic`/player-aware `TryGetBoss`, new `Systems/ForcedTimeSystem.cs` added, `Tiles/Test1Tile.cs` wired to both -- these are the shared contracts 10-02..10-06 build real boss registrations against. Plans 10-02 and 10-03 executed and complete (2026-08-14, this session, parallel worktrees): `Integrations/CalamityIntegration.cs` now registers 5 Calamity bosses total (Hive Mind + Devourer of Gods/Yharon/Supreme Witch Calamitas/Dragonfolly), `Integrations/SpiritIntegration.cs` now registers the full 7-boss Spirit roster (Infernon + Ancient Avian/Scarabeus/Vinewrath Bane/Moon Jelly Wizard/Dusking/Atlas). Plan 10-04 executed and complete (2026-08-14, this session): `Integrations/CalamityIntegration.cs` now registers 12 of 12 Calamity bosses this phase covers directly (adds Providence, Profaned Guardians, Astrum Deus, Astrum Aureus, Ceaseless Void, Signus, Storm Weaver). Plan 10-05 executed and complete (2026-08-14, this session): `InfernumMode` wired as a new weak reference (`build.txt`/`BossArenaSubWorld.csproj`/`Libs/InfernumMode.dll`) and The Old Duke registered (Calamity+Infernum AND-gate, `downedBoomerDuke`), completing all 12 Calamity boss registrations this phase covers. 10-06 remains unexecuted, ARENA-01 stays open.
+- Phase 7 is COMPLETE (2026-08-14) — Goblin Chariot registered and live-verified end-to-end, including Boss Checklist recognition and ContinentOfJourney-disabled safety. NoxusBoss removed from v1 scope (2026-08-14, see Roadmap Evolution).
+- Phase 6 is COMPLETE (2026-08-14) — Thorn/Astrageldon registered and live-verified end-to-end (closed via 08-02's citation, see `06-03-SUMMARY.md`).
+- Phase 8 is at 3/4 (2026-08-14): `08-01`, `08-02`, `08-03` all closed (08-02 also closed Phase 6's 06-03; 08-03 closed by citation of 07-02). Only `08-04` (Phase 10 roster verification stub) remains, blocked on Phase 10's own `10-06` closing first.
+- Phase 10 is at 5/6 code-complete, blocked on `10-06`'s live verification: 17 of 18 bosses + the full Infernum-gating matrix + polymorphic item + forced-night persistence + mod-disabled JIT safety are all user-confirmed passing (2026-08-14). Only The Old Duke fails -- despawns immediately after spawning in the default plain-stone arena, contradicting `10-RESEARCH.md`'s decompile conclusion that it has no biome/Zone dependency. A `/gsd:debug` session (`old-duke-immediate-despawn-plain-arena`) is investigating via fresh decompile -- see PENDING BUG under Current Position. This is now the single blocker for both Phase 10 and Phase 8 (`08-04`) closing.
 - Isolation premise NOT empirically confirmed: live King Slime kill test shows NPC.downedSlimeKing=True in the main world after subworld round-trip (expected False per 01-RESEARCH.md/PITFALLS.md, which both explicitly predicted vanilla flags behave the same as modded ones for this bug). Do NOT proceed to Phase 2/3 planning until re-investigated -- see 01-04-SUMMARY.md hypotheses (in-memory-only leak vs. genuine on-disk persistence vs. vanilla-specific behavior difference). Also unconfirmed: inventory-intact check (SUBW-06) was skipped by tester during this run.
-- Dungeon and Sulphurous Sea biome-variant subworlds are deferred, not built (D-07, 2026-08-14, "for now"/일단). Blocks a future biome-safe arena for Polterghast (Spirit, Dungeon, unconditionally assignable) and The Old Duke (Calamity+Infernum, Sulphurous Sea) until a future phase reinstates them. Do not silently resurrect the discarded Wave-1 code (never merged, not reachable from master) -- treat any future request to add these back as new scope requiring its own research/planning pass.
+- Dungeon and Sulphurous Sea biome-variant subworlds are deferred, not built (D-07, 2026-08-14, "for now"/일단). Blocks a future biome-safe arena for Polterghast (Spirit, Dungeon, unconditionally assignable) and The Old Duke (Calamity+Infernum, Sulphurous Sea) until a future phase reinstates them. Do not silently resurrect the discarded Wave-1 code (never merged, not reachable from master) -- treat any future request to add these back as new scope requiring its own research/planning pass. **UPDATE (2026-08-14):** This entry's prediction for The Old Duke appears to have materialized live -- see the `old-duke-immediate-despawn-plain-arena` debug session under PENDING BUG. If the debug session confirms Sulphurous Sea (or a liquid-submersion equivalent) is genuinely required, that IS new scope requiring its own research/planning pass per this note's own instruction, not a silent in-place patch.
 
 ## Session Continuity
 
-Last session: 2026-08-14T14:22:29.019Z
-Stopped at: Completed 10-05-PLAN.md
-Resume file: None
+Last session: 2026-08-14T14:45:00.000Z
+Stopped at: Live-verification round complete except The Old Duke (Phase 10-06); `old-duke-immediate-despawn-plain-arena` debug session in progress
+Resume file: `.planning/debug/old-duke-immediate-despawn-plain-arena.md`
 
-**Four things in flight when this session ended:**
+**What's in flight when this session ends:**
 
-1. Phase 07 -- blocked on the user actually playing Goblin Chariot live in-game (see PENDING CHECKPOINT above). This is the primary resume point.
-2. Phase 08 -- fully planned (4 plans, committed `e1494a2`), plan-checker verification was mid-run in the background, result never received by the orchestrator.
-3. Phase 10 -- fully planned (6 plans, committed `44e043f`, checker-verified clean after a fix, committed `0c90ffa`). Plan 10-01 (SummonItemRegistry polymorphic resolver + ForcedTimeSystem + Test1Tile wiring) executed and complete this session, all 3 tasks committed (`942d067`, `05819dd`, `37b3c34`), `10-01-SUMMARY.md` written, `dotnet build` clean. Plan 10-02 (Calamity Tier 1: Devourer of Gods, Yharon, Supreme Witch Calamitas, Dragonfolly) and Plan 10-03 (Spirit full roster) also executed and complete this session (parallel worktrees), tasks committed (`56bc0bc`, `21d145d`; `baeb553`, `7e2c7cb`, `5f8ea8b`), `10-02-SUMMARY.md`/`10-03-SUMMARY.md` written, `dotnet build` clean. Plan 10-04 (Infernum-gated + polymorphic Calamity tier: Providence, Profaned Guardians, Astrum Deus, Astrum Aureus, Ceaseless Void, Signus, Storm Weaver) also executed and complete this session, all 3 tasks committed (`95567b9`, `cfc0342`, `add81c6`), `10-04-SUMMARY.md` written, `dotnet build` clean. Plan 10-05 (InfernumMode weak reference wiring + The Old Duke Infernum-only registration) also executed and complete this session, both tasks committed (`05e8786`, `00d2daa`), `10-05-SUMMARY.md` written, `dotnet build` clean. 10-06 remains unexecuted -- ARENA-01 stays open until it lands and its live in-game verification confirms behavior.
-4. Worktree setup note: this worktree's `Libs/*.dll` compile-time references were missing at session start (known per-worktree gap) and were copied from the main working tree before the first build; they remain gitignored, not committed.
+1. **The Old Duke despawn bug** -- the sole remaining blocker for both Phase 10 (`10-06`) and Phase 8 (`08-04`) closing. `/gsd:debug` session `old-duke-immediate-despawn-plain-arena` was spawned this session and was still investigating (via fresh `Libs/CalamityMod.dll`/`Libs/InfernumMode.dll` decompile) when this session ended -- result never received by the orchestrator. This is THE primary resume point.
+2. Phases 6 and 7 are now fully COMPLETE (all live-verification checkpoints passed this session) -- see `06-03-SUMMARY.md`, `07-02-SUMMARY.md`.
+3. Phase 8 is at 3/4 (`08-01`, `08-02`, `08-03` all closed this session) -- only `08-04` remains, gated on Phase 10.
+4. Phase 10 is at 5/6 code-complete, with `10-06`'s live verification 17/18-bosses-and-every-other-item confirmed passing this session -- only The Old Duke's despawn blocks `10-06-SUMMARY.md` from being written and Phase 10 from closing.
+5. Worktree setup note (historical, from earlier this session's code-writing waves): gitignored `Libs/*.dll` compile-time references were missing in each fresh worktree and were copied from the main working tree before each first build; they remain gitignored, not committed. `Libs/InfernumMode.dll` was also copied into the main working tree's `Libs/` folder (from `../ModAssemblies/InfernumMode_v2.0.1.35.dll`) so master itself can build Plan 10-05's code.
+6. Build-lock note: immediately after merging Plan 10-05, `dotnet build` failed with `TML003: Please close tModLoader or disable the mod in-game to build mods directly` (C# compiles clean, 0 errors -- only `.tmod` packaging was locked because tModLoader was running). The user was told to close tModLoader and rebuild before live-testing Wave 4/5 content; unclear whether a fresh successful build has been confirmed since (worth re-checking `dotnet build BossArenaSubWorld.csproj` at the start of the next session if any doubt exists about whether the currently-loaded `.tmod` matches the latest merged code).
 
-All planning artifacts (CONTEXT/RESEARCH/VALIDATION/PLAN/ROADMAP/REQUIREMENTS/PROJECT/STATE) through this point are committed to git -- nothing is lost. The plan-checker verdict for Phase 08 is still unknown (quality gate, not a correctness requirement -- Phase 08's plan set already passed `frontmatter validate --schema plan` and `verify plan-structure` with zero errors).
+All planning artifacts (CONTEXT/RESEARCH/VALIDATION/PLAN/ROADMAP/REQUIREMENTS/PROJECT/STATE) through this point are committed to git except this STATE.md update itself (about to be committed) -- nothing is lost.
