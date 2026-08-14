@@ -14,6 +14,8 @@ namespace BossArenaSubWorld.Integrations
             RegisterHiveMind();
             RegisterDevourerOfGods();
             RegisterYharon();
+            RegisterSupremeCalamitas();
+            RegisterDragonfolly();
         }
 
         // D-01/Pitfall 2: every method below this point may reference CalamityMod
@@ -196,6 +198,77 @@ namespace BossArenaSubWorld.Integrations
                 CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.AuricOreText", Color.Gold);
             }
             CalamityMod.DownedBossSystem.downedYharon = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-02, Task 2: Supreme Witch, Calamitas -- plain arena. Calamity's own
+        // "Altar of the Accursed" furniture just needs to be placeable in
+        // BossArenaSubworld, no biome routing required (09-ALTAR-BIOME-REFERENCE.md
+        // Section 3). Real vanilla flow is hold-item, right-click a placed SCalAltar
+        // tile -- Test1Tile bypasses that entirely (Architecture Pattern 2,
+        // 10-RESEARCH.md); register CeremonialUrn directly.
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterSupremeCalamitas()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.CeremonialUrn>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.SupremeCalamitas.SupremeCalamitas>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+
+            BossRegistry.Register("calamity:supreme_calamitas", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplySupremeCalamitasDowned,
+                IsDowned: IsSupremeCalamitasDowned));
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsSupremeCalamitasDowned() => CalamityMod.DownedBossSystem.downedCalamitas;
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplySupremeCalamitasDowned()
+        {
+            // Faithful replay of SupremeCalamitas.OnKill(). Deliberately EXCLUDES
+            // SetNewBossJustDowned() (player-scoped, Pitfall 5), the player.Calamity().
+            // sCalKillCount++ increment (also player-scoped -- already ran for real on the
+            // live player during the actual subworld kill), and the follow-up
+            // Archmage/BrimstoneWitch NPC.NewNPC() spawn (a live-in-subworld encounter
+            // continuation -- no live NPC/position exists at BossCoreItem-use time in the
+            // main world).
+            CalamityMod.DownedBossSystem.downedCalamitas = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-02, Task 2: Dragonfolly -- FUNCTIONAL Zone dependency (10-RESEARCH.md,
+        // confirmed via decompile): Dragonfolly's AI() increments a leave-Jungle timer
+        // whenever !player.ZoneJungle, capping at 300 -- a genuine grace-period-then-enrage
+        // mechanic, not cosmetic. Must route to the real Jungle biome, not just thematically.
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterDragonfolly()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.ExoticPheromones>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.Bumblebirb.Dragonfolly>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaJungleSubworld>(npcType);
+
+            BossRegistry.Register("calamity:dragonfolly", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyDragonfollyDowned,
+                IsDowned: IsDragonfollyDowned));
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsDragonfollyDowned() => CalamityMod.DownedBossSystem.downedDragonfolly;
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyDragonfollyDowned()
+        {
+            // Faithful replay of Dragonfolly.OnKill()'s downed-state effects. Excludes
+            // SetNewBossJustDowned() (player-scoped, Pitfall 5) and the
+            // Main.zenithWorld-gated lightning-projectile effect (seed-specific cosmetic,
+            // not part of the downed-state contract -- matches Hive Mind's precedent of
+            // skipping seed-specific effects).
+            CalamityMod.DownedBossSystem.downedDragonfolly = true;
             CalamityMod.CalamityNetcode.SyncWorld();
         }
     }
