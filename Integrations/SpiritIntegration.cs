@@ -6,6 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using BossArenaSubWorld.Systems;
+using BossArenaSubWorld.Subworlds;
 
 namespace BossArenaSubWorld.Integrations
 {
@@ -20,6 +21,12 @@ namespace BossArenaSubWorld.Integrations
         {
             if (!ModLoader.HasMod("SpiritMod")) return;
             RegisterInfernon();
+            RegisterAncientAvian();
+            RegisterScarabeus();
+            RegisterVinewrathBane();
+            RegisterAtlas();
+            RegisterMoonJellyWizard();
+            RegisterDusking();
         }
 
         // D-01/Pitfall 2 (carried from Phase 4): every method below this point may reference
@@ -159,5 +166,178 @@ namespace BossArenaSubWorld.Integrations
                 }
             }
         }
+
+        // Architecture Pattern 3 (10-RESEARCH.md): generalizes Infernon's write-path reflection
+        // to every Spirit boss whose downed-tracking flows through the generic
+        // BossDownedTracker.OnKill(NPC) hook (confirmed: none of the 6 bosses below override
+        // OnKill() themselves, and none have any WorldGen/player-scoped side effect beyond the
+        // flag write -- unlike Infernon's own Hellstone tile-ring, which stays
+        // Infernon-specific). Reuses the SAME cached _downedField FieldInfo established in
+        // RegisterInfernon() -- do not re-reflect per boss.
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyGenericSpiritDowned<T>() where T : ModNPC
+        {
+            try
+            {
+                var downed = (Dictionary<string, bool>)_downedField.GetValue(null);
+                var instance = ModContent.GetInstance<T>();
+                string key = instance.Mod.Name + "/" + instance.Name;
+                downed[key] = true;
+                if (Main.netMode != NetmodeID.SinglePlayer)
+                    NetMessage.SendData(MessageID.WorldData);
+            }
+            catch (Exception e)
+            {
+                // Same swallow-and-log discipline as ApplyInfernonDowned (05-RESEARCH.md Open
+                // Question 1) -- a broken reflection lookup must never crash BossCoreItem.UseItem.
+                ModContent.GetInstance<BossArenaSubWorld>().Logger.Warn(
+                    "SpiritIntegration: failed to set " + typeof(T).Name + " downed flag via reflection: " + e);
+            }
+        }
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterAncientAvian()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.JewelCrown>();
+            int npcType = ModContent.NPCType<SpiritMod.NPCs.Boss.AncientFlyer>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // Thematic only (no Zone check in AncientFlyer's AI, 10-RESEARCH.md) -- routed to
+            // Space altar per 09-ALTAR-BIOME-REFERENCE.md wiki-thematic assignment (D-01).
+            BossArenaRoutingRegistry.Register<BossArenaSpaceSubworld>(npcType);
+
+            BossRegistry.Register("spirit:ancient_avian", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyAncientAvianDowned,
+                IsDowned: IsAncientAvianDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsAncientAvianDowned() => SpiritMod.MyWorld.DownedAncientAvian;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyAncientAvianDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.AncientFlyer>();
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterScarabeus()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.ScarabIdol>();
+            int npcType = ModContent.NPCType<SpiritMod.NPCs.Boss.Scarabeus.Scarabeus>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // FUNCTIONAL (10-RESEARCH.md, confirmed via decompile): ModifyHitByItem/hit-modifier
+            // code divides FinalDamage by 3 in both directions when !player.ZoneDesert -- fight
+            // is technically completable outside Desert but heavily unbalanced. Route to the
+            // real Desert biome for genuine balance reasons, not just theme.
+            BossArenaRoutingRegistry.Register<BossArenaDesertSubworld>(npcType);
+
+            BossRegistry.Register("spirit:scarabeus", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyScarabeusDowned,
+                IsDowned: IsScarabeusDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsScarabeusDowned() => SpiritMod.MyWorld.DownedScarabeus;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyScarabeusDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.Scarabeus.Scarabeus>();
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterVinewrathBane()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.ReachBossSummon>();
+            int reachBossType = ModContent.NPCType<SpiritMod.NPCs.Boss.ReachBoss.ReachBoss>();
+            int reachBoss1Type = ModContent.NPCType<SpiritMod.NPCs.Boss.ReachBoss.ReachBoss1>();
+
+            SummonItemRegistry.Register(itemType, reachBossType); // real summon target is phase 1 (ReachBoss)
+            BossArenaRoutingRegistry.Register<BossArenaBriarSubworld>(reachBossType); // thematic only, D-01
+
+            // CORRECTION to 10-RESEARCH.md this session (decompile-confirmed): Vinewrath Bane
+            // is a TWO-PHASE fight -- ReachBoss (real summon target, NPC.boss=true) transforms
+            // into ReachBoss1 (also NPC.boss=true) via NPC.NewNPC() on its own death.
+            // SpiritMod.MyWorld.DownedVinewrath reads
+            // BossDownedTracker.IsBossDowned<ReachBoss1>() specifically, NOT ReachBoss --
+            // mirrors this project's existing Infernon/InfernoSkull dual-type precedent
+            // (Pitfall B, Phase 5) exactly. Register BOTH NPC types under one BossDefinition
+            // so a BossCoreItem drops regardless of which entity's kill actually finalizes the
+            // fight; ApplyVinewrathBaneDowned only needs to write ReachBoss1's key (the one
+            // MyWorld.DownedVinewrath actually reads).
+            BossRegistry.Register("spirit:vinewrath_bane", new BossDefinition(
+                NpcTypes: new[] { reachBossType, reachBoss1Type },
+                ApplyDowned: ApplyVinewrathBaneDowned,
+                IsDowned: IsVinewrathBaneDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsVinewrathBaneDowned() => SpiritMod.MyWorld.DownedVinewrath;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyVinewrathBaneDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.ReachBoss.ReachBoss1>();
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterAtlas()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.StoneSkin>();
+            int npcType = ModContent.NPCType<SpiritMod.NPCs.Boss.Atlas.Atlas>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // Plain arena -- SpawnModBiomes = SpiritSurfaceBiome is bestiary-only cosmetic
+            // metadata, no despawn check (09-ALTAR-BIOME-REFERENCE.md Section 3). Falls back
+            // to the default BossArenaSubworld automatically.
+
+            BossRegistry.Register("spirit:atlas", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyAtlasDowned,
+                IsDowned: IsAtlasDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsAtlasDowned() => SpiritMod.MyWorld.DownedAtlas;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyAtlasDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.Atlas.Atlas>();
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterMoonJellyWizard()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.DreamlightJellyItem>();
+            int npcType = ModContent.NPCType<SpiritMod.NPCs.Boss.MoonWizard.MoonWizard>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // No BossArenaRoutingRegistry call -- no biome assignment for this boss
+            // (09-ALTAR-BIOME-REFERENCE.md Section 4: time-gated only, not biome-gated). Falls
+            // back to the default BossArenaSubworld automatically.
+
+            // D-04: CONFIRMED FUNCTIONAL (10-RESEARCH.md decompile) -- AI() contains
+            // `if (!val.active || val.dead || Main.dayTime) { ...; active = false; }`, a
+            // genuine despawn-on-daytime check every AI tick. Forced night is REQUIRED and
+            // must persist for the whole fight (Plan 10-01's ForcedTimeSystem.PreUpdateWorld
+            // re-asserts every tick, not just once on entry -- Pitfall 6).
+            ForcedTimeSystem.RegisterForceNight(npcType);
+
+            BossRegistry.Register("spirit:moon_jelly_wizard", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyMoonJellyWizardDowned,
+                IsDowned: IsMoonJellyWizardDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsMoonJellyWizardDowned() => SpiritMod.MyWorld.DownedMoonWizard;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyMoonJellyWizardDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.MoonWizard.MoonWizard>();
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterDusking()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.DuskCrown>();
+            int npcType = ModContent.NPCType<SpiritMod.NPCs.Boss.Dusking.Dusking>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // Same D-04 rationale as Moon Jelly Wizard: CONFIRMED FUNCTIONAL Main.dayTime ->
+            // active=false despawn pattern in Dusking's own AI (10-RESEARCH.md). No biome
+            // routing.
+            ForcedTimeSystem.RegisterForceNight(npcType);
+
+            BossRegistry.Register("spirit:dusking", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyDuskingDowned,
+                IsDowned: IsDuskingDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsDuskingDowned() => SpiritMod.MyWorld.DownedDusking;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyDuskingDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.Dusking.Dusking>();
     }
 }
