@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: 7 of 9 originally-planned biome variants built and merged to master (D-07); Wave 2 (09-05 debug tool) complete. Waves 3-4 (09-06/09-07 live checkpoints) remain, revised to reference only the 7 kept biomes.
-stopped_at: Completed 09-05-PLAN.md
-last_updated: "2026-08-14T03:12:12.523Z"
-last_activity: 2026-08-14 -- Phase 09 Wave 2 (09-05) complete: temporary biome-enter/check-flags debug commands added
+status: All 7 kept biome variants live-verified across all 3 mechanism families (Wave 3 / 09-06 complete). Wave 4 (09-07 -- CalamityMod/SpiritMod-disabled JIT-safety checkpoint + debug-tool cleanup) remains, the last plan in Phase 9.
+stopped_at: Completed 09-06-PLAN.md
+last_updated: "2026-08-14T04:16:49.769Z"
+last_activity: "2026-08-14 -- Phase 09 Wave 3 (09-06) complete: all 7 biome subworlds live-confirmed to satisfy their target Zone/Biome flag; Desert falling-Sand crash fixed mid-checkpoint"
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 21
-  completed_plans: 19
-  percent: 90
+  completed_plans: 20
+  percent: 95
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 09 — biome-dependent-subworld-coverage (Wave 3 next: 09-06 live verification checkpoints)
+**Current focus:** Phase 09 — biome-dependent-subworld-coverage (Wave 4 next: 09-07 mod-disabled safety checkpoint + debug-tool cleanup)
 
 ## Current Position
 
 Phase: 09 (biome-dependent-subworld-coverage) — EXECUTING (out of ROADMAP order, per D-01 — ahead of Phases 6-8)
-Plan: Wave 1 complete (09-01, 09-02, 09-03, 09-04). Wave 2 complete (09-05). Wave 3 (09-06) next.
-Status: 7 of 9 originally-planned biome variants built and merged to master; Dungeon and Sulphurous Sea descoped mid-execution by user decision (09-CONTEXT.md D-07) — their code was built once, then discarded before merging. Debug/BiomeArenaDebugCommands.cs (09-05) now provides the temporary enter/check-flags chat commands needed for Wave 3's live checkpoints. Waves 3-4 (09-06/09-07 live checkpoints) remain, revised to reference only the 7 kept biomes.
-Last activity: 2026-08-14 -- Phase 09 Wave 2 (09-05) complete: temporary biome-enter/check-flags debug commands added
+Plan: Wave 1 complete (09-01, 09-02, 09-03, 09-04). Wave 2 complete (09-05). Wave 3 complete (09-06). Wave 4 (09-07) next -- last plan in Phase 9.
+Status: All 7 kept biome-variant subworlds (Hallow, Underworld, Jungle, Space, Desert, Astral, Briar) are now live-confirmed, across all 3 checkpoints of 09-06, to generate correctly and satisfy their target Zone/Biome flag on entry. One mid-checkpoint fix: Desert's platform crashed via falling-Sand recursion, fixed to a thin real-Sand-over-Sandstone layer (same SceneMetrics weight), re-verified live. ARENA-01 remains open pending Phases 6-8's boss-classification-and-routing half. 09-07 (Wave 4) remains: CalamityMod/SpiritMod-disabled JIT-safety checkpoint for Astral/Briar, then deletion of Debug/BiomeArenaDebugCommands.cs per D-02.
+Last activity: 2026-08-14 -- Phase 09 Wave 3 (09-06) complete: all 7 biome subworlds live-confirmed to satisfy their target Zone/Biome flag; Desert falling-Sand crash fixed mid-checkpoint
 
-Progress: [█████████░] 90% (19 of 21 currently-planned plans across Phases 1-5 + Phase 9; Phases 6-8 plans not yet created, executed out of order per D-01)
+Progress: [██████████] 95% (20 of 21 currently-planned plans across Phases 1-5 + Phase 9; Phases 6-8 plans not yet created, executed out of order per D-01)
 
 ## Performance Metrics
 
@@ -71,6 +71,7 @@ Progress: [█████████░] 90% (19 of 21 currently-planned plans
 | Phase 09 P03 | n/a | 1 task kept (of 2 built) | 2 files (Dungeon discarded) |
 | Phase 09 P04 | n/a | 2 tasks kept (of 3 built) | 4 files (Sulphurous discarded) |
 | Phase 09 P05 | 15min | 2 tasks | 1 files |
+| Phase 09 P06 | verification-only | 3 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,8 @@ Recent decisions affecting current work:
 - [Phase 09]: Parallel-worktree merge pattern used for Wave 1: rather than `git merge`-ing each worktree branch (which would conflict on STATE.md/ROADMAP.md/REQUIREMENTS.md since all 4 parallel executors independently modified those shared files from the same base commit), the orchestrator cherry-picked only each plan's `feat` commits onto master and hand-wrote/reconciled STATE.md/ROADMAP.md/REQUIREMENTS.md/SUMMARY.md once, centrally, after all four worktrees' code was extracted. Precedent for any future phase using `isolation: worktree` parallel execution with >1 wave-1 plan. Re-verify `phase complete`'s output against `git diff` every time, don't trust its `*_updated` flags at face value.
 - [Phase 09 P05]: Fixed two compile-blocking bugs (Rule 3) in 09-05-PLAN.md's illustrative Debug/BiomeArenaDebugCommands.cs code, both confirmed via `ilspycmd` decompile of the actual installed `Libs/CalamityMod.dll`/`Libs/SpiritMod.dll` rather than assumption: (1) `player.Calamity().ZoneAstral` needs the `CalamityMod` namespace in scope for extension-method resolution -- called `CalamityMod.CalamityUtils.Calamity(player)` directly instead of adding a `using` directive; (2) `SpiritMod.Biomes.BiomeTileCounts` is `internal class BiomeTileCounts : ModSystem`, so its `public static bool InBriar` is unreachable at compile time (CS0122) -- read via reflection (`Type.GetType` + `PropertyInfo.GetValue`, try/catch + `Mod.Logger.Warn`), mirroring `Integrations/SpiritIntegration.cs`'s established internal-Spirit-type reflection pattern (there for a write, here for a read). Precedent: verify a plan's illustrative mod-API interface code against the actual installed DLL via `ilspycmd` before treating it as directly compilable, even when the underlying member/value it describes is confirmed correct by research.
 - [Phase 09 P05]: Tooling note: `gsd-tools state advance-plan` failed with `"Cannot parse Current Plan or Total Plans in Phase from STATE.md"` (this project's STATE.md uses a narrative "Plan:" line, not the `Current Plan: N/Total Plans: M` format the tool expects) -- `state update-progress`/`state record-metric`/`state record-session` all worked correctly, but `advance-plan`'s Current Position narrative update was done manually instead, consistent with the Phase 05 tooling-note precedent above.
+- [Phase 09]: [Phase 09 P06] Fixed Desert platform mid-checkpoint (Rule 1): full-depth falling-Sand fill caused a native stack-overflow via infinite WorldGen.SquareTileFrame/TileFrame/SpawnFallingBlockProjectile recursion; changed to a 3-row real-Sand cosmetic layer over solid Sandstone base (same SceneMetrics weight-1 per tile), mirroring UnderworldPlatformPass's established pattern. User re-tested live and confirmed no crash, ZoneDesert=True.
+- [Phase 09]: [Phase 09 P06] All 7 biome Subworld/GenPass pairs (Hallow, Underworld, Jungle, Space, Desert, Astral, Briar) live-confirmed to generate correctly and satisfy their target Zone/Biome flag across all three mechanism families (vanilla SceneMetrics, height-only, modded ModBiome). ARENA-01 deliberately left unmarked complete in REQUIREMENTS.md -- this plan (and 09-07) only close the arena-construction/JIT-safety half; boss-classification-and-routing across Phases 6-8 remains outstanding.
 
 ### Roadmap Evolution
 
@@ -131,6 +134,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-08-14T03:12:12.516Z
-Stopped at: Completed 09-05-PLAN.md
-Resume file: .planning/phases/09-biome-dependent-subworld-coverage/09-06-PLAN.md
+Last session: 2026-08-14T04:16:42.158Z
+Stopped at: Completed 09-06-PLAN.md
+Resume file: .planning/phases/09-biome-dependent-subworld-coverage/09-07-PLAN.md
