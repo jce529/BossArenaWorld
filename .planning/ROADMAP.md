@@ -169,7 +169,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 7. ContinentOfJourney/Daybreak (Homeward Journey) Integration | 0/2 | Not started | - |
 | 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |
 | 9. Biome-Dependent Subworld Coverage | 4/7 | In Progress|  |
-| 10. Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing | 3/6 | In Progress|  |
+| 10. Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing | 4/6 | In Progress|  |
 
 ### Phase 9: Biome-Dependent Subworld Coverage
 **Goal**: Every v1-registered boss whose AI depends on a biome/Zone flag (the despawn-bug class found live with Calamity's Hive Mind in Phase 4, fixed there only ad-hoc via `BossArenaCorruptionSubworld`) has a matching routed biome-variant subworld, audited systematically across every integrated mod instead of being discovered live in-game per boss.
@@ -208,6 +208,6 @@ Plans:
 - [x] 10-01-PLAN.md -- SummonItemRegistry polymorphic resolver + ForcedTimeSystem + Test1Tile wiring
 - [x] 10-02-PLAN.md -- Calamity Tier 1: Devourer of Gods, Yharon, Supreme Witch Calamitas, Dragonfolly
 - [x] 10-03-PLAN.md -- Spirit full roster: Ancient Avian, Scarabeus, Vinewrath Bane, Moon Jelly Wizard, Dusking, Atlas
-- [ ] 10-04-PLAN.md -- Calamity Tier 2: Providence, Profaned Guardians, Astrum Deus, Astrum Aureus, Ceaseless Void/Signus/Storm Weaver (polymorphic)
+- [x] 10-04-PLAN.md -- Calamity Tier 2: Providence, Profaned Guardians, Astrum Deus, Astrum Aureus, Ceaseless Void/Signus/Storm Weaver (polymorphic)
 - [ ] 10-05-PLAN.md -- The Old Duke: InfernumMode.dll wiring + Infernum-only registration
 - [ ] 10-06-PLAN.md -- Live verification checkpoint + mod-disabled safety checkpoint
