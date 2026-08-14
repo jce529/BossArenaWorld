@@ -25,6 +25,8 @@ namespace BossArenaSubWorld.Integrations
             RegisterScarabeus();
             RegisterVinewrathBane();
             RegisterAtlas();
+            RegisterMoonJellyWizard();
+            RegisterDusking();
         }
 
         // D-01/Pitfall 2 (carried from Phase 4): every method below this point may reference
@@ -287,5 +289,55 @@ namespace BossArenaSubWorld.Integrations
         private static bool IsAtlasDowned() => SpiritMod.MyWorld.DownedAtlas;
         [JITWhenModsEnabled("SpiritMod")]
         private static void ApplyAtlasDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.Atlas.Atlas>();
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterMoonJellyWizard()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.DreamlightJellyItem>();
+            int npcType = ModContent.NPCType<SpiritMod.NPCs.Boss.MoonWizard.MoonWizard>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // No BossArenaRoutingRegistry call -- no biome assignment for this boss
+            // (09-ALTAR-BIOME-REFERENCE.md Section 4: time-gated only, not biome-gated). Falls
+            // back to the default BossArenaSubworld automatically.
+
+            // D-04: CONFIRMED FUNCTIONAL (10-RESEARCH.md decompile) -- AI() contains
+            // `if (!val.active || val.dead || Main.dayTime) { ...; active = false; }`, a
+            // genuine despawn-on-daytime check every AI tick. Forced night is REQUIRED and
+            // must persist for the whole fight (Plan 10-01's ForcedTimeSystem.PreUpdateWorld
+            // re-asserts every tick, not just once on entry -- Pitfall 6).
+            ForcedTimeSystem.RegisterForceNight(npcType);
+
+            BossRegistry.Register("spirit:moon_jelly_wizard", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyMoonJellyWizardDowned,
+                IsDowned: IsMoonJellyWizardDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsMoonJellyWizardDowned() => SpiritMod.MyWorld.DownedMoonWizard;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyMoonJellyWizardDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.MoonWizard.MoonWizard>();
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterDusking()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.DuskCrown>();
+            int npcType = ModContent.NPCType<SpiritMod.NPCs.Boss.Dusking.Dusking>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // Same D-04 rationale as Moon Jelly Wizard: CONFIRMED FUNCTIONAL Main.dayTime ->
+            // active=false despawn pattern in Dusking's own AI (10-RESEARCH.md). No biome
+            // routing.
+            ForcedTimeSystem.RegisterForceNight(npcType);
+
+            BossRegistry.Register("spirit:dusking", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyDuskingDowned,
+                IsDowned: IsDuskingDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsDuskingDowned() => SpiritMod.MyWorld.DownedDusking;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyDuskingDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.Dusking.Dusking>();
     }
 }
