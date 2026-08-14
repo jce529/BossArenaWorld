@@ -12,6 +12,10 @@ namespace BossArenaSubWorld.Integrations
         {
             if (!ModLoader.HasMod("CalamityMod")) return;
             RegisterHiveMind();
+            RegisterDevourerOfGods();
+            RegisterYharon();
+            RegisterSupremeCalamitas();
+            RegisterDragonfolly();
         }
 
         // D-01/Pitfall 2: every method below this point may reference CalamityMod
@@ -115,6 +119,157 @@ namespace BossArenaSubWorld.Integrations
             // = false means those ModPlayer field changes already survived the exit).
             // Replaying it here would double-apply per Pitfall 5. See 04-RESEARCH.md
             // "Important Correction to Prior Project Research" for the full trace.
+        }
+
+        // Plan 10-02, Task 1: Devourer of Gods -- plain arena (no biome/routing dependency
+        // per 09-ALTAR-BIOME-REFERENCE.md Section 3), same RegisterX/IsXDowned/ApplyXDowned
+        // triplet shape as Hive Mind above.
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterDevourerOfGods()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.CosmicWorm>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.DevourerofGods.DevourerofGodsHead>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // No BossArenaRoutingRegistry call -- plain arena per 09-ALTAR-BIOME-REFERENCE.md
+            // Section 3 ("Plain arena, no altar needed at all"). Falls back to the default
+            // BossArenaSubworld automatically.
+
+            BossRegistry.Register("calamity:devourer_of_gods", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyDevourerOfGodsDowned,
+                IsDowned: IsDevourerOfGodsDowned));
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsDevourerOfGodsDowned() => CalamityMod.DownedBossSystem.downedDoG;
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyDevourerOfGodsDowned()
+        {
+            // Faithful replay of DevourerofGodsHead.OnKill(). SetNewShopVariable is called
+            // BEFORE the flag flips -- replicate that exact order (passes the OLD,
+            // pre-update value). Excludes SetNewBossJustDowned() (player-scoped, Pitfall 5).
+            CalamityMod.NPCs.CalamityGlobalTownNPC.SetNewShopVariable(
+                new[] { ModContent.NPCType<CalamityMod.NPCs.TownNPCs.Bandit>() },
+                CalamityMod.DownedBossSystem.downedDoG);
+            if (!CalamityMod.DownedBossSystem.downedDoG)
+            {
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.DoGBossText", Color.Cyan);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.DoGBossText2", Color.Orange);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.DargonBossText", Color.Yellow);
+            }
+            CalamityMod.DownedBossSystem.downedDoG = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-02, Task 1: Yharon -- plain arena, same rationale as Devourer of Gods above.
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterYharon()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.YharonEgg>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.Yharon.Yharon>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // Plain arena, same rationale as Devourer of Gods above.
+
+            BossRegistry.Register("calamity:yharon", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyYharonDowned,
+                IsDowned: IsYharonDowned));
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsYharonDowned() => CalamityMod.DownedBossSystem.downedYharon;
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyYharonDowned()
+        {
+            // Faithful replay of Yharon.OnKill(). Note SetNewShopVariable fires BEFORE
+            // SetNewBossJustDowned() here (reverse order vs. Devourer of Gods) -- source order
+            // doesn't matter for us since SetNewBossJustDowned is excluded (Pitfall 5), but
+            // SetNewShopVariable's BEFORE-the-flag-flip timing must still be preserved.
+            CalamityMod.NPCs.CalamityGlobalTownNPC.SetNewShopVariable(
+                new[] { ModContent.NPCType<CalamityMod.NPCs.TownNPCs.Bandit>() },
+                CalamityMod.DownedBossSystem.downedYharon);
+            if (!CalamityMod.DownedBossSystem.downedYharon)
+            {
+                CalamityMod.CalamityUtils.SpawnOre(ModContent.TileType<CalamityMod.Tiles.Ores.AuricOre>(), 2E-05, 0.75f, 0.9f, 10, 20);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.AuricOreText", Color.Gold);
+            }
+            CalamityMod.DownedBossSystem.downedYharon = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-02, Task 2: Supreme Witch, Calamitas -- plain arena. Calamity's own
+        // "Altar of the Accursed" furniture just needs to be placeable in
+        // BossArenaSubworld, no biome routing required (09-ALTAR-BIOME-REFERENCE.md
+        // Section 3). Real vanilla flow is hold-item, right-click a placed SCalAltar
+        // tile -- Test1Tile bypasses that entirely (Architecture Pattern 2,
+        // 10-RESEARCH.md); register CeremonialUrn directly.
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterSupremeCalamitas()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.CeremonialUrn>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.SupremeCalamitas.SupremeCalamitas>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+
+            BossRegistry.Register("calamity:supreme_calamitas", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplySupremeCalamitasDowned,
+                IsDowned: IsSupremeCalamitasDowned));
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsSupremeCalamitasDowned() => CalamityMod.DownedBossSystem.downedCalamitas;
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplySupremeCalamitasDowned()
+        {
+            // Faithful replay of SupremeCalamitas.OnKill(). Deliberately EXCLUDES
+            // SetNewBossJustDowned() (player-scoped, Pitfall 5), the player.Calamity().
+            // sCalKillCount++ increment (also player-scoped -- already ran for real on the
+            // live player during the actual subworld kill), and the follow-up
+            // Archmage/BrimstoneWitch NPC.NewNPC() spawn (a live-in-subworld encounter
+            // continuation -- no live NPC/position exists at BossCoreItem-use time in the
+            // main world).
+            CalamityMod.DownedBossSystem.downedCalamitas = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-02, Task 2: Dragonfolly -- FUNCTIONAL Zone dependency (10-RESEARCH.md,
+        // confirmed via decompile): Dragonfolly's AI() increments a leave-Jungle timer
+        // whenever !player.ZoneJungle, capping at 300 -- a genuine grace-period-then-enrage
+        // mechanic, not cosmetic. Must route to the real Jungle biome, not just thematically.
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterDragonfolly()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.ExoticPheromones>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.Bumblebirb.Dragonfolly>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaJungleSubworld>(npcType);
+
+            BossRegistry.Register("calamity:dragonfolly", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyDragonfollyDowned,
+                IsDowned: IsDragonfollyDowned));
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsDragonfollyDowned() => CalamityMod.DownedBossSystem.downedDragonfolly;
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyDragonfollyDowned()
+        {
+            // Faithful replay of Dragonfolly.OnKill()'s downed-state effects. Excludes
+            // SetNewBossJustDowned() (player-scoped, Pitfall 5) and the
+            // Main.zenithWorld-gated lightning-projectile effect (seed-specific cosmetic,
+            // not part of the downed-state contract -- matches Hive Mind's precedent of
+            // skipping seed-specific effects).
+            CalamityMod.DownedBossSystem.downedDragonfolly = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
         }
     }
 }
