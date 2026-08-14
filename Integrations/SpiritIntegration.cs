@@ -23,6 +23,8 @@ namespace BossArenaSubWorld.Integrations
             RegisterInfernon();
             RegisterAncientAvian();
             RegisterScarabeus();
+            RegisterVinewrathBane();
+            RegisterAtlas();
         }
 
         // D-01/Pitfall 2 (carried from Phase 4): every method below this point may reference
@@ -234,5 +236,56 @@ namespace BossArenaSubWorld.Integrations
         private static bool IsScarabeusDowned() => SpiritMod.MyWorld.DownedScarabeus;
         [JITWhenModsEnabled("SpiritMod")]
         private static void ApplyScarabeusDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.Scarabeus.Scarabeus>();
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterVinewrathBane()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.ReachBossSummon>();
+            int reachBossType = ModContent.NPCType<SpiritMod.NPCs.Boss.ReachBoss.ReachBoss>();
+            int reachBoss1Type = ModContent.NPCType<SpiritMod.NPCs.Boss.ReachBoss.ReachBoss1>();
+
+            SummonItemRegistry.Register(itemType, reachBossType); // real summon target is phase 1 (ReachBoss)
+            BossArenaRoutingRegistry.Register<BossArenaBriarSubworld>(reachBossType); // thematic only, D-01
+
+            // CORRECTION to 10-RESEARCH.md this session (decompile-confirmed): Vinewrath Bane
+            // is a TWO-PHASE fight -- ReachBoss (real summon target, NPC.boss=true) transforms
+            // into ReachBoss1 (also NPC.boss=true) via NPC.NewNPC() on its own death.
+            // SpiritMod.MyWorld.DownedVinewrath reads
+            // BossDownedTracker.IsBossDowned<ReachBoss1>() specifically, NOT ReachBoss --
+            // mirrors this project's existing Infernon/InfernoSkull dual-type precedent
+            // (Pitfall B, Phase 5) exactly. Register BOTH NPC types under one BossDefinition
+            // so a BossCoreItem drops regardless of which entity's kill actually finalizes the
+            // fight; ApplyVinewrathBaneDowned only needs to write ReachBoss1's key (the one
+            // MyWorld.DownedVinewrath actually reads).
+            BossRegistry.Register("spirit:vinewrath_bane", new BossDefinition(
+                NpcTypes: new[] { reachBossType, reachBoss1Type },
+                ApplyDowned: ApplyVinewrathBaneDowned,
+                IsDowned: IsVinewrathBaneDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsVinewrathBaneDowned() => SpiritMod.MyWorld.DownedVinewrath;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyVinewrathBaneDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.ReachBoss.ReachBoss1>();
+
+        [JITWhenModsEnabled("SpiritMod")]
+        private void RegisterAtlas()
+        {
+            int itemType = ModContent.ItemType<SpiritMod.Items.Consumable.StoneSkin>();
+            int npcType = ModContent.NPCType<SpiritMod.NPCs.Boss.Atlas.Atlas>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            // Plain arena -- SpawnModBiomes = SpiritSurfaceBiome is bestiary-only cosmetic
+            // metadata, no despawn check (09-ALTAR-BIOME-REFERENCE.md Section 3). Falls back
+            // to the default BossArenaSubworld automatically.
+
+            BossRegistry.Register("spirit:atlas", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyAtlasDowned,
+                IsDowned: IsAtlasDowned));
+        }
+        [JITWhenModsEnabled("SpiritMod")]
+        private static bool IsAtlasDowned() => SpiritMod.MyWorld.DownedAtlas;
+        [JITWhenModsEnabled("SpiritMod")]
+        private static void ApplyAtlasDowned() => ApplyGenericSpiritDowned<SpiritMod.NPCs.Boss.Atlas.Atlas>();
     }
 }
