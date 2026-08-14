@@ -1,3 +1,4 @@
+using System.Threading;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -18,6 +19,8 @@ namespace BossArenaSubWorld.Integrations
             RegisterDragonfolly();
             RegisterProvidence();
             RegisterProfanedGuardians();
+            RegisterAstrumDeus();
+            RegisterAstrumAureus();
         }
 
         // D-01/Pitfall 2: every method below this point may reference CalamityMod
@@ -350,6 +353,81 @@ namespace BossArenaSubWorld.Integrations
             // Faithful replay of ProfanedGuardianCommander.OnKill() -- excludes
             // SetNewBossJustDowned() (player-scoped, Pitfall 5).
             CalamityMod.DownedBossSystem.downedGuardians = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-04, Task 2: Astrum Deus -- routes to BossArenaAstralSubworld
+        // unconditionally, forces night in its arena ONLY when InfernumMode is loaded
+        // (D-02/D-04).
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterAstrumDeus()
+        {
+            // Recommended over TitanHeart (also used for unrelated armor crafting), 10-RESEARCH.md Discretion.
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.Starcore>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.AstrumDeus.AstrumDeusHead>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaAstralSubworld>(npcType); // thematic (no Zone dependency in AI, 10-RESEARCH.md)
+
+            // D-02: Astrum Deus additionally needs forced night in its arena ONLY when
+            // InfernumMode is loaded (Infernum reworks its AI to require night).
+            // Unconditional (no forced night) under base Calamity.
+            if (ModLoader.HasMod("InfernumMode"))
+                ForcedTimeSystem.RegisterForceNight(npcType);
+
+            BossRegistry.Register("calamity:astrum_deus", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyAstrumDeusDowned,
+                IsDowned: IsAstrumDeusDowned));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsAstrumDeusDowned() => CalamityMod.DownedBossSystem.downedAstrumDeus;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyAstrumDeusDowned()
+        {
+            // Faithful replay of AstrumDeusHead.OnKill()'s downed-state side effects. Excludes
+            // the ShouldNotDropThings()-gated "kill all active NPCs of this type" cleanup
+            // (live-fight multi-segment-worm bookkeeping) and SetNewBossJustDowned()
+            // (player-scoped, Pitfall 5).
+            if (!CalamityMod.DownedBossSystem.downedAstrumDeus)
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.AstralBossText", Color.Gold);
+            CalamityMod.DownedBossSystem.downedAstrumDeus = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        // Plan 10-04, Task 2: Astrum Aureus -- same arena/night rules as Astrum Deus.
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterAstrumAureus()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.AstralChunk>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.AstrumAureus.AstrumAureus>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaAstralSubworld>(npcType);
+
+            if (ModLoader.HasMod("InfernumMode"))
+                ForcedTimeSystem.RegisterForceNight(npcType);
+
+            BossRegistry.Register("calamity:astrum_aureus", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyAstrumAureusDowned,
+                IsDowned: IsAstrumAureusDowned));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsAstrumAureusDowned() => CalamityMod.DownedBossSystem.downedAstrumAureus;
+        // Pitfall 4 (10-RESEARCH.md): PlaceAstralMeteor() is dispatched on a background thread
+        // in the real OnKill() -- replicate that exact ThreadPool.QueueUserWorkItem dispatch,
+        // do NOT simplify to a synchronous call.
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyAstrumAureusDowned()
+        {
+            if (!CalamityMod.DownedBossSystem.downedAstrumAureus)
+            {
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.AureusBossText", Color.Gold);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.AureusBossText2", Color.Gold);
+            }
+            ThreadPool.QueueUserWorkItem(_ => CalamityMod.World.AstralBiome.PlaceAstralMeteor());
+            CalamityMod.DownedBossSystem.downedAstrumAureus = true;
             CalamityMod.CalamityNetcode.SyncWorld();
         }
     }
