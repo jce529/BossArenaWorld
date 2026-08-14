@@ -142,7 +142,13 @@ Plans:
   1. Every registered boss across every integrated mod (vanilla, Calamity — including Phase 10's full roster, Spirit — including Phase 10's full roster, Redemption, CatalystMod, ContinentOfJourney/Daybreak i.e. Homeward Journey) has its full subworld-kill-to-main-world-apply pipeline verified end-to-end in singleplayer, superseding the original "at least one boss per mod" scope.
   2. Applied downed flags are confirmed recognized by Boss Checklist (or an equivalent tracker mod) after application, for every boss in Success Criterion 1 — including King Slime, Hive Mind, Thorn, and Astrageldon, whose earlier phase checkpoints did not all explicitly confirm Boss Checklist recognition specifically (only Infernon/Phase 5 did; King Slime/Phase 3 allowed an alternative confirmation method, and Hive Mind/Phase 4 confirmed its own side effects but not Boss Checklist).
   3. All verification runs are performed against a backed-up world save, per the guidance established in Phase 1.
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — King Slime + Hive Mind Boss Checklist tracker-UI recognition closure, Infernon citation, Boss Checklist sanity check
+- [ ] 08-02-PLAN.md — Thorn + Astrageldon live pipeline/Boss Checklist/Moon-Lord-lockout verification, Redemption/CatalystMod-disabled safety
+- [ ] 08-03-PLAN.md — Goblin Chariot live pipeline/Boss Checklist verification, ContinentOfJourney-disabled safety
+- [ ] 08-04-PLAN.md — Full Phase 10 Calamity/Spirit roster verification (blocked stub, gated on Phase 10 execution)
 
 > **Scope note (2026-08-14 discuss-phase):** Originally scoped to "at least one boss per registered mod" before Phase 9 (biome routing) and Phase 10 (full Calamity/Spirit roster) were added to the roadmap. User explicitly expanded Phase 8 to cover every registered boss, reasoning that each mod-integration phase already proved its one-worked-example boss works — so Phase 8's remaining job is full-roster breadth, not re-proving the mechanism. See `.planning/phases/08-*/08-CONTEXT.md` for full rationale.
 
