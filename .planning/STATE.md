@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Live verification round: 07-02/08-01/08-02/08-03/06-03 all confirmed passed; Phase 10-06 blocked on Old Duke despawn bug, debug session in progress"
-last_updated: "2026-08-14T14:45:00.000Z"
-last_activity: 2026-08-14
+stopped_at: "The Old Duke descoped from v1 boss roster (despawn bug root-caused and a general fix implemented, but Old Duke itself removed by user decision, quick task 260815-024); Phase 10 (10-06) and Phase 8 (08-04) both closed for the resulting 17-boss roster -- no blockers remain"
+last_updated: "2026-08-15T00:00:00.000Z"
+last_activity: 2026-08-15
 progress:
   total_phases: 10
-  completed_phases: 7
+  completed_phases: 9
   total_plans: 36
-  completed_plans: 34
-  percent: 94
+  completed_plans: 36
+  percent: 100
 ---
 
 # Project State
@@ -21,21 +21,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-12)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** Phase 10 — full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing (blocked on Old Duke live-verification bug, debug session in progress)
+**Current focus:** All v1 phases complete (Phase 10 closed 2026-08-15 with The Old Duke descoped; Phase 8 closed 2026-08-15 citing Phase 10's results) -- ready for milestone wrap-up
 
 ## Current Position
 
-Phase: 10 (full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing) — EXECUTING
-Plan: 5 of 6 code-complete (10-01..10-05 COMPLETE); 10-06 (live verification) IN PROGRESS -- 17/18 bosses + all matrix/idempotency/JIT-safety items confirmed live, The Old Duke fails (immediate despawn after spawn) -- see PENDING BUG below
-Status: Executing Phase 10, blocked on debug session `old-duke-immediate-despawn-plain-arena`
+Phase: 10 (full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing) — COMPLETE (2026-08-15)
+Plan: 6 of 6 complete (10-01..10-06). The Old Duke removed from v1 scope (quick task 260815-024) after its despawn bug was root-caused and a general fix implemented, but Old Duke itself still descoped by user decision; all other 17 bosses + the full Infernum-conditional gating matrix + polymorphic item + forced-night persistence + mod-disabled JIT safety were already user-confirmed passing live this session -- see 10-06-SUMMARY.md.
+Status: Phase 10 and Phase 8 both closed. No blockers remain for v1.
 
-### PENDING BUG -- resume here
+### Old Duke Descope -- RESOLVED (2026-08-15)
 
-**Debug session:** `.planning/debug/old-duke-immediate-despawn-plain-arena.md` (spawned via `/gsd:debug` this session, `gsd-debugger` agent running in background)
-**Symptom:** The Old Duke auto-summons correctly via `BloodwormPlatter` -> Test1 redirect, but despawns immediately after spawning in the default (plain-stone) `BossArenaSubworld` -- no fight is possible. Contradicts `10-RESEARCH.md`'s decompile conclusion ("OldDuke.cs has zero references to any Sulphurous-Sea Zone flag" -> concluded safe on plain arena, no biome routing built for it in `10-05-PLAN.md`).
-**User's own hypothesis (2026-08-14):** The wiki-documented Sulphurous Sea dependency was probably correct after all -- some other AI/biome-check code path (missed by the prior research pass's decompile) likely causes the despawn, not necessarily a "Zone" flag by that exact name.
-**What to do when resuming:** Do NOT re-run 10-06's live checklist from scratch. Wait for the `gsd-debugger` agent's `## ROOT CAUSE FOUND` / `## CHECKPOINT REACHED` / `## INVESTIGATION INCONCLUSIVE` return, handle per `/gsd:debug`'s workflow (offer fix-now/plan-fix, or spawn a continuation agent on user checkpoint response). Once fixed and the user re-confirms The Old Duke survives a normal fight, `10-06-SUMMARY.md` can finally close Task 1's Old Duke sub-item -- all its other items (Dragonfolly, Scarabeus, Ancient Avian, MarkofProvidence polymorphic resolution across all 3 Zones, the full Infernum-conditional gating matrix apart from Old Duke's own AI, Astrum Deus/Aureus forced night, Task 2's Moon Jelly Wizard/Dusking full-duration forced-night persistence, and Task 3's CalamityMod/SpiritMod-disabled JIT safety) are already user-confirmed passing this session (see check.md section ④ and Decisions below).
-**Downstream blocked on this:** `08-04-PLAN.md` (Phase 8's Phase-10-roster verification stub) cannot close until Phase 10 (specifically 10-06) closes.
+The debug session `old-duke-immediate-despawn-plain-arena` (investigating The Old Duke's immediate-despawn-after-spawn bug) reached a confirmed root cause (InfernumMode's own per-world "Infernum Mode" toggle resetting to false inside the throwaway arena subworld, weaponized by NoxusBoss's Old-Duke-hijack AI) and a general fix was implemented and kept (`ForceInfernumModeActiveInArena()`, forcing the toggle active on every arena entry via InfernumMode's sanctioned `Mod.Call`) -- see `.planning/debug/old-duke-immediate-despawn-plain-arena.md` Resolution section. Despite the fix existing and building cleanly, The Old Duke's own registration was still closed as wontfix/descoped rather than live re-verified and kept: user decision, The Old Duke stays out of v1 scope entirely (the Sulphurous Sea biome variant was already excluded per D-07, Phase 9 -- this closes the same loop). `Integrations/CalamityIntegration.cs`'s `RegisterOldDuke()`/`IsOldDukeDowned()`/`ApplyOldDukeDowned()` removed; the `InfernumMode` weak reference (build.txt/.csproj) and the new `ForceInfernumModeActiveInArena()` helper were kept, since Providence/Profaned Guardians (absence-gating) and Astrum Deus/Astrum Aureus (forced-night presence-gating) still depend on `InfernumMode`, and the new helper further benefits their gating correctness. v1's Calamity roster is now 11 bosses (was 12), total Phase 10 roster 17 (was 18). Both `10-06-SUMMARY.md` and `08-04-SUMMARY.md` close citing the already-user-confirmed live-verification results for the 17-boss roster. See quick task `.planning/quick/260815-024-the-old-duke-v1-despawn/`.
 
 ### Phase 10 Plan 01 -- COMPLETE (2026-08-14, this session)
 
@@ -116,7 +112,7 @@ verification confirms behavior (including Phase 7's still-pending Goblin Chariot
 Next entry point: `10-06-PLAN.md` (live verification checkpoint + mod-disabled safety
 checkpoint) -- the final plan in Phase 10.
 
-### Phase 06/07/08 live-verification round -- RESOLVED except Phase 10-06's Old Duke item (2026-08-14, this session)
+### Phase 06/07/08/10 live-verification round -- RESOLVED (2026-08-14/15, this session)
 
 In one round of live in-game testing, the user worked through `check.md`'s consolidated checklist (sections ①-④) covering four separate plans' checkpoints:
 
@@ -124,9 +120,9 @@ In one round of live in-game testing, the user worked through `check.md`'s conso
 - **07-02** (Goblin Chariot pipeline + Boss Checklist recognition + ContinentOfJourney-disabled safety): all items passed. Closes Phase 7 (MOD-06 fully satisfied end-to-end). See `07-02-SUMMARY.md`.
 - **08-02** (Thorn/Astrageldon pipeline + Boss Checklist + Moon-Lord-lockout + Redemption/CatalystMod-disabled safety): all items passed, including the two new-this-session Moon Lord lockout cases. Since `06-03-SUMMARY.md` did not exist prior to this session, this result also closes Phase 6's own outstanding `06-03` checkpoint by design (see `06-03-SUMMARY.md`, which cites this file). See `08-02-SUMMARY.md`.
 - **08-03** (Goblin Chariot, Phase 8's own copy of the same checkpoint): closed by citation of `07-02-SUMMARY.md` (executed first this session) rather than a duplicate live test, per `08-03-PLAN.md`'s own "if not already done" design. See `08-03-SUMMARY.md`.
-- **10-06** (Phase 10's full-roster live verification): every item passed EXCEPT The Old Duke, which despawns immediately after spawning in the default arena -- see PENDING BUG above. `10-06-SUMMARY.md` has NOT been written yet; it is blocked on the Old Duke fix + re-verification.
+- **10-06** (Phase 10's full-roster live verification): all 17 in-scope bosses + gating matrix/idempotency/JIT-safety items passed live this session. The Old Duke was excluded from scope entirely (descoped 2026-08-15, quick task 260815-024) rather than remaining a failure. See 10-06-SUMMARY.md.
 
-Net effect: Phase 6 complete (3/3), Phase 7 complete (2/2), Phase 8 at 3/4 (only `08-04` remains, itself blocked on Phase 10 fully closing), Phase 10 at 5/6 code-complete with 10-06 blocked on one bug.
+Net effect: Phase 6 complete (3/3), Phase 7 complete (2/2), Phase 8 complete (4/4), Phase 10 complete (6/6) -- all closed 2026-08-15 after The Old Duke was descoped from v1.
 
 Last activity: 2026-08-14
 
@@ -137,7 +133,7 @@ The prior session's two `gsd-plan-checker` background agents never reported back
 - **Phase 08 plans** (`08-01`..`08-04-PLAN.md`, committed `e1494a2`) -- `VERIFICATION PASSED`, zero issues. Ready to execute (`/gsd:execute-phase 8`); Wave 1 (`08-01`) has no dependency and is immediately executable, Waves 2-3 self-gate on Phase 6/7/10 live-verification status.
 - **Phase 10 plans** (`10-01`..`10-06-PLAN.md`, committed `44e043f`) -- first pass found **1 real blocker**: `10-05-PLAN.md`'s `RegisterOldDuke()` guarded on `HasMod("CalamityMod")` instead of `HasMod("InfernumMode")`, which would have caused a live `TypeLoadException`/JIT crash the moment CalamityMod is present without InfernumMode (breaking Phase 10 Success Criterion 2). Also 1 warning: a stale `build.txt` snippet risked dropping Phase 7's `ContinentOfJourney@0.8.70.88` weakReferences entry on literal find/replace. Both fixed by a `gsd-planner` revision pass, committed `0c90ffa`. Re-verification after the fix: `VERIFICATION PASSED`, zero remaining issues. Ready to execute (`/gsd:execute-phase 10`).
 
-Progress: [█████████░] 94% (34 of 36 currently-planned plans across Phases 1-10; only 08-04 and 10-06 remain, both blocked on the same Old Duke debug session resolving)
+Progress: [██████████] 100% (36 of 36 currently-planned plans across Phases 1-10 complete; The Old Duke removed from scope via quick task 260815-024, 2026-08-15)
 
 ## Performance Metrics
 
@@ -246,6 +242,7 @@ Recent decisions affecting current work:
 - [Phase 10]: [Phase 10]: Plan 10-04 registered 7 more Calamity bosses (Providence, Profaned Guardians, Astrum Deus, Astrum Aureus, Ceaseless Void, Signus, Storm Weaver) -- Providence/Profaned Guardians gated to InfernumMode-absent, Astrum Deus/Aureus force night only when InfernumMode is loaded, MarkofProvidence resolved polymorphically (first real exercise of Plan 10-01's polymorphic resolver + forced-night capabilities). Integrations/CalamityIntegration.cs now registers 12 of 12 Calamity bosses this phase covers directly (The Old Duke remains, Plan 10-05).
 - [Phase 10]: [Phase 10]: Plan 10-05 wired InfernumMode as a new weak reference and registered The Old Duke (Calamity+Infernum AND-gate). Internal guard checks HasMod("InfernumMode"), not HasMod("CalamityMod") -- avoids a no-op guard that would crash via lazy JIT in the CalamityMod-only configuration. Fixed a Rule 3 MSB4025 XML-comment double-dash bug in the new csproj Reference block (same class of bug as Phase 7's ContinentOfJourney fix). All 12 Calamity boss registrations this phase covers are now code-complete.
 - [Phase 10]: Live 10-06 checkpoint (2026-08-14) confirmed 17 of 18 registered bosses correct end-to-end, including: Dragonfolly's no-despawn Jungle fight, Scarabeus's normal (non-scaled) damage in Desert, Ancient Avian's normal Space fight, MarkofProvidence's polymorphic resolution to Ceaseless Void/Signus/Storm Weaver across all 3 reachable Zones with no item consumption, the full Infernum-conditional gating matrix in BOTH configurations (Providence/Profaned Guardians/Ceaseless Void redirect only when InfernumMode absent, Astrum Deus/Aureus force night only when InfernumMode present), APPLY-04 re-use idempotency, Moon Jelly Wizard/Dusking full-duration forced-night persistence with no mid-fight daytime despawn (Pitfall 6 confirmed non-issue), and CalamityMod/SpiritMod-disabled JIT safety. The ONE failure: The Old Duke despawns immediately after spawning in the default plain-stone arena -- contradicts 10-RESEARCH.md's decompile conclusion that OldDuke.cs has no Sulphurous-Sea Zone-flag dependency. User hypothesizes the wiki's Sulphurous Sea requirement was correct and some other AI/biome-check mechanism (missed by the prior decompile pass) is the real cause. Debug session `old-duke-immediate-despawn-plain-arena` spawned via `/gsd:debug` to investigate via fresh decompile of the live `CalamityMod.NPCs.OldDuke.OldDuke` AI (and check InfernumMode's own AI override, since Infernum reworks many Calamity bosses) -- see PENDING BUG under Current Position. This closely mirrors the Phase 4 Hive Mind/ZoneCorrupt precedent: a research pass's decompile conclusion turned out incomplete once tested live.
+- [Phase 10]: The Old Duke removed from v1 scope entirely (2026-08-15, quick task 260815-024). Its immediate-despawn bug (debug session old-duke-immediate-despawn-plain-arena) WAS root-caused (NoxusBoss's Old-Duke-hijack AI firing whenever InfernumMode's per-world toggle reads false, which it always does inside the throwaway arena subworld) and a general fix (`ForceInfernumModeActiveInArena()`) was implemented, build-verified, and kept in the codebase since it also benefits Providence/Profaned Guardians/Astrum Deus/Astrum Aureus's Infernum-conditional gating correctness. Despite the fix existing, The Old Duke's own registration was still removed by user decision rather than live re-verified and re-added -- a deliberate scope-closing choice, mirroring the Sulphurous Sea exclusion already made for the same boss under D-07 (Phase 9). Integrations/CalamityIntegration.cs's RegisterOldDuke/IsOldDukeDowned/ApplyOldDukeDowned removed; InfernumMode weak reference kept. Phase 10's roster is now 17 bosses (11 Calamity + 6 Spirit), down from 18.
 
 ### Roadmap Evolution
 
@@ -263,23 +260,23 @@ None yet.
 - Phase 4 planning should resolve the weak-reference+[JITWhenModsEnabled] vs. pure-reflection disagreement between research files before writing the first Integrations/*.cs file (see research/SUMMARY.md Gaps).
 - Phase 7 is COMPLETE (2026-08-14) — Goblin Chariot registered and live-verified end-to-end, including Boss Checklist recognition and ContinentOfJourney-disabled safety. NoxusBoss removed from v1 scope (2026-08-14, see Roadmap Evolution).
 - Phase 6 is COMPLETE (2026-08-14) — Thorn/Astrageldon registered and live-verified end-to-end (closed via 08-02's citation, see `06-03-SUMMARY.md`).
-- Phase 8 is at 3/4 (2026-08-14): `08-01`, `08-02`, `08-03` all closed (08-02 also closed Phase 6's 06-03; 08-03 closed by citation of 07-02). Only `08-04` (Phase 10 roster verification stub) remains, blocked on Phase 10's own `10-06` closing first.
-- Phase 10 is at 5/6 code-complete, blocked on `10-06`'s live verification: 17 of 18 bosses + the full Infernum-gating matrix + polymorphic item + forced-night persistence + mod-disabled JIT safety are all user-confirmed passing (2026-08-14). Only The Old Duke fails -- despawns immediately after spawning in the default plain-stone arena, contradicting `10-RESEARCH.md`'s decompile conclusion that it has no biome/Zone dependency. A `/gsd:debug` session (`old-duke-immediate-despawn-plain-arena`) is investigating via fresh decompile -- see PENDING BUG under Current Position. This is now the single blocker for both Phase 10 and Phase 8 (`08-04`) closing.
+- Phase 8 is COMPLETE (4/4, 2026-08-15): 08-01/08-02/08-03 closed 2026-08-14; 08-04 closed 2026-08-15 citing 10-06-SUMMARY.md for the 17-boss roster (The Old Duke descoped, quick task 260815-024).
+- Phase 10 is COMPLETE (6/6, 2026-08-15): all 17 in-scope bosses + the full Infernum-gating matrix + polymorphic item + forced-night persistence + mod-disabled JIT safety were user-confirmed passing live (2026-08-14). The Old Duke was removed from v1 scope entirely (2026-08-15, quick task 260815-024) rather than kept -- its despawn bug was investigated and root-caused, and a general fix was implemented and kept, but The Old Duke's own registration was still descoped by user decision; see .planning/debug/old-duke-immediate-despawn-plain-arena.md Resolution section.
 - Isolation premise NOT empirically confirmed: live King Slime kill test shows NPC.downedSlimeKing=True in the main world after subworld round-trip (expected False per 01-RESEARCH.md/PITFALLS.md, which both explicitly predicted vanilla flags behave the same as modded ones for this bug). Do NOT proceed to Phase 2/3 planning until re-investigated -- see 01-04-SUMMARY.md hypotheses (in-memory-only leak vs. genuine on-disk persistence vs. vanilla-specific behavior difference). Also unconfirmed: inventory-intact check (SUBW-06) was skipped by tester during this run.
-- Dungeon and Sulphurous Sea biome-variant subworlds are deferred, not built (D-07, 2026-08-14, "for now"/일단). Blocks a future biome-safe arena for Polterghast (Spirit, Dungeon, unconditionally assignable) and The Old Duke (Calamity+Infernum, Sulphurous Sea) until a future phase reinstates them. Do not silently resurrect the discarded Wave-1 code (never merged, not reachable from master) -- treat any future request to add these back as new scope requiring its own research/planning pass. **UPDATE (2026-08-14):** This entry's prediction for The Old Duke appears to have materialized live -- see the `old-duke-immediate-despawn-plain-arena` debug session under PENDING BUG. If the debug session confirms Sulphurous Sea (or a liquid-submersion equivalent) is genuinely required, that IS new scope requiring its own research/planning pass per this note's own instruction, not a silent in-place patch.
+- Dungeon and Sulphurous Sea biome-variant subworlds are deferred, not built (D-07, 2026-08-14, "for now"/일단). Blocks a future biome-safe arena for Polterghast (Spirit, Dungeon, unconditionally assignable) and The Old Duke (Calamity+Infernum, Sulphurous Sea) until a future phase reinstates them. Do not silently resurrect the discarded Wave-1 code (never merged, not reachable from master) -- treat any future request to add these back as new scope requiring its own research/planning pass. **UPDATE (2026-08-15):** The Old Duke's despawn bug was investigated and root-caused -- NOT the Sulphurous Sea Zone dependency this entry predicted, but a cross-mod subworld-isolation interaction (InfernumMode's per-world toggle resetting inside the throwaway arena, weaponized by NoxusBoss's Old-Duke-hijack AI). A general fix was implemented and kept (benefits Providence/Profaned Guardians/Astrum Deus/Astrum Aureus too). Despite the fix, The Old Duke was removed from v1 scope entirely (quick task 260815-024) by deliberate user decision rather than live re-verified and kept. This closes that open question permanently for v1, not just defers it. Polterghast/Dungeon remains the only still-open item this entry describes.
 
 ## Session Continuity
 
-Last session: 2026-08-14T14:45:00.000Z
-Stopped at: Live-verification round complete except The Old Duke (Phase 10-06); `old-duke-immediate-despawn-plain-arena` debug session in progress
-Resume file: `.planning/debug/old-duke-immediate-despawn-plain-arena.md`
+Last session: 2026-08-15T00:00:00.000Z
+Stopped at: The Old Duke descoped from v1 (quick task 260815-024); Phase 10 (10-06) and Phase 8 (08-04) both closed
+Resume file: none -- no open blockers
 
 **What's in flight when this session ends:**
 
-1. **The Old Duke despawn bug** -- the sole remaining blocker for both Phase 10 (`10-06`) and Phase 8 (`08-04`) closing. `/gsd:debug` session `old-duke-immediate-despawn-plain-arena` was spawned this session and was still investigating (via fresh `Libs/CalamityMod.dll`/`Libs/InfernumMode.dll` decompile) when this session ended -- result never received by the orchestrator. This is THE primary resume point.
+1. The Old Duke despawn bug was descoped, not fixed-and-kept-in-scope -- see .planning/debug/old-duke-immediate-despawn-plain-arena.md Resolution section and quick task 260815-024. No longer in flight.
 2. Phases 6 and 7 are now fully COMPLETE (all live-verification checkpoints passed this session) -- see `06-03-SUMMARY.md`, `07-02-SUMMARY.md`.
-3. Phase 8 is at 3/4 (`08-01`, `08-02`, `08-03` all closed this session) -- only `08-04` remains, gated on Phase 10.
-4. Phase 10 is at 5/6 code-complete, with `10-06`'s live verification 17/18-bosses-and-every-other-item confirmed passing this session -- only The Old Duke's despawn blocks `10-06-SUMMARY.md` from being written and Phase 10 from closing.
+3. Phase 8 is COMPLETE (4/4) -- 08-04 closed 2026-08-15.
+4. Phase 10 is COMPLETE (6/6) -- 10-06 closed 2026-08-15 for the resulting 17-boss roster.
 5. Worktree setup note (historical, from earlier this session's code-writing waves): gitignored `Libs/*.dll` compile-time references were missing in each fresh worktree and were copied from the main working tree before each first build; they remain gitignored, not committed. `Libs/InfernumMode.dll` was also copied into the main working tree's `Libs/` folder (from `../ModAssemblies/InfernumMode_v2.0.1.35.dll`) so master itself can build Plan 10-05's code.
 6. Build-lock note: immediately after merging Plan 10-05, `dotnet build` failed with `TML003: Please close tModLoader or disable the mod in-game to build mods directly` (C# compiles clean, 0 errors -- only `.tmod` packaging was locked because tModLoader was running). The user was told to close tModLoader and rebuild before live-testing Wave 4/5 content; unclear whether a fresh successful build has been confirmed since (worth re-checking `dotnet build BossArenaSubWorld.csproj` at the start of the next session if any doubt exists about whether the currently-loaded `.tmod` matches the latest merged code).
 
