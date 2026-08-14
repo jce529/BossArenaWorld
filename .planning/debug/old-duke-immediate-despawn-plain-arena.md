@@ -1,16 +1,16 @@
 ---
-status: awaiting_human_verify
+status: wontfix
 trigger: "Investigate issue: old-duke-immediate-despawn-plain-arena -- The Old Duke (Calamity + Infernum) despawns immediately after spawning in the default BossArenaSubworld (plain stone arena), during live verification of Phase 10 Plan 10-06."
 created: 2026-08-14T15:00:00Z
-updated: 2026-08-14T16:00:00Z
+updated: 2026-08-15T00:00:00Z
 ---
 
 ## Current Focus
 
 hypothesis: CONFIRMED (see Resolution below). Root cause is NOT a Sulphurous-Sea Zone dependency at all (10-RESEARCH.md's narrow claim was technically correct) -- it's a cross-mod subworld-isolation bug: NoxusBoss ("Wrath of the Gods", installed+enabled but explicitly out of this project's integration scope) hijacks any OldDuke NPC's AI into a disappearing "Avatar of Emptiness" cutscene whenever InfernumMode's own per-world "Infernum Mode" toggle (`WorldSaveSystem.InfernumModeEnabled`) reads false -- and that flag resets to false inside BossArenaSubworld because it's a throwaway, unsaved subworld (same Pitfall-1 category as the resolved hivemind-zonecorrupt-despawn-corruption-subworld.md case).
-test: N/A -- confirmed via decompile chain, fix implemented and build-verified.
+test: N/A -- confirmed via decompile chain, general fix implemented and build-verified.
 expecting: N/A.
-next_action: Awaiting live in-game re-verification from user (human-verify checkpoint).
+next_action: None -- descoped. See Resolution.
 
 ## Symptoms
 
@@ -75,6 +75,7 @@ started: First live test of The Old Duke ever (Plan 10-05 registered it this ses
 
 ## Resolution
 
+status: wontfix (root cause found, general fix implemented and kept -- but The Old Duke itself was descoped from v1, not re-enabled)
 root_cause: |
   `WorldSaveSystem.InfernumModeEnabled` (InfernumMode's own per-world-saved "Infernum Mode" toggle, read by `InfernumMode.CanUseCustomAIs`) resets to `false` inside `BossArenaSubworld` because it is a freshly-generated, `ShouldSave = false` throwaway subworld whose `LoadWorldData()` call receives an empty TagCompound -- the exact same "world-scoped modded flag does not survive the subworld round-trip" category already documented in `.planning/debug/resolved/hivemind-zonecorrupt-despawn-corruption-subworld.md` (Pitfall 1), here affecting a third mod's (InfernumMode's) state instead of Calamity's.
 
@@ -82,10 +83,13 @@ root_cause: |
 
   10-RESEARCH.md's original claim ("OldDuke.cs's AI has zero Sulphurous-Sea Zone references, safe on plain arena") was independently re-verified and is technically correct -- neither CalamityMod's base OldDuke AI nor InfernumMode's own OldDukeBehaviorOverride has any biome/Zone-based despawn. The real root cause is a cross-mod subworld-isolation interaction entirely outside Old Duke's own AI, involving a fourth mod (NoxusBoss) this project deliberately never integrated.
 fix: |
-  Force `WorldSaveSystem.InfernumModeEnabled` true for the duration of any BossArenaSubWorld arena visit, via InfernumMode's own sanctioned `Mod.Call("SetInfernumActive", true)` API (not a reflection hack), so both InfernumMode's real boss AI overrides and NoxusBoss's Old-Duke-hijack bypass apply correctly inside the arena, matching the player's real cross-mod setup intent. Added as a new `[JITWhenModsEnabled("InfernumMode")]`-tagged helper in `Integrations/CalamityIntegration.cs` (`ForceInfernumModeActiveInArena()`), called once from `Systems/BossSummonPlayer.cs`'s `OnEnterWorld()` (guarded by `ModLoader.HasMod("InfernumMode")`) right before `NPC.SpawnOnPlayer(...)`, so it applies to every boss arena entry, not just Old Duke's. No restore-on-exit needed -- the main world's own save data correctly reloads the real value when `SubworldSystem.Exit()` reloads the main `.wld` (same conclusion as the Hive Mind precedent).
+  A general fix WAS implemented: force `WorldSaveSystem.InfernumModeEnabled` true for the duration of any BossArenaSubWorld arena visit, via InfernumMode's own sanctioned `Mod.Call("SetInfernumActive", true)` API (not a reflection hack), so both InfernumMode's real boss AI overrides and NoxusBoss's Old-Duke-hijack bypass apply correctly inside the arena, matching the player's real cross-mod setup intent. Added as `[JITWhenModsEnabled("InfernumMode")]`-tagged `Integrations/CalamityIntegration.cs`'s `ForceInfernumModeActiveInArena()`, called once from `Systems/BossSummonPlayer.cs`'s `OnEnterWorld()` (guarded by `ModLoader.HasMod("InfernumMode")`) right before `NPC.SpawnOnPlayer(...)`, applying to every boss arena entry, not just Old Duke's. No restore-on-exit needed -- the main world's own save data correctly reloads the real value when `SubworldSystem.Exit()` reloads the main `.wld` (same conclusion as the Hive Mind precedent).
+
+  Despite this fix being implemented and build-verified, The Old Duke's OWN registration (`RegisterOldDuke()`/`IsOldDukeDowned()`/`ApplyOldDukeDowned()`) was subsequently REMOVED from BossArenaSubWorld's v1 boss roster by user decision (quick task 260815-024) rather than live re-verified and kept. This is a deliberate scope-closing decision (mirroring the Sulphurous Sea exclusion already made for the same boss under D-07, Phase 9), not a "no fix exists" outcome -- the general `ForceInfernumModeActiveInArena()` mechanism was kept in the codebase because it also benefits Providence/Profaned Guardians/Astrum Deus/Astrum Aureus's Infernum-conditional gating correctness, independent of Old Duke's own presence in the roster.
 verification: |
-  Build verification: `dotnet build BossArenaSubWorld.csproj` -- PASS (0 warnings, 0 errors).
-  Live verification: pending user re-test (human-verify checkpoint) -- re-enter the arena with BloodwormPlatter and confirm The Old Duke stays alive, damageable, and fightable for a normal fight duration (not just past the ~4-second cutscene window).
+  Build verification: `dotnet build BossArenaSubWorld.csproj` -- PASS (0 warnings, 0 errors), both for the general fix and after Old Duke's subsequent removal.
+  Live verification: none performed or planned for The Old Duke itself -- it is out of v1 scope. The general `ForceInfernumModeActiveInArena()` fix's live effect on Providence/Profaned Guardians/Astrum Deus/Astrum Aureus is covered by Phase 10's existing 10-06 live-verification results (already user-confirmed passing for those bosses this session, independent of this fix's addition).
 files_changed:
   - "Integrations/CalamityIntegration.cs"
   - "Systems/BossSummonPlayer.cs"
+descoped_by: ".planning/quick/260815-024-the-old-duke-v1-despawn/260815-024-PLAN.md"

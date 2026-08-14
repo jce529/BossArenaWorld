@@ -91,7 +91,7 @@ Phase 07(고블린 채리엇), Phase 08(전체 파이프라인/Boss Checklist �
 
 ---
 
-## ④ Phase 10-06 — 신규 보스 로스터(18종) 라이브 검증
+## ④ Phase 10-06 — 신규 보스 로스터(17종) 라이브 검증
 *(Phase 10의 코드 등록 10-01~10-05가 전부 완료·병합·빌드 확인됨. 이제 라이브 테스트 가능.)*
 
 **⚠ 먼저 확인**: 마지막 병합(10-05, The Old Duke) 직후 `dotnet build`가 `TML003: Please close tModLoader or disable the mod in-game to build mods directly` 오류로 실패했습니다 (C# 컴파일 자체는 0 warnings/0 errors — 순수 tModLoader가 실행 중이라 `.tmod` 패키징만 잠긴 상태). 즉 **현재 로드된 `.tmod`는 Wave 4(10-04)까지만 반영**돼 있고 The Old Duke(10-05) 코드는 아직 패키징 안 됐습니다. tModLoader를 완전히 종료한 뒤 `dotnet build BossArenaSubWorld.csproj`를 한 번 더 돌려서 최신 `.tmod`를 만들고 재시작한 다음 아래 테스트를 진행해주세요.
@@ -116,10 +116,8 @@ Phase 07(고블린 채리엇), Phase 08(전체 파이프라인/Boss Checklist �
   - [ ] 셋 중 하나 처치 후 아이템 사용 → 해당 `downedCeaselessVoid`/`downedSignus`/`downedStormWeaver` true 확인
 - [ ] **Infernum 게이팅 매트릭스 — InfernumMode 비활성 상태**:
   - [ ] `ProfanedCore`(Providence), `ProfanedShard`(Profaned Guardians), 던전에서 `MarkofProvidence`(Ceaseless Void) 전부 정상 리다이렉트 확인
-  - [ ] `BloodwormPlatter`(The Old Duke)는 리다이렉트 전혀 안 됨 확인 (아이템도 존재 안 할 수 있음 — InfernumMode 자체가 로드 안 됐으므로)
 - [ ] **Infernum 게이팅 매트릭스 — InfernumMode 활성 상태**:
   - [ ] `ProfanedCore`/`ProfanedShard`/던전 `MarkofProvidence` 전부 리다이렉트 안 됨(아이템 미소모, 메시지 없음) 확인 — Infernum 자체 구조물 기반 트리거로 넘어감
-  - [ ] `BloodwormPlatter` 정상 리다이렉트 → The Old Duke 자동 소환 → 처치 후 아이템 사용 → `downedBoomerDuke` true 확인 (`downedOldDuke` 아님) + Sea King 상점 해금 확인
   - [ ] Astrum Deus(`Starcore`)/Astrum Aureus(`AstralChunk`) 둘 다 `BossArenaAstralSubworld` 진입 시 강제로 밤(`Main.dayTime == false`)이 되는지 확인
 - [ ] **InfernumMode 비활성 상태에서는** Astrum Deus/Aureus 밤 강제 안 됨(평범한 낮 아레나) 확인
 - [ ] **재사용 멱등성**: 이미 처치한 보스 중 하나의 `BossCoreItem`을 재사용 → 중복 메시지/월드젠 없음 확인
@@ -140,10 +138,12 @@ Phase 07(고블린 채리엇), Phase 08(전체 파이프라인/Boss Checklist �
 
 **통과 시 resume-signal:** `"mod-disabled safety verified"`
 
-대상 보스 전체 (18종, 등록 완료):
-- Calamity 12종: Providence, Profaned Guardians, Ceaseless Void, The Old Duke, Signus, Storm Weaver, Astrum Deus, Astrum Aureus, Dragonfolly, Devourer of Gods, Yharon, Supreme Witch Calamitas
+대상 보스 전체 (17종, 등록 완료 — The Old Duke는 v1 범위에서 제외됨, quick task 260815-024):
+- Calamity 11종: Providence, Profaned Guardians, Ceaseless Void, Signus, Storm Weaver, Astrum Deus, Astrum Aureus, Dragonfolly, Devourer of Gods, Yharon, Supreme Witch Calamitas
 - Spirit 6종: Ancient Avian, Scarabeus, Vinewrath Bane, Moon Jelly Wizard, Dusking, Atlas
 
 ---
 
 각 항목 결과(통과 여부, 실패 시 어느 단계에서 뭘 관찰했는지)를 알려주시면 해당 SUMMARY.md 작성 및 다음 단계 진행하겠습니다.
+
+**업데이트 (2026-08-15):** ①~④ 전 항목 통과 확인 완료 (Old Duke 항목은 v1 범위 제외로 정리됨, quick task 260815-024). Phase 10(10-06)·Phase 8(08-04) 모두 종료됨 — 상세 내용은 각 SUMMARY.md 참고.

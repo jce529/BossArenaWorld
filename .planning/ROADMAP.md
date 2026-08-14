@@ -20,9 +20,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Spirit Integration** - Spirit bosses are registered via their structurally different static-field API, proving the registry pattern generalizes (completed 2026-08-13)
 - [x] **Phase 6: Redemption & CatalystMod Integration** - Both mods' downed-progress APIs are researched and their bosses registered (completed 2026-08-14)
 - [x] **Phase 7: ContinentOfJourney/Daybreak (Homeward Journey) Integration** - Homeward Journey's downed-progress API is researched and at least one of its bosses is registered, completing v1 mod coverage (NoxusBoss removed from scope, see Phase 7 discuss-phase decision) (completed 2026-08-14)
-- [ ] **Phase 8: Full Pipeline Verification & Tracker Confirmation** - The complete pipeline is verified end-to-end for every registered mod and confirmed recognized by external tracker mods (3/4 plans complete 2026-08-14; 08-04 blocked on Phase 10's live verification)
+- [x] **Phase 8: Full Pipeline Verification & Tracker Confirmation** - The complete pipeline is verified end-to-end for every registered mod and confirmed recognized by external tracker mods (4/4 plans complete 2026-08-15)
 - [ ] **Phase 9: Biome-Dependent Subworld Coverage** - Every biome/Zone-dependent boss across all integrated mods has a matching routed subworld variant, audited systematically instead of discovered live in-game
-- [ ] **Phase 10: Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing** - Every researched Calamity and Spirit boss not already registered is registered end-to-end and routed to its correct arena subworld, with Infernum-conditional gating and forced-night mechanics correctly implemented
+- [x] **Phase 10: Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing** - Every researched Calamity and Spirit boss not already registered is registered end-to-end and routed to its correct arena subworld, with Infernum-conditional gating and forced-night mechanics correctly implemented (17 of the originally-planned 18 bosses -- The Old Duke removed from v1 scope, see Scope note below) (completed 2026-08-15)
 
 ## Phase Details
 
@@ -149,7 +149,7 @@ Plans:
 - [x] 08-01-PLAN.md — King Slime + Hive Mind Boss Checklist tracker-UI recognition closure, Infernon citation, Boss Checklist sanity check (2026-08-14)
 - [x] 08-02-PLAN.md — Thorn + Astrageldon live pipeline/Boss Checklist/Moon-Lord-lockout verification, Redemption/CatalystMod-disabled safety (2026-08-14, also closes Phase 6's 06-03)
 - [x] 08-03-PLAN.md — Goblin Chariot live pipeline/Boss Checklist verification, ContinentOfJourney-disabled safety (closed by citation of 07-02-SUMMARY.md, 2026-08-14)
-- [ ] 08-04-PLAN.md — Full Phase 10 Calamity/Spirit roster verification (blocked stub, gated on Phase 10 execution -- Phase 10 code registration complete 2026-08-14 but its own live-verification checkpoint 10-06 is not yet closed, see below)
+- [x] 08-04-PLAN.md — Full Phase 10 Calamity/Spirit roster verification, closed citing 10-06-SUMMARY.md for the 17-boss roster (2026-08-15)
 
 > **Scope note (2026-08-14 discuss-phase):** Originally scoped to "at least one boss per registered mod" before Phase 9 (biome routing) and Phase 10 (full Calamity/Spirit roster) were added to the roadmap. User explicitly expanded Phase 8 to cover every registered boss, reasoning that each mod-integration phase already proved its one-worked-example boss works — so Phase 8's remaining job is full-roster breadth, not re-proving the mechanism. See `.planning/phases/08-*/08-CONTEXT.md` for full rationale.
 
@@ -167,9 +167,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 5. Spirit Integration | 2/2 | Complete | 2026-08-13 |
 | 6. Redemption & CatalystMod Integration | 3/3 | Complete | 2026-08-14 |
 | 7. ContinentOfJourney/Daybreak (Homeward Journey) Integration | 2/2 | Complete | 2026-08-14 |
-| 8. Full Pipeline Verification & Tracker Confirmation | 3/4 | In Progress|  |
+| 8. Full Pipeline Verification & Tracker Confirmation | 4/4 | Complete | 2026-08-15 |
 | 9. Biome-Dependent Subworld Coverage | 4/7 | In Progress|  |
-| 10. Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing | 5/6 | In Progress|  |
+| 10. Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing | 6/6 | Complete | 2026-08-15 |
 
 ### Phase 9: Biome-Dependent Subworld Coverage
 **Goal**: Every v1-registered boss whose AI depends on a biome/Zone flag (the despawn-bug class found live with Calamity's Hive Mind in Phase 4, fixed there only ad-hoc via `BossArenaCorruptionSubworld`) has a matching routed biome-variant subworld, audited systematically across every integrated mod instead of being discovered live in-game per boss.
@@ -192,12 +192,12 @@ Plans:
 
 ### Phase 10: Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing
 
-**Goal**: Every researched Calamity boss (Providence, Profaned Guardians, Ceaseless Void, The Old Duke, Signus, Storm Weaver, Astrum Deus, Astrum Aureus, Dragonfolly, Devourer of Gods, Yharon, Supreme Witch Calamitas) and Spirit boss (Ancient Avian, Scarabeus, Vinewrath Bane, Moon Jelly Wizard, Dusking, Atlas) not already registered in Phase 4/5 (Hive Mind, Infernon) is registered end-to-end in BossRegistry/SummonItemRegistry, with each boss's actual decompiled downed-progress side effects faithfully reproduced, routed to the correct Phase 9 biome-variant arena subworld where functionally required, and gated correctly across Infernum-present/absent mod combinations.
+**Goal**: Every researched Calamity boss (Providence, Profaned Guardians, Ceaseless Void, Signus, Storm Weaver, Astrum Deus, Astrum Aureus, Dragonfolly, Devourer of Gods, Yharon, Supreme Witch Calamitas) and Spirit boss (Ancient Avian, Scarabeus, Vinewrath Bane, Moon Jelly Wizard, Dusking, Atlas) not already registered in Phase 4/5 (Hive Mind, Infernon) is registered end-to-end in BossRegistry/SummonItemRegistry, with each boss's actual decompiled downed-progress side effects faithfully reproduced, routed to the correct Phase 9 biome-variant arena subworld where functionally required, and gated correctly across Infernum-present/absent mod combinations.
 **Depends on**: Phase 9
 **Requirements**: ARENA-01
 **Success Criteria** (what must be TRUE):
-  1. All 12 researched Calamity bosses and 6 Spirit bosses listed in the Goal above are registered end-to-end (summon item -> BossRegistry key -> BossCoreItem drop -> main-world Apply), matching each boss's actual decompiled `OnKill()` side effects (world-scoped only, per Pitfall 5 discipline).
-  2. Providence, Profaned Guardians, and Ceaseless Void register ONLY when InfernumMode is absent; The Old Duke registers ONLY when InfernumMode is present -- verified live in both mod configurations.
+  1. All 11 researched Calamity bosses and 6 Spirit bosses listed in the Goal above are registered end-to-end (summon item -> BossRegistry key -> BossCoreItem drop -> main-world Apply), matching each boss's actual decompiled `OnKill()` side effects (world-scoped only, per Pitfall 5 discipline).
+  2. Providence, Profaned Guardians, and Ceaseless Void register ONLY when InfernumMode is absent -- verified live in both mod configurations.
   3. A summon item that spawns different bosses depending on the player's live Zone state (Ceaseless Void / Signus / Storm Weaver, sharing one item) resolves correctly via a new `SummonItemRegistry.RegisterPolymorphic` extension, with no silent single-item-overwrite regression.
   4. Astrum Deus/Astrum Aureus force night in their arena only when InfernumMode is loaded; Moon Jelly Wizard/Dusking force night unconditionally; forced night persists for the full fight duration via a new `ForcedTimeSystem`.
   5. Dragonfolly and Scarabeus are routed to their functionally-required biome arenas (Jungle, Desert) from Phase 9, not just thematically.
@@ -210,4 +210,6 @@ Plans:
 - [x] 10-03-PLAN.md -- Spirit full roster: Ancient Avian, Scarabeus, Vinewrath Bane, Moon Jelly Wizard, Dusking, Atlas
 - [x] 10-04-PLAN.md -- Calamity Tier 2: Providence, Profaned Guardians, Astrum Deus, Astrum Aureus, Ceaseless Void/Signus/Storm Weaver (polymorphic)
 - [x] 10-05-PLAN.md -- The Old Duke: InfernumMode.dll wiring + Infernum-only registration
-- [ ] 10-06-PLAN.md -- Live verification checkpoint + mod-disabled safety checkpoint
+- [x] 10-06-PLAN.md -- Live verification checkpoint + mod-disabled safety checkpoint (17-boss roster, The Old Duke removed from scope)
+
+> **Scope note (2026-08-15, quick task 260815-024):** The Old Duke (Calamity+Infernum boss) was removed from Phase 10's/v1's scope entirely after live verification (10-06) found it despawns immediately after spawning in the default arena, and a follow-up debug session root-caused the issue (InfernumMode's per-world toggle resetting inside the throwaway arena subworld, weaponized by NoxusBoss's Old-Duke-hijack AI) and implemented a general fix. Rather than live re-verify and keep The Old Duke itself in scope, or build a Sulphurous Sea biome-variant arena to test the wiki-documented dependency hypothesis (Sulphurous Sea was already excluded from Phase 9's scope per D-07), the user chose to descope The Old Duke entirely. Phase 10's roster is 17 bosses (11 Calamity + 6 Spirit), down from the originally-planned 18. `Integrations/CalamityIntegration.cs`'s Old Duke registration code was removed; the `InfernumMode` weak reference and the new general `ForceInfernumModeActiveInArena()` fix were kept (Providence/Profaned Guardians/Astrum Deus/Astrum Aureus still depend on `InfernumMode`, and benefit from the fix).
