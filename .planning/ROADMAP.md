@@ -126,7 +126,11 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. ContinentOfJourney/Daybreak's downed-progress API is identified via research, and at least one of its bosses is registered with its downed state correctly applied in the main world.
   2. The integration continues to load and run safely when the source mod is disabled.
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Wire ContinentOfJourney weak reference (build.txt/.csproj) + register Goblin Chariot into BossRegistry/SummonItemRegistry
+- [ ] 07-02-PLAN.md — Live Goblin Chariot downed-flag/Boss Checklist verification + ContinentOfJourney-disabled load-safety checkpoint
 
 > **Scope note (2026-08-14 discuss-phase):** "ContinentOfJourney" was identified as **Homeward Journey** by GabeHasWon (Steam Workshop id 2930931197) — two prior research passes (Phase 9 prep) could not resolve the name "ContinentOfJourney" directly; the user supplied this link during discussion, confirming the "(Homeward series)" phrase in this phase's original title was the actual pointer. "Daybreak" is confirmed to be `gold-meridian/daybreak-mod`, a boss-less library dependency of Wrath of the Gods — not a separate registration target. **NoxusBoss (Devourer of Universes) was removed from this phase's scope entirely** (was MOD-05/Success Criterion 1) — see `.planning/phases/07-*/07-CONTEXT.md` and `PROJECT.md` Key Decisions for rationale (quest-triggered/self-contained-subworld bosses don't fit the carrier-item pattern; no plan to revisit).
 
@@ -155,7 +159,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 2/2 | Complete | 2026-08-13 |
 | 5. Spirit Integration | 2/2 | Complete | 2026-08-13 |
 | 6. Redemption & CatalystMod Integration | 0/3 | Not started | - |
-| 7. ContinentOfJourney/Daybreak (Homeward Journey) Integration | 0/TBD | Not started | - |
+| 7. ContinentOfJourney/Daybreak (Homeward Journey) Integration | 0/2 | Not started | - |
 | 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |
 | 9. Biome-Dependent Subworld Coverage | 4/7 | In Progress|  |
 
