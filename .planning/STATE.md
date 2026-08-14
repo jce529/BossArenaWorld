@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 07-01-PLAN.md
-last_updated: "2026-08-14T07:56:41.077Z"
-last_activity: 2026-08-14 -- Plan 07-01 complete (MOD-06 code-level registration)
+stopped_at: "Phase 07 Plan 07-02 Task 1 checkpoint:human-verify -- awaiting live Goblin Chariot test"
+last_updated: "2026-08-14T08:10:00.000Z"
+last_activity: 2026-08-14 -- Plan 07-01 complete (MOD-06 code-level registration); Plan 07-02 execution started, stopped at Task 1's checkpoint:human-verify (live Goblin Chariot test), awaiting user's real in-game result
 progress:
   total_phases: 10
   completed_phases: 6
@@ -26,9 +26,19 @@ See: .planning/PROJECT.md (updated 2026-08-12)
 ## Current Position
 
 Phase: 07 (noxusboss-continentofjourney-daybreak-integration) — EXECUTING
-Plan: 2 of 2 (07-01 complete, 07-02 next: live verification)
-Status: Executing Phase 07
-Last activity: 2026-08-14 -- Plan 07-01 complete (MOD-06 code-level registration)
+Plan: 2 of 2 (07-01 complete, 07-02 IN PROGRESS -- stopped at Task 1 checkpoint)
+Status: Executing Phase 07 -- Plan 07-02 Task 1 is a checkpoint:human-verify blocked on a real in-game test. No code changes pending; nothing else to execute until the user provides the live-test result.
+
+### PENDING CHECKPOINT -- resume here
+
+**Plan:** `.planning/phases/07-noxusboss-continentofjourney-daybreak-integration/07-02-PLAN.md`
+**Task:** 1 of 2 ("Live Goblin Chariot downed-flag application + Boss Checklist recognition checkpoint")
+**What to do when resuming:** Do NOT re-spawn a fresh 07-02 executor from scratch -- ask the user for the live-test result first, then spawn a *continuation* agent (per `execute-phase.md`'s `checkpoint_handling` step) with that result as `{user_response}`.
+**Expected resume-signal:** `"goblin chariot verified"` if all 10 steps in Task 1's checklist passed, or a description of exactly which step failed and what was observed instead.
+**After Task 1 resolves:** Plan 07-02 continues to Task 2 (ContinentOfJourney-disabled load-safety checkpoint, 5 steps, resume-signal `"mod-disabled safety verified"`), then creates `07-02-SUMMARY.md` and updates STATE.md/ROADMAP.md/REQUIREMENTS.md, closing Phase 7.
+**Verification steps (full text) are in the assistant's last message to the user in this session, and in `07-02-PLAN.md` Task 1 `<action>` directly.**
+
+Last activity: 2026-08-14 -- Plan 07-01 complete (MOD-06 code-level registration); Plan 07-02 stopped at Task 1's live-verification checkpoint, awaiting user's real in-game result (see PENDING CHECKPOINT above)
 
 Progress: [████████░░] 75% (24 of 32 currently-planned plans across Phases 1-7, 9-10; Phase 8 plans not yet created)
 
@@ -142,12 +152,14 @@ None yet.
 ### Blockers/Concerns
 
 - Phase 4 planning should resolve the weak-reference+[JITWhenModsEnabled] vs. pure-reflection disagreement between research files before writing the first Integrations/*.cs file (see research/SUMMARY.md Gaps).
-- Phase 7 (ContinentOfJourney/Daybreak, i.e. Homeward Journey) has an entirely unresearched downed-progress API — will likely need a `/gsd:research-phase`/`/gsd:plan-phase 7` research pass before detailed planning. NoxusBoss removed from v1 scope (2026-08-14, see Roadmap Evolution) — no longer a blocker.
+- Phase 7 research/planning/Wave-1-execution are all complete (2026-08-14) — Goblin Chariot registered in `Integrations/HomewardJourneyIntegration.cs`, `dotnet build` passes. Only Plan 07-02's live in-game checkpoint remains (see "PENDING CHECKPOINT" under Current Position). NoxusBoss removed from v1 scope (2026-08-14, see Roadmap Evolution) — no longer a blocker.
+- Phase 8 fully planned (2026-08-14): 4 plans in 3 waves (`08-01` Boss Checklist sanity + King Slime/Hive Mind closure, `08-02` Thorn/Astrageldon, `08-03` Goblin Chariot, `08-04` blocked stub for Phase 10's roster). Note `08-03` and `07-02` both cover Goblin Chariot's live verification by design (`08-03` is written to close `07-02` "if not already done" rather than duplicate blindly) — when executing Phase 8, check whether `07-02-SUMMARY.md` already exists before treating `08-03` as fresh work.
+- Phase 10 fully planned (2026-08-14): 6 plans, zero execution yet. `Integrations/CalamityIntegration.cs`/`SpiritIntegration.cs` still register only the Phase 4/5 baseline (Hive Mind, Infernon) as of this session.
 - Isolation premise NOT empirically confirmed: live King Slime kill test shows NPC.downedSlimeKing=True in the main world after subworld round-trip (expected False per 01-RESEARCH.md/PITFALLS.md, which both explicitly predicted vanilla flags behave the same as modded ones for this bug). Do NOT proceed to Phase 2/3 planning until re-investigated -- see 01-04-SUMMARY.md hypotheses (in-memory-only leak vs. genuine on-disk persistence vs. vanilla-specific behavior difference). Also unconfirmed: inventory-intact check (SUBW-06) was skipped by tester during this run.
 - Dungeon and Sulphurous Sea biome-variant subworlds are deferred, not built (D-07, 2026-08-14, "for now"/일단). Blocks a future biome-safe arena for Polterghast (Spirit, Dungeon, unconditionally assignable) and The Old Duke (Calamity+Infernum, Sulphurous Sea) until a future phase reinstates them. Do not silently resurrect the discarded Wave-1 code (never merged, not reachable from master) -- treat any future request to add these back as new scope requiring its own research/planning pass.
 
 ## Session Continuity
 
-Last session: 2026-08-14T07:56:11.022Z
-Stopped at: Completed 07-01-PLAN.md
-Resume file: None
+Last session: 2026-08-14T08:10:00.000Z
+Stopped at: Phase 07 Plan 07-02 Task 1 checkpoint:human-verify -- awaiting live Goblin Chariot test (see "PENDING CHECKPOINT" under Current Position for exact resume instructions)
+Resume file: .planning/phases/07-noxusboss-continentofjourney-daybreak-integration/07-02-PLAN.md
