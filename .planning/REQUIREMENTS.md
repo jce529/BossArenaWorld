@@ -38,9 +38,9 @@
 
 ### Verification & Safety (VERIFY)
 
-- [ ] **VERIFY-01**: Full pipeline (subworld kill → item drop → main-world apply) verified end-to-end in singleplayer for at least one boss per registered mod
+- [ ] **VERIFY-01**: Full pipeline (subworld kill → item drop → main-world apply) verified end-to-end in singleplayer for every registered boss across every integrated mod — expanded during Phase 8 discuss-phase (2026-08-14) from the original "at least one boss per mod" scope, since each mod-integration phase already proved its one-worked-example boss and Phase 9/10 have since expanded the total registered roster substantially
 - [x] **VERIFY-02**: World-backup guidance is documented and followed before any live testing against a real save
-- [ ] **VERIFY-03**: Applied flags are confirmed recognized by Boss Checklist (or equivalent tracker mod) after application — not just internally consistent
+- [ ] **VERIFY-03**: Applied flags are confirmed recognized by Boss Checklist (or equivalent tracker mod) after application — not just internally consistent. Scope now matches VERIFY-01's full-roster expansion; note only Infernon (Phase 5) has explicitly confirmed Boss Checklist recognition so far — King Slime (Phase 3) used an alternative confirmation method, Hive Mind/Thorn/Astrageldon confirmed their own side effects but not Boss Checklist specifically, so this still needs closing even for the original baseline set
 
 ### Arena Biome Coverage (ARENA)
 

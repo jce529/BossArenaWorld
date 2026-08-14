@@ -131,14 +131,16 @@ Plans:
 > **Scope note (2026-08-14 discuss-phase):** "ContinentOfJourney" was identified as **Homeward Journey** by GabeHasWon (Steam Workshop id 2930931197) — two prior research passes (Phase 9 prep) could not resolve the name "ContinentOfJourney" directly; the user supplied this link during discussion, confirming the "(Homeward series)" phrase in this phase's original title was the actual pointer. "Daybreak" is confirmed to be `gold-meridian/daybreak-mod`, a boss-less library dependency of Wrath of the Gods — not a separate registration target. **NoxusBoss (Devourer of Universes) was removed from this phase's scope entirely** (was MOD-05/Success Criterion 1) — see `.planning/phases/07-*/07-CONTEXT.md` and `PROJECT.md` Key Decisions for rationale (quest-triggered/self-contained-subworld bosses don't fit the carrier-item pattern; no plan to revisit).
 
 ### Phase 8: Full Pipeline Verification & Tracker Confirmation
-**Goal**: The complete subworld-kill-to-main-world-apply pipeline is verified end-to-end for every registered mod, and applied progress is confirmed recognized by external tracking tools, not just internally consistent.
-**Depends on**: Phase 7
+**Goal**: The complete subworld-kill-to-main-world-apply pipeline is verified end-to-end for every registered boss across every integrated mod — not just one representative boss per mod — and applied progress is confirmed recognized by external tracking tools, not just internally consistent.
+**Depends on**: Phase 7 (and, per the expanded scope below, effectively also Phase 9/10 for their registered rosters to exist)
 **Requirements**: VERIFY-01, VERIFY-03
 **Success Criteria** (what must be TRUE):
-  1. For at least one boss per registered mod (vanilla, Calamity, Spirit, Redemption, CatalystMod, ContinentOfJourney/Daybreak i.e. Homeward Journey), the full pipeline is verified end-to-end in singleplayer.
-  2. Applied downed flags are confirmed recognized by Boss Checklist (or an equivalent tracker mod) after application.
+  1. Every registered boss across every integrated mod (vanilla, Calamity — including Phase 10's full roster, Spirit — including Phase 10's full roster, Redemption, CatalystMod, ContinentOfJourney/Daybreak i.e. Homeward Journey) has its full subworld-kill-to-main-world-apply pipeline verified end-to-end in singleplayer, superseding the original "at least one boss per mod" scope.
+  2. Applied downed flags are confirmed recognized by Boss Checklist (or an equivalent tracker mod) after application, for every boss in Success Criterion 1 — including King Slime, Hive Mind, Thorn, and Astrageldon, whose earlier phase checkpoints did not all explicitly confirm Boss Checklist recognition specifically (only Infernon/Phase 5 did; King Slime/Phase 3 allowed an alternative confirmation method, and Hive Mind/Phase 4 confirmed its own side effects but not Boss Checklist).
   3. All verification runs are performed against a backed-up world save, per the guidance established in Phase 1.
 **Plans**: TBD
+
+> **Scope note (2026-08-14 discuss-phase):** Originally scoped to "at least one boss per registered mod" before Phase 9 (biome routing) and Phase 10 (full Calamity/Spirit roster) were added to the roadmap. User explicitly expanded Phase 8 to cover every registered boss, reasoning that each mod-integration phase already proved its one-worked-example boss works — so Phase 8's remaining job is full-roster breadth, not re-proving the mechanism. See `.planning/phases/08-*/08-CONTEXT.md` for full rationale.
 
 ## Progress
 
