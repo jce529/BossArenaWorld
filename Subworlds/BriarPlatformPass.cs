@@ -27,6 +27,13 @@ namespace BossArenaSubWorld.Subworlds
 		{
 		}
 
+		// D-01/Pitfall 4 (proactive fix, same root cause live-confirmed for
+		// AstralPlatformPass.cs 2026-08-14): being a non-ModType constructed only inside
+		// BossArenaBriarSubworld.Tasks is NOT sufficient on its own -- tModLoader's
+		// AssemblyManager.JITAssembliesAsync JIT-prefilters every method in the assembly
+		// regardless of call-reachability. Without this attribute, SpiritMod-disabled
+		// load would throw the same JITException naming BriarPlatformPass.ApplyPass.
+		[JITWhenModsEnabled("SpiritMod")]
 		protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
 		{
 			progress.Message = "Generating briar boss arena platform";

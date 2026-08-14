@@ -25,6 +25,14 @@ namespace BossArenaSubWorld.Subworlds
 		{
 		}
 
+		// D-01/Pitfall 4 (live-confirmed 2026-08-14): being a non-ModType constructed
+		// only inside BossArenaAstralSubworld.Tasks is NOT sufficient on its own --
+		// tModLoader's AssemblyManager.JITAssembliesAsync JIT-prefilters every method in
+		// the assembly regardless of call-reachability. Without this attribute,
+		// CalamityMod-disabled load throws a real JITException naming
+		// AstralPlatformPass.ApplyPass. Mirrors the exact discipline already applied to
+		// Integrations/CalamityIntegration.cs's per-method tags.
+		[JITWhenModsEnabled("CalamityMod")]
 		protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
 		{
 			progress.Message = "Generating astral infection boss arena platform";
