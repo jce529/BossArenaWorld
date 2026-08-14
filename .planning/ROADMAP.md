@@ -112,7 +112,12 @@ Plans:
   1. Redemption's downed-progress API is identified via research, and at least one Redemption boss is registered with its downed state correctly applied in the main world.
   2. CatalystMod's downed-progress API is identified via research, and at least one CatalystMod boss is registered with its downed state correctly applied in the main world.
   3. Both integrations continue to load and run safely when their respective source mod is disabled.
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Extract Libs/Redemption.dll + Libs/CatalystMod.dll, wire build.txt/csproj weak references
+- [ ] 06-02-PLAN.md — Integrations/RedemptionIntegration.cs (Thorn) + Integrations/CatalystIntegration.cs (Astrageldon) registration
+- [ ] 06-03-PLAN.md — Live downed-flag/WorldGen checkpoint (Thorn, Astrageldon) + Redemption/CatalystMod-disabled load-safety checkpoint
 
 ### Phase 7: NoxusBoss & ContinentOfJourney/Daybreak Integration
 **Goal**: NoxusBoss (Devourer of Universes) and ContinentOfJourney/Daybreak (Homeward series) bosses' downed-progress APIs are researched and registered, completing v1 mod coverage.
@@ -146,7 +151,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 3. BossRegistry + BossCoreItem + GlobalNPC Pipeline (POC) | 3/3 | Complete   | 2026-08-13 |
 | 4. Calamity Integration & Cross-Mod Side-Effect Reproduction | 2/2 | Complete | 2026-08-13 |
 | 5. Spirit Integration | 2/2 | Complete | 2026-08-13 |
-| 6. Redemption & CatalystMod Integration | 0/TBD | Not started | - |
+| 6. Redemption & CatalystMod Integration | 0/3 | Not started | - |
 | 7. NoxusBoss & ContinentOfJourney/Daybreak Integration | 0/TBD | Not started | - |
 | 8. Full Pipeline Verification & Tracker Confirmation | 0/TBD | Not started | - |
 | 9. Biome-Dependent Subworld Coverage | 4/7 | In Progress|  |
