@@ -22,7 +22,6 @@ namespace BossArenaSubWorld.Integrations
             RegisterAstrumDeus();
             RegisterAstrumAureus();
             RegisterMarkOfProvidenceBosses();
-            RegisterOldDuke();
         }
 
         // D-01/Pitfall 2: every method below this point may reference CalamityMod
@@ -515,59 +514,32 @@ namespace BossArenaSubWorld.Integrations
             CalamityMod.CalamityNetcode.SyncWorld();
         }
 
-        // Plan 10-05: The Old Duke -- register ONLY when both CalamityMod AND InfernumMode are
-        // present. Tagging with [JITWhenModsEnabled("InfernumMode")] alone is sufficient JIT guard
-        // -- InfernumMode hard-depends on CalamityMod via its own build.txt modReferences, so
-        // InfernumMode being loaded guarantees CalamityMod is also loaded (same reasoning already
-        // established for CatalystIntegration.cs's CatalystMod->CalamityMod dependency). CRITICAL:
-        // the internal guard below MUST check InfernumMode, NOT CalamityMod -- CalamityIntegration's
-        // PostSetupContent() only guarantees CalamityMod is present (its own outer guard), not
-        // InfernumMode. Guarding on CalamityMod here would be a no-op (already true by the time
-        // this method is reachable) and would let this method run -- and lazily JIT its
-        // InfernumMode type reference the moment it's invoked -- in the common "CalamityMod
-        // enabled, InfernumMode disabled" configuration, crashing with a TypeLoadException.
+        // Fix for .planning/debug/resolved/old-duke-immediate-despawn-plain-arena.md:
+        // InfernumMode.CanUseCustomAIs reads InfernumMode's own WorldSaveSystem.InfernumModeEnabled
+        // -- a per-world TagCompound-saved "Infernum Mode" toggle. BossArenaSubworld (and every
+        // other arena subworld in this project) is a freshly-generated, ShouldSave=false throwaway
+        // world; its LoadWorldData() receives an empty tag, so this flag resets to false inside
+        // the arena regardless of the player's real main-world toggle state -- same Pitfall-1
+        // category as hivemind-zonecorrupt-despawn-corruption-subworld.md's downedHiveMind case,
+        // here affecting InfernumMode's state instead of Calamity's. With the flag false, Infernum's
+        // own boss AI overrides don't apply, AND (Old Duke specifically) NoxusBoss's
+        // FUCKYOUOLDDUKESystem hijacks Old Duke into a scripted, harmless "Avatar of Emptiness"
+        // cutscene that disappears after ~4 seconds, whenever it reads InfernumMode as inactive.
+        // Force it true via InfernumMode's own sanctioned Mod.Call("SetInfernumActive", true) API
+        // (not a reflection hack) for the whole arena visit -- called once from
+        // BossSummonPlayer.OnEnterWorld() for every arena entry, not just Old Duke's. No
+        // restore-on-exit needed: the real main world's own save data correctly reloads the real
+        // value when SubworldSystem.Exit() reloads the main .wld (same conclusion as the Hive Mind
+        // precedent -- the arena's forced-true value is discarded with the rest of the throwaway
+        // subworld's state). NOTE: The Old Duke itself was removed from this project's v1 boss
+        // roster (quick task 260815-024, see .planning/debug/old-duke-immediate-despawn-plain-arena.md
+        // Resolution) despite this fix being implemented -- this helper is KEPT because it also
+        // benefits Providence/Profaned Guardians/Astrum Deus/Astrum Aureus's Infernum-conditional
+        // gating correctness, not just Old Duke's.
         [JITWhenModsEnabled("InfernumMode")]
-        private void RegisterOldDuke()
+        public static void ForceInfernumModeActiveInArena()
         {
-            if (!ModLoader.HasMod("InfernumMode")) return; // D-02: without InfernumMode, no summon item exists to hook -- nothing to register
-
-            int itemType = ModContent.ItemType<InfernumMode.Content.Items.SummonItems.BloodwormPlatter>();
-            int npcType = ModContent.NPCType<CalamityMod.NPCs.OldDuke.OldDuke>();
-
-            SummonItemRegistry.Register(itemType, npcType);
-            // No BossArenaRoutingRegistry call -- 09-ALTAR-BIOME-REFERENCE.md Open Item 3
-            // RESOLVED (10-RESEARCH.md): OldDuke.cs's full decompiled AI has zero references to
-            // any Sulphurous-Sea Zone flag. BloodwormPlatter.CanUseItem()'s own ZoneSulphur
-            // check is item-gate only and irrelevant here (Test1Tile.RightClick bypasses
-            // CanUseItem()/UseItem() entirely, Architecture Pattern 2). Falls back to the
-            // default BossArenaSubworld automatically -- no BossArenaSulphurousSubworld
-            // rebuild needed (it was discarded per D-07, Phase 9, and stays discarded).
-
-            BossRegistry.Register("calamity:old_duke", new BossDefinition(
-                NpcTypes: new[] { npcType },
-                ApplyDowned: ApplyOldDukeDowned,
-                IsDowned: IsOldDukeDowned));
-        }
-
-        // NOTE: the field is downedBoomerDuke, NOT downedOldDuke -- the latter does not exist
-        // in DownedBossSystem (confirmed via decompile, 10-RESEARCH.md Pitfall 1 -- a naming
-        // trap for anyone going from the wiki/boss display name alone).
-        [JITWhenModsEnabled("CalamityMod")]
-        private static bool IsOldDukeDowned() => CalamityMod.DownedBossSystem.downedBoomerDuke;
-
-        [JITWhenModsEnabled("CalamityMod")]
-        private static void ApplyOldDukeDowned()
-        {
-            // Faithful replay of OldDuke.OnKill()'s exact order. SetNewShopVariable fires
-            // BEFORE the flag flips (passes the OLD, pre-update value) -- same
-            // BEFORE-the-flag-flip timing discipline as Devourer of Gods/Yharon (Plan 10-02).
-            // Excludes SetNewBossJustDowned() (player-scoped, Pitfall 5).
-            CalamityMod.NPCs.CalamityGlobalTownNPC.SetNewShopVariable(
-                new[] { ModContent.NPCType<CalamityMod.NPCs.TownNPCs.SeaKing>() },
-                CalamityMod.DownedBossSystem.downedBoomerDuke);
-            CalamityMod.DownedBossSystem.downedBoomerDuke = true;
-            CalamityMod.Events.AcidRainEvent.OldDukeHasBeenEncountered = true;
-            CalamityMod.CalamityNetcode.SyncWorld();
+            ModLoader.GetMod("InfernumMode").Call("SetInfernumActive", true);
         }
     }
 }

@@ -1,5 +1,6 @@
 using Terraria;
 using Terraria.ModLoader;
+using BossArenaSubWorld.Integrations;
 
 namespace BossArenaSubWorld.Systems
 {
@@ -25,6 +26,14 @@ namespace BossArenaSubWorld.Systems
             // while still preserving Pitfall 3's intent (prevents re-summon on a later,
             // unrelated subworld entry belonging to some other mod).
             if (!BossArenaRoutingRegistry.IsAnyArenaActive()) return;
+
+            // See .planning/debug/old-duke-immediate-despawn-plain-arena.md: InfernumMode's own
+            // per-world "Infernum Mode" toggle resets to false inside this throwaway subworld --
+            // force it true (via InfernumMode's sanctioned Mod.Call) before spawning, so Infernum's
+            // boss AI overrides (and cross-mod compatibility checks other mods key off of) behave
+            // correctly for every arena boss.
+            if (ModLoader.HasMod("InfernumMode"))
+                CalamityIntegration.ForceInfernumModeActiveInArena();
 
             NPC.SpawnOnPlayer(Player.whoAmI, PendingBossNpcType.Value);
             PendingBossNpcType = null; // consume once -- Pitfall 3 guard: prevents
