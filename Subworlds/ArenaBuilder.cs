@@ -111,5 +111,24 @@ namespace BossArenaSubWorld.Subworlds
 
             WorldGen.PlaceTile(x, y, portalTileType, mute: true, forced: true);
         }
+
+        /// <summary>
+        /// Fills a solid rectangle of background walls directly into Main.tile (DECOR-01).
+        /// </summary>
+        public static void FillWall(int startX, int endX, int startY, int endY, ushort wallType)
+        {
+            int minX = Math.Max(0, Math.Min(startX, endX));
+            int maxX = Math.Min(Main.maxTilesX, Math.Max(startX, endX));
+            int minY = Math.Max(0, Math.Min(startY, endY));
+            int maxY = Math.Min(Main.maxTilesY, Math.Max(startY, endY));
+
+            for (int x = minX; x < maxX; x++)
+            {
+                for (int y = minY; y < maxY; y++)
+                {
+                    Main.tile[x, y].WallType = wallType;
+                }
+            }
+        }
     }
 }

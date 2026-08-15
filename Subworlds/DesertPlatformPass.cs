@@ -41,18 +41,24 @@ namespace BossArenaSubWorld.Subworlds
 			int thickness = 20; // wider margin than the usual 15 -- see class comment (Pitfall 5)
 			int sandSurfaceRows = 3; // top rows only -- see BUGFIX comment above; rest is solid Sandstone
 
+			// Fill themed background wall behind the arena tiers (DECOR-01)
+			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 60, surfaceY + thickness, WallID.SandstoneBrick);
+
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
 				for (int y = surfaceY; y < surfaceY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
-					tile.TileType = (y < surfaceY + sandSurfaceRows) ? TileID.Sand : TileID.Sandstone;
+					tile.TileType = (y < surfaceY + sandSurfaceRows) ? TileID.Sand : ((y == surfaceY + sandSurfaceRows) ? TileID.SandstoneBrick : TileID.Sandstone);
 				}
 			}
 
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+
+			// Place desert campfire for arena theming (DECOR-01, style 7 = Desert)
+			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 7);
 		}
 	}
 }

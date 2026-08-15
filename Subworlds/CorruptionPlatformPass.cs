@@ -40,21 +40,25 @@ namespace BossArenaSubWorld.Subworlds
 			int surfaceY = Main.maxTilesY / 2; // mid-height placement, matches FlatStonePlatformPass
 			int thickness = 15; // same thickness guideline as FlatStonePlatformPass (D-07)
 
+			// Fill themed background wall behind the arena tiers (DECOR-01)
+			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 60, surfaceY + thickness, WallID.EbonstoneUnsafe);
+
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
 				for (int y = surfaceY; y < surfaceY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
-					tile.TileType = (y == surfaceY) ? TileID.CorruptGrass : TileID.Ebonstone;
+					tile.TileType = (y == surfaceY) ? TileID.CorruptGrass : ((y == surfaceY + 1) ? TileID.EbonstoneBrick : TileID.Ebonstone);
 				}
 			}
 
-			// Set spawn point above the platform surface explicitly -- LoadSubworld()'s blind
-			// midpoint default would otherwise leave the player mid-air/underground (Pitfall 2,
-			// mirrors FlatStonePlatformPass).
+			// Set spawn point above the platform surface explicitly
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+
+			// Place corrupt campfire for arena theming (DECOR-01, style 1 = Corrupt)
+			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 1);
 		}
 	}
 }

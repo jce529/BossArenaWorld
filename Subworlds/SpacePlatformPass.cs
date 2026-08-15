@@ -24,18 +24,24 @@ namespace BossArenaSubWorld.Subworlds
 			int surfaceY = 70; // strictly inside ZoneSkyHeight (<= 84) with 3 tiers (70, 52, 34) all within [10, 80]
 			int thickness = 10;
 
+			// Fill themed background wall behind the arena tiers (DECOR-01)
+			ArenaBuilder.FillWall(0, Main.maxTilesX, 10, surfaceY + thickness, WallID.Glass);
+
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
 				for (int y = surfaceY; y < surfaceY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
-					tile.TileType = TileID.Stone;
+					tile.TileType = (y == surfaceY) ? TileID.Sunplate : TileID.Stone;
 				}
 			}
 
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+
+			// Place ultrabright campfire for arena theming (DECOR-01, style 5 = Ultrabright)
+			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 5);
 		}
 	}
 }

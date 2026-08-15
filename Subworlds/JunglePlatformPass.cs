@@ -27,18 +27,24 @@ namespace BossArenaSubWorld.Subworlds
 			int surfaceY = Main.maxTilesY / 2; // mid-height, matches CorruptionPlatformPass convention
 			int thickness = 15;
 
+			// Fill themed background wall behind the arena tiers (DECOR-01)
+			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 60, surfaceY + thickness, WallID.JungleUnsafe);
+
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
 				for (int y = surfaceY; y < surfaceY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
-					tile.TileType = TileID.JungleGrass; // full-thickness fill -- Mud carries zero JungleBiome weight, see class comment
+					tile.TileType = (y == surfaceY + thickness - 1) ? TileID.LihzahrdBrick : TileID.JungleGrass;
 				}
 			}
 
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+
+			// Place jungle campfire for arena theming (DECOR-01, style 6 = Jungle)
+			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 6);
 		}
 	}
 }

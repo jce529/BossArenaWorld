@@ -21,20 +21,25 @@ namespace BossArenaSubWorld.Subworlds
 			int surfaceY = Main.maxTilesY / 2; // mid-height placement
 			int thickness = 15; // thin stone layer (D-07 guideline: ~10-20 blocks)
 
+			// Fill themed background wall behind the arena tiers (DECOR-01)
+			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 60, surfaceY + thickness, WallID.Stone);
+
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
 				for (int y = surfaceY; y < surfaceY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
-					tile.TileType = TileID.Stone;
+					tile.TileType = (y <= surfaceY + 1) ? TileID.GrayBrick : TileID.Stone;
 				}
 			}
 
-			// Set spawn point above the platform surface explicitly -- LoadSubworld()'s blind
-			// midpoint default would otherwise leave the player mid-air/underground (Pitfall 2).
+			// Set spawn point above the platform surface explicitly
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+
+			// Place campfire for arena theming and player convenience (DECOR-01)
+			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true);
 		}
 	}
 }

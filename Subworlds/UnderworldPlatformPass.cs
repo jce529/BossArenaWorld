@@ -25,21 +25,25 @@ namespace BossArenaSubWorld.Subworlds
 			int surfaceY = 670; // strictly > UnderworldLayer (600) with 3 tiers (670, 642, 614) all staying > 600
 			int thickness = 10;
 
+			// Fill themed background wall behind the arena tiers (DECOR-01)
+			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 65, surfaceY + thickness, WallID.ObsidianBrick);
+
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
 				for (int y = surfaceY; y < surfaceY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
-					tile.TileType = (y == surfaceY) ? TileID.Ash : TileID.Hellstone; // cosmetic only, see class comment
+					tile.TileType = (y == surfaceY) ? TileID.ObsidianBrick : ((y == surfaceY + 1) ? TileID.Ash : TileID.Hellstone);
 				}
 			}
 
-			// Set spawn point above the platform surface explicitly -- LoadSubworld()'s blind
-			// midpoint default would otherwise leave the player mid-air/underground (Pitfall 2,
-			// mirrors FlatStonePlatformPass/CorruptionPlatformPass).
+			// Set spawn point above the platform surface explicitly
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+
+			// Place demon campfire for arena theming (DECOR-01, style 4 = Demon)
+			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 4);
 		}
 	}
 }
