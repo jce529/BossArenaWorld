@@ -28,7 +28,8 @@ namespace BossArenaSubWorld.Subworlds
 
 		public override List<GenPass> Tasks => new()
 		{
-			new AstralPlatformPass("Astral Infection Boss Arena Platform", 1f)
+			new AstralPlatformPass("Astral Infection Boss Arena Platform", 1f),
+			new ArenaPolishPass("Astral Arena Polish", 1f, surfaceY: 400, thickness: 15, tierCount: 3, tierSpacing: 28, torchInterval: 30, torchStyle: 4)
 		};
 
 		public override bool ShouldSave => false;

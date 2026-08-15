@@ -33,7 +33,7 @@ Full phase details, success criteria, and requirements: [milestones/v1.0-ROADMAP
 
 - [x] **Phase 11: Shared Arena-Polish Foundation (Plain Arena)** (1/1 plans) — completed 2026-08-15
 - [x] **Phase 12: Entry & Exit Convenience** (1/1 plans) — completed 2026-08-15
-- [ ] **Phase 13: Boundary & Tier Extension to All Biome Variants** - Extend the proven layer to all 8 biome arenas (Corruption, Hallow, Underworld, Jungle, Space, Desert, Astral, Briar) in one combined phase, verifying Zone/Biome-flag budgets survive and confirming Astral/Briar's JIT safety with each source mod disabled.
+- [x] **Phase 13: Boundary & Tier Extension to All Biome Variants** (1/1 plans) — completed 2026-08-15
 - [ ] **Phase 14: Per-Biome Decorative Theming** - Add biome-legible decoration to all 9 arenas, additive to each biome's existing qualifying tile set.
 
 ## Phase Details
@@ -72,7 +72,7 @@ Full phase details, success criteria, and requirements: [milestones/v1.0-ROADMAP
   4. Each of the 8 biome arenas' pre-existing Zone/Biome-flag qualification (including Desert's 1500-weight threshold and Astral/Briar's modded `IsBiomeActive` checks) is unchanged after adding tiers — the flag still reads true on entry exactly as it did pre-retrofit.
   5. Loading the mod with CalamityMod disabled succeeds without a JITException (Astral), and loading with SpiritMod disabled succeeds without a JITException (Briar) — confirming the shared `ArenaBuilder`/`ArenaPolishPass` public API stayed strictly primitive-typed and introduced no new JIT-unsafe surface reachable from either arena's untagged call path.
 **Plans**: 1 plan
-  - [ ] 13-01-PLAN.md: Boundary and multi-tier platform extension to all 8 biome arenas (Wave 1: Vanilla biomes, Wave 2: Modded biomes)
+  - [x] 13-01-PLAN.md: Boundary and multi-tier platform extension to all 8 biome arenas (Wave 1: Vanilla biomes, Wave 2: Modded biomes) — completed 2026-08-15
 
 ### Phase 14: Per-Biome Decorative Theming
 **Goal**: All 9 arenas read as visually distinct, biome-legible spaces rather than minimal Zone-flag-satisfying platforms, without regressing any biome's tile-weight budget or JIT safety.
@@ -103,6 +103,6 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 10. Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing | v1.0 | 6/6 | Complete | 2026-08-15 |
 | 11. Shared Arena-Polish Foundation (Plain Arena) | v1.1 | 1/1 | Complete | 2026-08-15 |
 | 12. Entry & Exit Convenience | v1.1 | 1/1 | Complete | 2026-08-15 |
-| 13. Boundary & Tier Extension to All Biome Variants | v1.1 | 0/1 | Planned | - |
+| 13. Boundary & Tier Extension to All Biome Variants | v1.1 | 1/1 | Complete | 2026-08-15 |
 | 14. Per-Biome Decorative Theming | v1.1 | 0/TBD | Not started | - |
 </content>
