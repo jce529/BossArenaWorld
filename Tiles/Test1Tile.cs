@@ -59,15 +59,11 @@ namespace BossArenaSubWorld.Tiles
             if (!SummonItemRegistry.CanSummon(player.HeldItem.type))
                 return false;
 
-            Main.NewText("보스 아레나로 입장합니다. 도착하면 보스가 자동으로 소환됩니다.", 220, 180, 255); // D-11
+            Main.NewText("보스 아레나로 입장합니다. 준비가 되면 소환 아이템을 사용하세요.", 220, 180, 255);
 
-            BossSummonPlayer.PendingBossNpcType = bossNpcType;
-            // D-04 (10-CONTEXT.md): tracks which boss this arena visit is for, for the WHOLE visit
-            // (unlike BossSummonPlayer.PendingBossNpcType, which is consumed once the boss spawns).
+            // D-04 (10-CONTEXT.md): tracks which boss this arena visit is for, for the WHOLE visit.
             // Lets ForcedTimeSystem.PreUpdateWorld keep re-asserting forced night every tick for
-            // bosses that need it (Moon Jelly Wizard, Dusking unconditionally; Astrum Deus/Astrum
-            // Aureus only when InfernumMode is loaded). No-op for every boss not registered via
-            // ForcedTimeSystem.RegisterForceNight (i.e. every boss before Plan 10-03/10-04).
+            // bosses that need it, and lets BossSummonPlayer prime InfernumMode on entry.
             ForcedTimeSystem.ActiveArenaBossNpcType = bossNpcType;
             // SUBW-boss-aware: routes to the correct arena subworld for this boss (plain
             // BossArenaSubworld by default, or a boss-specific biome arena if one was

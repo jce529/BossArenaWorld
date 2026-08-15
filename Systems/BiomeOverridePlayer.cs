@@ -29,7 +29,7 @@ namespace BossArenaSubWorld.Systems
 
 		public override void PostUpdate()
 		{
-			if (!SubworldSystem.IsActive<BossArenaSubworld>())
+			if (!BossArenaRoutingRegistry.IsAnyArenaActive())
 				return;
 
 			// Phase 1: infrastructure only, no active override applied.
