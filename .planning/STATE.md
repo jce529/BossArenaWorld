@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 아레나 서브월드 디자인 개선
-status: Ready to plan Phase 12
-stopped_at: "Phase 11 complete (11-01-PLAN.md: BoundaryTile, ArenaBuilder static helper, ArenaPolishPass GenPass, BossArenaSubworld wiring verified with 0 errors/warnings); ready to plan Phase 12"
+status: Ready to execute Wave 1
+stopped_at: "Phase 12 planned (12-01-PLAN.md: Wave 1 Entry Convenience / Wave 2 ReturnPortalTile); ready to execute Wave 1"
 last_updated: "2026-08-15T00:00:00.000Z"
 last_activity: 2026-08-15
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 1
+  total_plans: 2
   completed_plans: 1
   percent: 25
 ---
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-15)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** v1.1 (아레나 서브월드 디자인 개선), Phase 12: Entry & Exit Convenience -- Phase 11 foundation complete, ready to plan Phase 12. v1.0 MVP history preserved in .planning/MILESTONES.md and .planning/milestones/v1.0-ROADMAP.md.
+**Current focus:** v1.1 (아레나 서브월드 디자인 개선), Phase 12: Entry & Exit Convenience -- 12-01-PLAN.md created (Wave 1: Entry, Wave 2: Exit), ready to execute Wave 1. v1.0 MVP history preserved in .planning/MILESTONES.md and .planning/milestones/v1.0-ROADMAP.md.
 
 ## Current Position
 
 Phase: 12 of 14 (Entry & Exit Convenience)
-Plan: TBD -- not yet planned
-Status: Ready to plan Phase 12 (ENTRY-01, ENTRY-02, ENTRY-03: player prep timing, return portal tile). Next: `/gsd:plan-phase 12`.
+Plan: 01 of 01 (12-01-PLAN.md, Wave 1)
+Status: Ready to execute Wave 1 (ENTRY-01: player-controlled summon timing, Infernum toggle activation, BiomeOverridePlayer gate). Next: Execute Wave 1.
 
 ### Old Duke Descope -- RESOLVED (2026-08-15)
 
