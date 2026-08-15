@@ -31,18 +31,25 @@ namespace BossArenaSubWorld.Systems
             // per-world "Infernum Mode" toggle resets to false inside this throwaway subworld --
             // force it true (via InfernumMode's sanctioned Mod.Call) before spawning, so Infernum's
             // boss AI overrides (and cross-mod compatibility checks other mods key off of) behave
-            // correctly for every arena boss.
+            // correctly for every arena boss that actually depends on it.
             //
-            // Only Calamity-sourced bosses need InfernumMode's toggle forced active (Providence/
-            // Profaned Guardians absence-gating, Astrum Deus/Astrum Aureus forced-night presence-
-            // gating all live in Integrations/CalamityIntegration.cs) -- a Spirit-mod boss (or any
-            // other non-Calamity boss) summoned into the arena has no reason to touch InfernumMode's
-            // toggle at all. Reuse BossRegistry's existing namespaced boss-key lookup ("calamity:*",
-            // "spirit:*", "vanilla:*" -- see Systems/BossRegistry.cs) rather than gating purely on
-            // whether InfernumMode happens to be installed.
+            // Only bosses explicitly flagged BossDefinition.RequiresInfernumToggle = true need
+            // InfernumMode's toggle forced active (currently Providence/Profaned Guardians
+            // absence-gating, Astrum Deus/Astrum Aureus forced-night presence-gating -- all set in
+            // Integrations/CalamityIntegration.cs). This replaces the prior
+            // bossKey.StartsWith("calamity:") string-prefix heuristic (quick task 260815-to6): a code
+            // review flagged the prefix as a naming-convention proxy for the real condition, and
+            // found a concrete gap -- catalyst:astrageldon (CalamityMod-dependent, but keyed
+            // "catalyst:") was silently excluded from the fix despite being CalamityMod-adjacent.
+            // Investigated and resolved (quick task 260815-u7g, decompiled Libs/InfernumMode.dll):
+            // Astrageldon has NO InfernumMode dependency (zero references to it or CatalystMod
+            // anywhere across InfernumMode's 2097 types), so its BossDefinition correctly leaves
+            // RequiresInfernumToggle at its default false -- but the flag is now the explicit,
+            // per-boss source of truth instead of an implicit key-prefix guess, so any future boss's
+            // actual dependency is stated directly on its own BossDefinition.
             if (ModLoader.HasMod("InfernumMode")
-                && BossRegistry.TryGetKeyForNpc(PendingBossNpcType.Value, out string bossKey)
-                && bossKey.StartsWith("calamity:"))
+                && BossRegistry.TryGetDefinitionForNpc(PendingBossNpcType.Value, out BossDefinition def)
+                && def.RequiresInfernumToggle)
             {
                 CalamityIntegration.ForceInfernumModeActiveInArena();
             }
