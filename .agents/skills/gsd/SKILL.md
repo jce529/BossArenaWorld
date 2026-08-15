@@ -39,15 +39,17 @@ GSD is an autonomous, spec-driven project execution and planning framework desig
 
 ### 2) Planning
 - **Discuss Phase (`/gsd:discuss-phase <N>`)**: Solicit user intent, domain boundaries, and essential constraints; produce `XX-CONTEXT.md`.
-- **Plan Phase (`/gsd:plan-phase <N>`)**: Create concrete, atomic `XX-YY-PLAN.md` files with verifiable `must_haves` and step-by-step tasks. Update `ROADMAP.md` and `STATE.md` to `Ready to execute`.
+- **Research Phase (`/gsd:research-phase <N>`)**: Thorough codebase-level analysis (APIs, existing classes, decompiled source inspection if needed) and external documentation/web search to uncover pitfalls and recommended patterns; produce `XX-RESEARCH.md`.
+- **Plan Phase (`/gsd:plan-phase <N>`)**: Create concrete, atomic `XX-YY-PLAN.md` files structured into discrete waves with verifiable `must_haves` and step-by-step tasks. Update `ROADMAP.md` and `STATE.md` to `Ready to execute`.
 
 ### 3) Execution
 - **Execute Phase (`/gsd:execute-phase <N>`)**:
   1. Load `XX-YY-PLAN.md`.
-  2. Implement all tasks in the plan.
-  3. Verify against plan `verification` criteria (e.g. build tests, unit tests, code inspection).
-  4. Write `XX-YY-SUMMARY.md`.
-  5. Update `ROADMAP.md` and `STATE.md`.
+  2. Implement tasks grouped by wave (`Wave 1`, `Wave 2`, etc.).
+  3. Verify after each wave (`dotnet build`, unit/behavioral checks).
+  4. Submit each completed wave to user for review/inspection and obtain approval before continuing.
+  5. Write `XX-YY-SUMMARY.md`.
+  6. Update `ROADMAP.md` and `STATE.md`.
 
 ### 4) Quick Tasks & Debugging
 - **Quick (`/gsd:quick [task]`)**: Execute small isolated tasks with planner + executor into `.planning/quick/`.
@@ -59,5 +61,6 @@ GSD is an autonomous, spec-driven project execution and planning framework desig
 
 1. **Never Skip State Updates**: Every plan creation or completion MUST update `.planning/STATE.md` and `.planning/ROADMAP.md`.
 2. **Preserve Integrity**: Do not overwrite or regress existing verified requirements in `REQUIREMENTS.md`.
-3. **Continuous Verification**: Ensure project compiles cleanly (`dotnet build` or equivalent) after each task.
-4. **Wave-by-Wave Execution & User Approval (Mandatory)**: In every phase, divide tasks and plans into clear sequential waves (`Wave 1`, `Wave 2`, etc.). After each wave is completed and verified, report the results to the user for inspection and obtain user approval before starting the next wave.
+3. **Mandatory Pre-Plan Research**: Before creating execution plans, always conduct deep research (codebase inspection + external lookup when needed) and document findings in `XX-RESEARCH.md`.
+4. **Continuous Verification**: Ensure project compiles cleanly (`dotnet build` or equivalent) after each task.
+5. **Wave-by-Wave Execution & User Approval (Mandatory)**: In every phase, divide tasks and plans into clear sequential waves (`Wave 1`, `Wave 2`, etc.). After each wave is completed and verified, report the results to the user for inspection and obtain user approval before starting the next wave.
