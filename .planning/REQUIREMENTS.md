@@ -32,9 +32,9 @@
 
 ### Entry & Exit Convenience (ENTRY)
 
-- [ ] **ENTRY-01**: Entering the arena subworld no longer auto-summons the boss immediately; the player instead uses the held boss-summon item directly (its normal use-effect) whenever ready, giving the player control over prep timing
-- [ ] **ENTRY-02**: Each arena has a visible return-point marker (a portal tile placed near arena spawn) that calls `SubworldSystem.Exit()` on use, without bypassing or reordering the existing vanilla-downed-flag snapshot/restore guard in `OnEnter()`/`OnExit()`
-- [ ] **ENTRY-03**: SubworldLibrary's existing built-in Return button/flow remains intact and is not replaced or duplicated by the new return-point marker — the marker is an additional convenience, not a second exit mechanism
+- [x] **ENTRY-01**: Entering the arena subworld no longer auto-summons the boss immediately; the player instead uses the held boss-summon item directly (its normal use-effect) whenever ready, giving the player control over prep timing
+- [x] **ENTRY-02**: Each arena has a visible return-point marker (a portal tile placed near arena spawn) that calls `SubworldSystem.Exit()` on use, without bypassing or reordering the existing vanilla-downed-flag snapshot/restore guard in `OnEnter()`/`OnExit()`
+- [x] **ENTRY-03**: SubworldLibrary's existing built-in Return button/flow remains intact and is not replaced or duplicated by the new return-point marker — the marker is an additional convenience, not a second exit mechanism
 
 ## v2 Requirements
 
@@ -80,9 +80,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DECOR-01 | Phase 14 | Pending |
 | DECOR-02 | Phase 14 | Pending |
 | DECOR-03 | Phase 14 | Pending |
-| ENTRY-01 | Phase 12 | Pending |
-| ENTRY-02 | Phase 12 | Pending |
-| ENTRY-03 | Phase 12 | Pending |
+| ENTRY-01 | Phase 12 | Complete |
+| ENTRY-02 | Phase 12 | Complete |
+| ENTRY-03 | Phase 12 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 15 total

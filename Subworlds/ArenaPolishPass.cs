@@ -62,6 +62,10 @@ namespace BossArenaSubWorld.Subworlds
                     ArenaBuilder.PlaceTorchInterval(0, Main.maxTilesX, tierY, _torchInterval, _torchStyle);
                 }
             }
+
+            // 5. In-arena Return Portal near spawn point (ENTRY-02)
+            ushort portalTileType = (ushort)ModContent.TileType<Tiles.ReturnPortalTile>();
+            ArenaBuilder.PlaceReturnPortal((Main.maxTilesX / 2) + 4, _surfaceY - 1, portalTileType);
         }
     }
 }

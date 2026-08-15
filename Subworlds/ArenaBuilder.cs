@@ -100,5 +100,16 @@ namespace BossArenaSubWorld.Subworlds
                 WorldGen.PlaceTile(x, y - 1, TileID.Torches, mute: true, forced: true, style: torchStyle);
             }
         }
+
+        /// <summary>
+        /// Places the in-arena return portal tile near the spawn point (ENTRY-02).
+        /// </summary>
+        public static void PlaceReturnPortal(int x, int y, ushort portalTileType)
+        {
+            if (x < 0 || x >= Main.maxTilesX || y < 0 || y >= Main.maxTilesY)
+                return;
+
+            WorldGen.PlaceTile(x, y, portalTileType, mute: true, forced: true);
+        }
     }
 }

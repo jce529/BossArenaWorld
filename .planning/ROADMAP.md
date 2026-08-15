@@ -32,7 +32,7 @@ Full phase details, success criteria, and requirements: [milestones/v1.0-ROADMAP
 **Revised 2026-08-15** (user feedback, pre-execution): compressed from 5 phases to 4 — Entry & Exit Convenience moved up to immediately follow the shared foundation phase (was last), and the vanilla-biome and modded-biome boundary/tier extension phases merged into one combined phase covering all 8 biome variants together.
 
 - [x] **Phase 11: Shared Arena-Polish Foundation (Plain Arena)** (1/1 plans) — completed 2026-08-15
-- [ ] **Phase 12: Entry & Exit Convenience** - Player-controlled prep timing before boss summon, plus a return-point portal that safely routes through `SubworldSystem.Exit()`.
+- [x] **Phase 12: Entry & Exit Convenience** (1/1 plans) — completed 2026-08-15
 - [ ] **Phase 13: Boundary & Tier Extension to All Biome Variants** - Extend the proven layer to all 8 biome arenas (Corruption, Hallow, Underworld, Jungle, Space, Desert, Astral, Briar) in one combined phase, verifying Zone/Biome-flag budgets survive and confirming Astral/Briar's JIT safety with each source mod disabled.
 - [ ] **Phase 14: Per-Biome Decorative Theming** - Add biome-legible decoration to all 9 arenas, additive to each biome's existing qualifying tile set.
 
@@ -59,7 +59,7 @@ Full phase details, success criteria, and requirements: [milestones/v1.0-ROADMAP
   2. Each arena has a visible return-point portal tile near spawn; using it exits the subworld back to the main world via `SubworldSystem.Exit()`, with the existing vanilla-downed-flag snapshot/restore guard still firing correctly (no flag regression on return).
   3. SubworldLibrary's built-in Return button still works exactly as before — the new portal is an additional convenience, not a replacement or a second exit mechanism.
 **Plans**: 1 plan
-  - [ ] 12-01-PLAN.md: Entry convenience (player prep timing) & ReturnPortalTile placement (Wave 1: Entry, Wave 2: Exit)
+  - [x] 12-01-PLAN.md: Entry convenience (player prep timing) & ReturnPortalTile placement (Wave 1: Entry, Wave 2: Exit) — completed 2026-08-15
 
 ### Phase 13: Boundary & Tier Extension to All Biome Variants
 **Goal**: The proven shared arena-polish layer is extended to all 8 biome arenas (Corruption, Hallow, Underworld, Jungle, Space, Desert, Astral, Briar) in one combined pass, with boundary placement correctly parameterized per arena's own surfaceY/Y-window, multi-tier platforms verified not to break any biome's Zone/Biome-flag qualification, and Astral/Briar's JIT safety confirmed with each source mod disabled — closing out full 9-arena boundary/tier coverage.
@@ -101,7 +101,7 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 9. Biome-Dependent Subworld Coverage | v1.0 | 7/7 | Complete | 2026-08-14 |
 | 10. Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing | v1.0 | 6/6 | Complete | 2026-08-15 |
 | 11. Shared Arena-Polish Foundation (Plain Arena) | v1.1 | 1/1 | Complete | 2026-08-15 |
-| 12. Entry & Exit Convenience | v1.1 | 0/1 | Planned | - |
+| 12. Entry & Exit Convenience | v1.1 | 1/1 | Complete | 2026-08-15 |
 | 13. Boundary & Tier Extension to All Biome Variants | v1.1 | 0/TBD | Not started | - |
 | 14. Per-Biome Decorative Theming | v1.1 | 0/TBD | Not started | - |
 </content>
