@@ -82,7 +82,8 @@ Full phase details, success criteria, and requirements: [milestones/v1.0-ROADMAP
   1. Each of the 9 arenas is visually identifiable as its intended biome at a glance (Corruption chasms/purple grass, Hallow crystal tones, Underworld ash/obsidian/lava glow, Jungle mud/vines, Desert dunes/sandstone, Astral/Briar mod-native palettes, plain arena neutral theme).
   2. After decoration, every biome-gated arena's Zone flag still reads true on entry — decoration tiles are additive to/drawn from the existing qualifying tile set, not a replacement.
   3. Astral and Briar's new decoration code lives entirely inside their existing JIT-tagged `ApplyPass()` methods — confirmed by code inspection plus the Phase 13 disable-mod smoke test still passing after decoration is added.
-**Plans**: TBD
+**Plans**: 1 plan
+  - [ ] 14-01-PLAN.md: Decorative theming for all 9 arenas (Wave 1: Plain & Vanilla biomes, Wave 2: Modded biomes)
 
 ## Progress
 
@@ -104,5 +105,5 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 11. Shared Arena-Polish Foundation (Plain Arena) | v1.1 | 1/1 | Complete | 2026-08-15 |
 | 12. Entry & Exit Convenience | v1.1 | 1/1 | Complete | 2026-08-15 |
 | 13. Boundary & Tier Extension to All Biome Variants | v1.1 | 1/1 | Complete | 2026-08-15 |
-| 14. Per-Biome Decorative Theming | v1.1 | 0/TBD | Not started | - |
+| 14. Per-Biome Decorative Theming | v1.1 | 0/1 | Planned | - |
 </content>
