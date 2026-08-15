@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: "The Old Duke descoped from v1 boss roster (despawn bug root-caused and a general fix implemented, but Old Duke itself removed by user decision, quick task 260815-024); Phase 10 (10-06) and Phase 8 (08-04) both closed for the resulting 17-boss roster -- no blockers remain"
-last_updated: "2026-08-15T00:00:00.000Z"
+status: Phase 10 and Phase 8 both closed. No blockers remain for v1.
+stopped_at: "Quick task 260815-u7g complete (BossDefinition.RequiresInfernumToggle explicit flag replaces bossKey.StartsWith("calamity:") heuristic); The Old Duke descoped from v1 (quick task 260815-024); Phase 10 (10-06) and Phase 8 (08-04) both closed"
+last_updated: "2026-08-15T12:59:09.232Z"
 last_activity: 2026-08-15
 progress:
   total_phases: 10
-  completed_phases: 9
+  completed_phases: 10
   total_plans: 36
   completed_plans: 36
   percent: 100
@@ -18,10 +18,10 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-08-12)
+See: .planning/PROJECT.md (updated 2026-08-15)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** All v1 phases complete (Phase 10 closed 2026-08-15 with The Old Duke descoped; Phase 8 closed 2026-08-15 citing Phase 10's results) -- ready for milestone wrap-up
+**Current focus:** v1.0 MVP shipped 2026-08-15 (see .planning/MILESTONES.md and .planning/milestones/v1.0-ROADMAP.md) -- planning next milestone via `/gsd:new-milestone`
 
 ## Current Position
 
@@ -124,7 +124,7 @@ In one round of live in-game testing, the user worked through `check.md`'s conso
 
 Net effect: Phase 6 complete (3/3), Phase 7 complete (2/2), Phase 8 complete (4/4), Phase 10 complete (6/6) -- all closed 2026-08-15 after The Old Duke was descoped from v1.
 
-Last activity: 2026-08-14
+Last activity: 2026-08-15
 
 ### Phase 08 and Phase 10 plan-checker re-verification -- RESOLVED (2026-08-14, this session)
 
