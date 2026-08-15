@@ -37,7 +37,8 @@ namespace BossArenaSubWorld.Subworlds
 
 		public override List<GenPass> Tasks => new()
 		{
-			new JunglePlatformPass("Jungle Boss Arena Platform", 1f)
+			new JunglePlatformPass("Jungle Boss Arena Platform", 1f),
+			new ArenaPolishPass("Jungle Arena Polish", 1f, surfaceY: 400, thickness: 15, tierCount: 3, tierSpacing: 28, torchInterval: 30, torchStyle: 21)
 		};
 
 		public override bool ShouldSave => false;

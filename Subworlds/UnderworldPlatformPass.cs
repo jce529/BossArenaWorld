@@ -22,7 +22,7 @@ namespace BossArenaSubWorld.Subworlds
 		{
 			progress.Message = "Generating underworld boss arena platform";
 
-			int surfaceY = 650; // > UnderworldLayer (600) with margin -- near the bottom of the 800-row world, NOT mid-height
+			int surfaceY = 670; // strictly > UnderworldLayer (600) with 3 tiers (670, 642, 614) all staying > 600
 			int thickness = 10;
 
 			for (int x = 0; x < Main.maxTilesX; x++)

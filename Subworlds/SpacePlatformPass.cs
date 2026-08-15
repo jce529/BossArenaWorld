@@ -21,7 +21,7 @@ namespace BossArenaSubWorld.Subworlds
 		{
 			progress.Message = "Generating space boss arena platform";
 
-			int surfaceY = 50; // well under the ZoneSkyHeight boundary (84) with margin -- near the top of the 800-row world, NOT mid-height
+			int surfaceY = 70; // strictly inside ZoneSkyHeight (<= 84) with 3 tiers (70, 52, 34) all within [10, 80]
 			int thickness = 10;
 
 			for (int x = 0; x < Main.maxTilesX; x++)

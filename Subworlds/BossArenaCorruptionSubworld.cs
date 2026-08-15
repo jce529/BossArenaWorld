@@ -13,20 +13,17 @@ namespace BossArenaSubWorld.Subworlds
 	// WHY THIS EXISTS (see
 	// .planning/debug/resolved/hivemind-zonecorrupt-despawn-corruption-subworld.md):
 	// CalamityMod's HiveMind.AI() (decompiled from the installed CalamityMod.dll) re-caps
-	// NPC.timeLeft to ~1 second on every tick its target is invalid, and one of its
-	// target-validity conditions is `!player.ZoneCorrupt && !BossRushEvent.BossRushActive`. The
-	// plain BossArenaSubworld's bare-stone platform never sets player.ZoneCorrupt, so Hive Mind
-	// despawns almost immediately after NPC.SpawnOnPlayer(). Any future Corruption-gated boss
-	// should route here too (see Systems/BossArenaRoutingRegistry.cs), rather than forcing
-	// ZoneCorrupt via a ModPlayer override -- that alternative was explicitly considered and
-	// rejected by the user: a real biome is a more faithful reproduction of the boss's actual
-	// intended arena, and avoids an ever-growing pile of per-boss Zone* overrides in
-	// BiomeOverridePlayer for every future biome-gated boss.
+	// (TileID.Ebonstone/CorruptGrass instead of plain Stone), satisfying vanilla's real
+	// ZoneCorrupt requirement.
 	//
-	// BossArenaSubworld.cs itself is intentionally left untouched -- it remains the correct (and
-	// default) arena for bosses that need no biome (e.g. King Slime, Phase 3). This class
-	// duplicates (does NOT inherit) BossArenaSubworld's OnEnter/OnExit vanilla-downed-flag
-	// snapshot/restore guard, specifically so BossArenaSubworld.cs does not need to change shape.
+	// Fixes the Hive Mind immediate-despawn bug: Hive Mind's AI requires player.ZoneCorrupt,
+	// which is computed every tick from a live tile scan of surrounding tiles (EvilTileCount
+	// >= 300). The plain-stone arena provided 0 corrupt tiles, so Hive Mind despawned on tick 1.
+	//
+	// Preserves the identical OnEnter/OnExit vanilla-downed-flag snapshot/restore guard from
+	// Subworld/BossArenaSubworld.cs so King Slime (and any other vanilla boss/event flag)
+	// cannot leak back into the main world.
+	//
 	// See .planning/debug/resolved/isolation-premise-flag-persistence.md for the full root-cause
 	// explanation of why this guard is required for EVERY Subworld subclass in this mod
 	// independently (SubworldLibrary's CopyDowned()/ReadCopiedDowned() bidirectional vanilla-flag
@@ -41,7 +38,8 @@ namespace BossArenaSubWorld.Subworlds
 
 		public override List<GenPass> Tasks => new()
 		{
-			new CorruptionPlatformPass("Corruption Boss Arena Platform", 1f)
+			new CorruptionPlatformPass("Corruption Boss Arena Platform", 1f),
+			new ArenaPolishPass("Corruption Arena Polish", 1f, surfaceY: 400, thickness: 15, tierCount: 3, tierSpacing: 28, torchInterval: 30, torchStyle: 4)
 		};
 
 		public override bool ShouldSave => false;

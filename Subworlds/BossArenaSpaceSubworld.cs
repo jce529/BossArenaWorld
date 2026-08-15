@@ -29,7 +29,8 @@ namespace BossArenaSubWorld.Subworlds
 
 		public override List<GenPass> Tasks => new()
 		{
-			new SpacePlatformPass("Space Boss Arena Platform", 1f)
+			new SpacePlatformPass("Space Boss Arena Platform", 1f),
+			new ArenaPolishPass("Space Arena Polish", 1f, surfaceY: 70, thickness: 10, tierCount: 3, tierSpacing: 18, torchInterval: 30, torchStyle: 5, boundaryMargin: 60)
 		};
 
 		public override bool ShouldSave => false;

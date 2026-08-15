@@ -35,7 +35,8 @@ namespace BossArenaSubWorld.Subworlds
 
 		public override List<GenPass> Tasks => new()
 		{
-			new HallowPlatformPass("Hallow Boss Arena Platform", 1f)
+			new HallowPlatformPass("Hallow Boss Arena Platform", 1f),
+			new ArenaPolishPass("Hallow Arena Polish", 1f, surfaceY: 400, thickness: 15, tierCount: 3, tierSpacing: 28, torchInterval: 30, torchStyle: 20)
 		};
 
 		public override bool ShouldSave => false;

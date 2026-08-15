@@ -28,7 +28,8 @@ namespace BossArenaSubWorld.Subworlds
 
 		public override List<GenPass> Tasks => new()
 		{
-			new UnderworldPlatformPass("Underworld Boss Arena Platform", 1f)
+			new UnderworldPlatformPass("Underworld Boss Arena Platform", 1f),
+			new ArenaPolishPass("Underworld Arena Polish", 1f, surfaceY: 670, thickness: 10, tierCount: 3, tierSpacing: 28, torchInterval: 30, torchStyle: 7, boundaryMargin: 65)
 		};
 
 		public override bool ShouldSave => false;
