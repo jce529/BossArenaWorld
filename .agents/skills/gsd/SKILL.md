@@ -49,7 +49,8 @@ GSD is an autonomous, spec-driven project execution and planning framework desig
   3. Verify after each wave (`dotnet build`, unit/behavioral checks).
   4. Submit each completed wave to user for review/inspection and obtain approval before continuing.
   5. Write `XX-YY-SUMMARY.md`.
-  6. Update `ROADMAP.md` and `STATE.md`.
+  6. At the conclusion of the phase, generate a comprehensive verification and QA document `check.md` in the phase folder (`.planning/phases/XX-.../check.md`) covering code-level verification, in-game playtest checklists, and anticipated bugs/vulnerabilities.
+  7. Update `ROADMAP.md` and `STATE.md`.
 
 ### 4) Quick Tasks & Debugging
 - **Quick (`/gsd:quick [task]`)**: Execute small isolated tasks with planner + executor into `.planning/quick/`.
@@ -64,3 +65,4 @@ GSD is an autonomous, spec-driven project execution and planning framework desig
 3. **Mandatory Pre-Plan Research**: Before creating execution plans, always conduct deep research (codebase inspection + external lookup when needed) and document findings in `XX-RESEARCH.md`.
 4. **Continuous Verification**: Ensure project compiles cleanly (`dotnet build` or equivalent) after each task.
 5. **Wave-by-Wave Execution & User Approval (Mandatory)**: In every phase, divide tasks and plans into clear sequential waves (`Wave 1`, `Wave 2`, etc.). After each wave is completed and verified, report the results to the user for inspection and obtain user approval before starting the next wave.
+6. **Phase Conclusion check.md Requirement (Mandatory)**: Every completed phase MUST include a `check.md` document synthesizing code-level validation, playtest verification checklist, and potential edge-case/vulnerability analysis.
