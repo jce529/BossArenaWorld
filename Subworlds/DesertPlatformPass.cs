@@ -37,25 +37,46 @@ namespace BossArenaSubWorld.Subworlds
 		{
 			progress.Message = "Generating desert boss arena platform";
 
-			int surfaceY = Main.maxTilesY / 2; // mid-height, matches CorruptionPlatformPass convention
-			int thickness = 20; // wider margin than the usual 15 -- see class comment (Pitfall 5)
-			int sandSurfaceRows = 3; // top rows only -- see BUGFIX comment above; rest is solid Sandstone
+			int surfaceY = Main.maxTilesY / 2; // mid-height (400)
+			int thickness = 20; // 20-thick solid Sandstone/HardenedSand (>> 1500 threshold)
+			int sandSurfaceRows = 3;
 
-			// Fill themed background wall behind the arena tiers (DECOR-01)
-			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 60, surfaceY + thickness, WallID.SandstoneBrick);
+			// Fill themed background wall behind all 7 arena tiers (DECOR-01)
+			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 120, surfaceY + 80, WallID.SandstoneBrick);
 
+			// 1. Solid desert floor slab below lower platform tiers (provides ~4000 Sandstone tiles >> 1500)
+			int floorY = surfaceY + 60;
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
-				for (int y = surfaceY; y < surfaceY + thickness; y++)
+				for (int y = floorY; y < floorY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
-					tile.TileType = (y < surfaceY + sandSurfaceRows) ? TileID.Sand : ((y == surfaceY + sandSurfaceRows) ? TileID.SandstoneBrick : TileID.Sandstone);
+					tile.TileType = (y < floorY + sandSurfaceRows) ? TileID.Sand : ((y == floorY + sandSurfaceRows) ? TileID.SandstoneBrick : TileID.Sandstone);
 				}
 			}
 
+			// 2. Solid sandstone ceiling slab above top platform tier
+			int ceilingY = surfaceY - 120;
+			for (int x = 0; x < Main.maxTilesX; x++)
+			{
+				for (int y = ceilingY; y < ceilingY + 12; y++)
+				{
+					Tile tile = Main.tile[x, y];
+					tile.HasTile = true;
+					tile.TileType = TileID.Sandstone;
+				}
+			}
+
+			// 3. Spawn pad on center tier for campfire and portal
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+			for (int x = Main.spawnTileX - 8; x <= Main.spawnTileX + 14; x++)
+			{
+				Tile tile = Main.tile[x, surfaceY];
+				tile.HasTile = true;
+				tile.TileType = TileID.SandstoneBrick;
+			}
 
 			// Place desert campfire for arena theming (DECOR-01, style 7 = Desert)
 			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 7);

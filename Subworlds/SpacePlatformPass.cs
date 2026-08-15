@@ -21,24 +21,45 @@ namespace BossArenaSubWorld.Subworlds
 		{
 			progress.Message = "Generating space boss arena platform";
 
-			int surfaceY = 70; // strictly inside ZoneSkyHeight (<= 84) with 3 tiers (70, 52, 34) all within [10, 80]
+			int surfaceY = 90; // strictly inside ZoneSkyHeight (<= 168 at WorldHeight=1600)
 			int thickness = 10;
 
-			// Fill themed background wall behind the arena tiers (DECOR-01)
-			ArenaBuilder.FillWall(0, Main.maxTilesX, 10, surfaceY + thickness, WallID.Glass);
+			// Fill themed background wall behind all 7 arena tiers (DECOR-01)
+			ArenaBuilder.FillWall(0, Main.maxTilesX, 15, 145, WallID.Glass);
 
+			// 1. Solid floor slab below lower platform tiers (y in [128, 138] <= 168)
+			int floorY = surfaceY + 38;
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
-				for (int y = surfaceY; y < surfaceY + thickness; y++)
+				for (int y = floorY; y < floorY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
-					tile.TileType = (y == surfaceY) ? TileID.Sunplate : TileID.Stone;
+					tile.TileType = (y == floorY) ? TileID.Sunplate : TileID.Stone;
 				}
 			}
 
+			// 2. Solid ceiling slab above top platform tier (y in [20, 25])
+			int ceilingY = surfaceY - 70;
+			for (int x = 0; x < Main.maxTilesX; x++)
+			{
+				for (int y = ceilingY; y < ceilingY + 5; y++)
+				{
+					Tile tile = Main.tile[x, y];
+					tile.HasTile = true;
+					tile.TileType = TileID.Sunplate;
+				}
+			}
+
+			// 3. Spawn pad on center tier for campfire and portal
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+			for (int x = Main.spawnTileX - 8; x <= Main.spawnTileX + 14; x++)
+			{
+				Tile tile = Main.tile[x, surfaceY];
+				tile.HasTile = true;
+				tile.TileType = TileID.Sunplate;
+			}
 
 			// Place ultrabright campfire for arena theming (DECOR-01, style 5 = Ultrabright)
 			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 5);

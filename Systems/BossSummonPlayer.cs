@@ -1,4 +1,6 @@
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 using BossArenaSubWorld.Integrations;
 
@@ -13,6 +15,8 @@ namespace BossArenaSubWorld.Systems
     // boss AI overrides are active when the player chooses to summon.
     public class BossSummonPlayer : ModPlayer
     {
+        private bool _justUsedSummon;
+
         public override void OnEnterWorld()
         {
             if (!BossArenaRoutingRegistry.IsAnyArenaActive())
@@ -24,6 +28,49 @@ namespace BossArenaSubWorld.Systems
                 && def.RequiresInfernumToggle)
             {
                 CalamityIntegration.ForceInfernumModeActiveInArena();
+            }
+        }
+
+        public override void PostUpdate()
+        {
+            if (!BossArenaRoutingRegistry.IsAnyArenaActive())
+                return;
+
+            if (Player.whoAmI != Main.myPlayer)
+                return;
+
+            Item held = Player.HeldItem;
+            if (held == null || held.IsAir)
+            {
+                _justUsedSummon = false;
+                return;
+            }
+
+            if (!SummonItemRegistry.TryGetBoss(Player, held.type, out int bossNpcType))
+            {
+                _justUsedSummon = false;
+                return;
+            }
+
+            if (NPC.AnyNPCs(bossNpcType))
+            {
+                _justUsedSummon = false;
+                return;
+            }
+
+            // When player uses held summon item in the arena subworld, trigger spawn
+            if (Player.controlUseItem)
+            {
+                if (!_justUsedSummon)
+                {
+                    _justUsedSummon = true;
+                    SoundEngine.PlaySound(SoundID.Roar, Player.position);
+                    NPC.SpawnOnPlayer(Player.whoAmI, bossNpcType);
+                }
+            }
+            else
+            {
+                _justUsedSummon = false;
             }
         }
     }

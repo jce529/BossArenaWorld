@@ -22,6 +22,21 @@ namespace BossArenaSubWorld.Integrations
             RegisterAstrumDeus();
             RegisterAstrumAureus();
             RegisterMarkOfProvidenceBosses();
+            RegisterDesertScourge();
+            RegisterCrabulon();
+            RegisterPerforators();
+            RegisterSlimeGod();
+            RegisterCryogen();
+            RegisterAquaticScourge();
+            RegisterBrimstoneElemental();
+            RegisterCalamitasClone();
+            RegisterPlaguebringerGoliath();
+            RegisterRavager();
+            RegisterPolterghast();
+            RegisterGreatSandShark();
+            RegisterOldDuke();
+            RegisterPortabulb();
+            RegisterEidolonTablet();
         }
 
         // D-01/Pitfall 2: every method below this point may reference CalamityMod
@@ -518,6 +533,309 @@ namespace BossArenaSubWorld.Integrations
             CalamityMod.CalamityNetcode.SyncWorld();
         }
 
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterDesertScourge()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.DesertMedallion>();
+            int headType = ModContent.NPCType<CalamityMod.NPCs.DesertScourge.DesertScourgeHead>();
+            int bodyType = ModContent.NPCType<CalamityMod.NPCs.DesertScourge.DesertScourgeBody>();
+            int tailType = ModContent.NPCType<CalamityMod.NPCs.DesertScourge.DesertScourgeTail>();
+
+            SummonItemRegistry.Register(itemType, headType);
+            BossArenaRoutingRegistry.Register<BossArenaDesertSubworld>(headType);
+
+            BossRegistry.Register("calamity:desert_scourge", new BossDefinition(
+                NpcTypes: new[] { headType, bodyType, tailType },
+                ApplyDowned: ApplyDesertScourgeDowned,
+                IsDowned: IsDesertScourgeDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsDesertScourgeDowned() => CalamityMod.DownedBossSystem.downedDesertScourge;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyDesertScourgeDowned()
+        {
+            if (!CalamityMod.DownedBossSystem.downedDesertScourge)
+            {
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.OpenSunkenSea", Color.Aquamarine);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.SandstormTrigger", Color.PaleGoldenrod);
+                if (!Terraria.GameContent.Events.Sandstorm.Happening)
+                    CalamityMod.World.CalamityWorld.StartSandstorm();
+            }
+            CalamityMod.DownedBossSystem.downedDesertScourge = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterCrabulon()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.DecapoditaSprout>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.Crabulon.Crabulon>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+
+            BossRegistry.Register("calamity:crabulon", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyCrabulonDowned,
+                IsDowned: IsCrabulonDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsCrabulonDowned() => CalamityMod.DownedBossSystem.downedCrabulon;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyCrabulonDowned()
+        {
+            CalamityMod.DownedBossSystem.downedCrabulon = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterPerforators()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.BloodyWormFood>();
+            int hiveType = ModContent.NPCType<CalamityMod.NPCs.Perforator.PerforatorHive>();
+            int headL = ModContent.NPCType<CalamityMod.NPCs.Perforator.PerforatorHeadLarge>();
+            int headM = ModContent.NPCType<CalamityMod.NPCs.Perforator.PerforatorHeadMedium>();
+            int headS = ModContent.NPCType<CalamityMod.NPCs.Perforator.PerforatorHeadSmall>();
+
+            SummonItemRegistry.Register(itemType, hiveType);
+            BossArenaRoutingRegistry.Register<BossArenaCorruptionSubworld>(hiveType);
+
+            BossRegistry.Register("calamity:perforators", new BossDefinition(
+                NpcTypes: new[] { hiveType, headL, headM, headS },
+                ApplyDowned: ApplyPerforatorsDowned,
+                IsDowned: IsPerforatorsDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsPerforatorsDowned() => CalamityMod.DownedBossSystem.downedPerforator;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyPerforatorsDowned()
+        {
+            if (!CalamityMod.DownedBossSystem.downedHiveMind && !CalamityMod.DownedBossSystem.downedPerforator)
+            {
+                CalamityMod.World.AerialiteOreGen.Enchant();
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.SkyOreText", Color.Cyan);
+            }
+            CalamityMod.DownedBossSystem.downedPerforator = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterSlimeGod()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.OverloadedSludge>();
+            int coreType = ModContent.NPCType<CalamityMod.NPCs.SlimeGod.SlimeGodCore>();
+            int ebonType = ModContent.NPCType<CalamityMod.NPCs.SlimeGod.EbonianPaladin>();
+            int crimType = ModContent.NPCType<CalamityMod.NPCs.SlimeGod.CrimulanPaladin>();
+
+            SummonItemRegistry.Register(itemType, coreType);
+
+            BossRegistry.Register("calamity:slime_god", new BossDefinition(
+                NpcTypes: new[] { coreType, ebonType, crimType },
+                ApplyDowned: ApplySlimeGodDowned,
+                IsDowned: IsSlimeGodDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsSlimeGodDowned() => CalamityMod.DownedBossSystem.downedSlimeGod;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplySlimeGodDowned()
+        {
+            CalamityMod.DownedBossSystem.downedSlimeGod = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterCryogen()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.CryoKey>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.Cryogen.Cryogen>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+
+            BossRegistry.Register("calamity:cryogen", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyCryogenDowned,
+                IsDowned: IsCryogenDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsCryogenDowned() => CalamityMod.DownedBossSystem.downedCryogen;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyCryogenDowned()
+        {
+            if (!CalamityMod.DownedBossSystem.downedCryogen)
+            {
+                System.Collections.Generic.List<int> validTiles = new System.Collections.Generic.List<int>
+                {
+                    147, 161, 163, 200, 164,
+                    ModContent.TileType<CalamityMod.Tiles.AstralSnow.AstralSnow>(),
+                    ModContent.TileType<CalamityMod.Tiles.AstralSnow.AstralIce>()
+                };
+                if (Main.drunkWorld) validTiles.Add(60);
+                CalamityMod.CalamityUtils.SpawnOre(ModContent.TileType<CalamityMod.Tiles.Ores.CryonicOre>(), 0.00016, 0.45f, 0.7f, 6, 11, validTiles);
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.IceOreText", Color.LightSkyBlue);
+            }
+            CalamityMod.DownedBossSystem.downedCryogen = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterAquaticScourge()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.Seafood>();
+            int headType = ModContent.NPCType<CalamityMod.NPCs.AquaticScourge.AquaticScourgeHead>();
+            int bodyType = ModContent.NPCType<CalamityMod.NPCs.AquaticScourge.AquaticScourgeBody>();
+            int tailType = ModContent.NPCType<CalamityMod.NPCs.AquaticScourge.AquaticScourgeTail>();
+
+            SummonItemRegistry.Register(itemType, headType);
+
+            BossRegistry.Register("calamity:aquatic_scourge", new BossDefinition(
+                NpcTypes: new[] { headType, bodyType, tailType },
+                ApplyDowned: ApplyAquaticScourgeDowned,
+                IsDowned: IsAquaticScourgeDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsAquaticScourgeDowned() => CalamityMod.DownedBossSystem.downedAquaticScourge;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyAquaticScourgeDowned()
+        {
+            if (!CalamityMod.DownedBossSystem.downedAquaticScourge)
+            {
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.WetWormBossText", CalamityMod.Events.AcidRainEvent.TextColor);
+                CalamityMod.Events.AcidRainEvent.CountdownUntilForcedAcidRain = 601;
+            }
+            CalamityMod.DownedBossSystem.downedAquaticScourge = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterBrimstoneElemental()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.CharredIdol>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.BrimstoneElemental.BrimstoneElemental>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaUnderworldSubworld>(npcType);
+
+            BossRegistry.Register("calamity:brimstone_elemental", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyBrimstoneElementalDowned,
+                IsDowned: IsBrimstoneElementalDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsBrimstoneElementalDowned() => CalamityMod.DownedBossSystem.downedBrimstoneElemental;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyBrimstoneElementalDowned()
+        {
+            CalamityMod.DownedBossSystem.downedBrimstoneElemental = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterCalamitasClone()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.EyeofDesolation>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.CalClone.CalamitasClone>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            ForcedTimeSystem.RegisterForceNight(npcType);
+
+            BossRegistry.Register("calamity:calamitas_clone", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyCalamitasCloneDowned,
+                IsDowned: IsCalamitasCloneDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsCalamitasCloneDowned() => CalamityMod.DownedBossSystem.downedCalamitasClone;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyCalamitasCloneDowned()
+        {
+            CalamityMod.NPCs.CalamityGlobalTownNPC.SetNewShopVariable(new int[] { ModContent.NPCType<CalamityMod.NPCs.TownNPCs.Bandit>() }, CalamityMod.DownedBossSystem.downedCalamitasClone);
+            CalamityMod.DownedBossSystem.downedCalamitasClone = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterPlaguebringerGoliath()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.Abombination>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.PlaguebringerGoliath.PlaguebringerGoliath>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaJungleSubworld>(npcType);
+
+            BossRegistry.Register("calamity:plaguebringer_goliath", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyPlaguebringerGoliathDowned,
+                IsDowned: IsPlaguebringerGoliathDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsPlaguebringerGoliathDowned() => CalamityMod.DownedBossSystem.downedPlaguebringer;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyPlaguebringerGoliathDowned()
+        {
+            CalamityMod.DownedBossSystem.downedPlaguebringer = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterRavager()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.DeathWhistle>();
+            int bodyType = ModContent.NPCType<CalamityMod.NPCs.Ravager.RavagerBody>();
+            int headType = ModContent.NPCType<CalamityMod.NPCs.Ravager.RavagerHead>();
+
+            SummonItemRegistry.Register(itemType, bodyType);
+
+            BossRegistry.Register("calamity:ravager", new BossDefinition(
+                NpcTypes: new[] { bodyType, headType },
+                ApplyDowned: ApplyRavagerDowned,
+                IsDowned: IsRavagerDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsRavagerDowned() => CalamityMod.DownedBossSystem.downedRavager;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyRavagerDowned()
+        {
+            CalamityMod.DownedBossSystem.downedRavager = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterPolterghast()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.NecroplasmicBeacon>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.Polterghast.Polterghast>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+
+            BossRegistry.Register("calamity:polterghast", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyPolterghastDowned,
+                IsDowned: IsPolterghastDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsPolterghastDowned() => CalamityMod.DownedBossSystem.downedPolterghast;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyPolterghastDowned()
+        {
+            CalamityMod.NPCs.CalamityGlobalTownNPC.SetNewShopVariable(new int[] { 209 }, CalamityMod.DownedBossSystem.downedPolterghast);
+            if (!CalamityMod.DownedBossSystem.downedPolterghast)
+            {
+                CalamityMod.CalamityUtils.BroadcastLocalizedText("Mods.CalamityMod.Status.Progression.GhostBossText4", CalamityMod.Events.AcidRainEvent.TextColor);
+            }
+            CalamityMod.DownedBossSystem.downedPolterghast = true;
+            CalamityMod.CalamityNetcode.SyncWorld();
+        }
+
         // Fix for .planning/debug/resolved/old-duke-immediate-despawn-plain-arena.md:
         // InfernumMode.CanUseCustomAIs reads InfernumMode's own WorldSaveSystem.InfernumModeEnabled
         // -- a per-world TagCompound-saved "Infernum Mode" toggle. BossArenaSubworld (and every
@@ -544,6 +862,64 @@ namespace BossArenaSubWorld.Integrations
         public static void ForceInfernumModeActiveInArena()
         {
             ModLoader.GetMod("InfernumMode").Call("SetInfernumActive", true);
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterGreatSandShark()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.SandstormsCore>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.GreatSandShark.GreatSandShark>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<BossArenaDesertSubworld>(npcType);
+
+            BossRegistry.Register("calamity:great_sand_shark", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyGreatSandSharkDowned,
+                IsDowned: IsGreatSandSharkDowned));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsGreatSandSharkDowned() => CalamityMod.DownedBossSystem.downedGSS;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyGreatSandSharkDowned()
+        {
+            CalamityMod.DownedBossSystem.downedGSS = true;
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterOldDuke()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.BloodwormItem>();
+            int npcType = ModContent.NPCType<CalamityMod.NPCs.OldDuke.OldDuke>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+
+            BossRegistry.Register("calamity:old_duke", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyOldDukeDowned,
+                IsDowned: IsOldDukeDowned,
+                RequiresInfernumToggle: true));
+        }
+        [JITWhenModsEnabled("CalamityMod")]
+        private static bool IsOldDukeDowned() => CalamityMod.DownedBossSystem.downedBoomerDuke;
+        [JITWhenModsEnabled("CalamityMod")]
+        private static void ApplyOldDukeDowned()
+        {
+            CalamityMod.DownedBossSystem.downedBoomerDuke = true;
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterPortabulb()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.Portabulb>();
+            SummonItemRegistry.Register(itemType, Terraria.ID.NPCID.Plantera);
+        }
+
+        [JITWhenModsEnabled("CalamityMod")]
+        private void RegisterEidolonTablet()
+        {
+            int itemType = ModContent.ItemType<CalamityMod.Items.SummonItems.EidolonTablet>();
+            SummonItemRegistry.Register(itemType, Terraria.ID.NPCID.CultistBoss);
         }
     }
 }

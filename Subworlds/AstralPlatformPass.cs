@@ -38,33 +38,58 @@ namespace BossArenaSubWorld.Subworlds
 		{
 			progress.Message = "Generating astral infection boss arena platform";
 
-			int surfaceY = Main.maxTilesY / 2; // no height constraint for ZoneAstral itself
+			int surfaceY = Main.maxTilesY / 2; // mid-height (400)
 			int thickness = 15; // ~200(scan window)*15 = 3000 tiles >> 950 threshold, ample margin
 
 			ushort astralStone = (ushort)ModContent.TileType<AstralStone>();
 			ushort astralGrass = (ushort)ModContent.TileType<AstralGrass>();
 
-			// Fill themed background wall behind the arena tiers (DECOR-01, DECOR-03)
+			// Fill themed background wall behind all 7 arena tiers (DECOR-01, DECOR-03)
 			ushort astralWall = ModContent.TryFind<ModWall>("CalamityMod", "AstralDirtWall", out ModWall wall) ? (ushort)wall.Type : (ushort)WallID.EbonstoneUnsafe;
-			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 60, surfaceY + thickness, astralWall);
+			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 120, surfaceY + 80, astralWall);
 
+			// 1. Solid astral floor slab below lower platform tiers (provides ~3000 Astral tiles >> 950)
+			int floorY = surfaceY + 60;
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
-				for (int y = surfaceY; y < surfaceY + thickness; y++)
+				for (int y = floorY; y < floorY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
-					tile.TileType = (y == surfaceY) ? astralGrass : astralStone;
-					// No dungeon wall/tiles placed anywhere in this arena -- required so
-					// !player.ZoneDungeon holds (IsBiomeActive's AND-condition).
+					tile.TileType = (y == floorY) ? astralGrass : astralStone;
 				}
 			}
 
+			// 2. Solid astral ceiling slab above top platform tier
+			int ceilingY = surfaceY - 120;
+			for (int x = 0; x < Main.maxTilesX; x++)
+			{
+				for (int y = ceilingY; y < ceilingY + 10; y++)
+				{
+					Tile tile = Main.tile[x, y];
+					tile.HasTile = true;
+					tile.TileType = astralStone;
+				}
+			}
+
+			// 3. Spawn pad on center tier for campfire, portal, and beacon
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+			for (int x = Main.spawnTileX - 8; x <= Main.spawnTileX + 14; x++)
+			{
+				Tile tile = Main.tile[x, surfaceY];
+				tile.HasTile = true;
+				tile.TileType = astralGrass;
+			}
 
 			// Place campfire for arena theming (DECOR-01)
 			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 1);
+
+			// Place Astral Beacon for Astrum Deus summoning
+			if (ModContent.TryFind<ModTile>("CalamityMod", "AstralBeacon", out ModTile beaconTile))
+			{
+				WorldGen.PlaceObject(Main.spawnTileX + 8, surfaceY - 1, beaconTile.Type);
+			}
 		}
 	}
 }

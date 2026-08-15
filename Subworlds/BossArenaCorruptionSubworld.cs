@@ -39,7 +39,7 @@ namespace BossArenaSubWorld.Subworlds
 		public override List<GenPass> Tasks => new()
 		{
 			new CorruptionPlatformPass("Corruption Boss Arena Platform", 1f),
-			new ArenaPolishPass("Corruption Arena Polish", 1f, surfaceY: 400, thickness: 15, tierCount: 3, tierSpacing: 28, torchInterval: 30, torchStyle: 4)
+			new ArenaPolishPass("Corruption Arena Polish", 1f, surfaceY: 400, thickness: 15, upperTierCount: 4, lowerTierCount: 2, tierSpacing: 26, torchInterval: 30, torchStyle: 4, boundaryMargin: 60)
 		};
 
 		public override bool ShouldSave => false;

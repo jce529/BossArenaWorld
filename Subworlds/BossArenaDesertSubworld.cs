@@ -35,7 +35,7 @@ namespace BossArenaSubWorld.Subworlds
 		public override List<GenPass> Tasks => new()
 		{
 			new DesertPlatformPass("Desert Boss Arena Platform", 1f),
-			new ArenaPolishPass("Desert Arena Polish", 1f, surfaceY: 400, thickness: 20, tierCount: 3, tierSpacing: 28, torchInterval: 30, torchStyle: 16)
+			new ArenaPolishPass("Desert Arena Polish", 1f, surfaceY: 400, thickness: 20, upperTierCount: 4, lowerTierCount: 2, tierSpacing: 26, torchInterval: 30, torchStyle: 16, boundaryMargin: 60)
 		};
 
 		public override bool ShouldSave => false;

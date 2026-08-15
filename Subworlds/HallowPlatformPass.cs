@@ -22,24 +22,45 @@ namespace BossArenaSubWorld.Subworlds
 		{
 			progress.Message = "Generating hallow boss arena platform";
 
-			int surfaceY = Main.maxTilesY / 2; // mid-height, matches CorruptionPlatformPass convention
+			int surfaceY = Main.maxTilesY / 2; // mid-height (400)
 			int thickness = 15;
 
-			// Fill themed background wall behind the arena tiers (DECOR-01)
-			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 60, surfaceY + thickness, WallID.HallowedGrassUnsafe);
+			// Fill themed background wall behind all 7 arena tiers (DECOR-01)
+			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 120, surfaceY + 80, WallID.HallowedGrassUnsafe);
 
+			// 1. Solid hallow floor slab below lower platform tiers (provides ~3000 Pearlstone tiles >> 125)
+			int floorY = surfaceY + 60;
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
-				for (int y = surfaceY; y < surfaceY + thickness; y++)
+				for (int y = floorY; y < floorY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
-					tile.TileType = (y == surfaceY) ? TileID.HallowedGrass : ((y == surfaceY + 1) ? TileID.PearlstoneBrick : TileID.Pearlstone);
+					tile.TileType = (y == floorY) ? TileID.HallowedGrass : ((y == floorY + 1) ? TileID.PearlstoneBrick : TileID.Pearlstone);
 				}
 			}
 
+			// 2. Solid hallow ceiling slab above top platform tier
+			int ceilingY = surfaceY - 120;
+			for (int x = 0; x < Main.maxTilesX; x++)
+			{
+				for (int y = ceilingY; y < ceilingY + 10; y++)
+				{
+					Tile tile = Main.tile[x, y];
+					tile.HasTile = true;
+					tile.TileType = TileID.Pearlstone;
+				}
+			}
+
+			// 3. Spawn pad on center tier for campfire and portal
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+			for (int x = Main.spawnTileX - 8; x <= Main.spawnTileX + 14; x++)
+			{
+				Tile tile = Main.tile[x, surfaceY];
+				tile.HasTile = true;
+				tile.TileType = TileID.PearlstoneBrick;
+			}
 
 			// Place hallowed campfire for arena theming (DECOR-01, style 2 = Hallowed)
 			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 2);

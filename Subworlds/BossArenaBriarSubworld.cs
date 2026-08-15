@@ -34,7 +34,7 @@ namespace BossArenaSubWorld.Subworlds
 		public override List<GenPass> Tasks => new()
 		{
 			new BriarPlatformPass("Briar Boss Arena Platform", 1f),
-			new ArenaPolishPass("Briar Arena Polish", 1f, surfaceY: 150, thickness: 15, tierCount: 3, tierSpacing: 28, torchInterval: 30, torchStyle: 3, boundaryMargin: 80)
+			new ArenaPolishPass("Briar Arena Polish", 1f, surfaceY: 130, thickness: 15, upperTierCount: 4, lowerTierCount: 2, tierSpacing: 16, torchInterval: 30, torchStyle: 3, boundaryMargin: 30)
 		};
 
 		public override bool ShouldSave => false;

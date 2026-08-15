@@ -15,6 +15,9 @@ namespace BossArenaSubWorld.Integrations
         {
             if (!ModLoader.HasMod("ContinentOfJourney")) return;
             RegisterGoblinChariot();
+            RegisterBigDipper();
+            RegisterDiverBoss();
+            RegisterWallOfShadow();
         }
 
         // D-01/Pitfall 2 (carried from Phase 4/5/6): every method below this point may
@@ -66,6 +69,74 @@ namespace BossArenaSubWorld.Integrations
             // source is exactly this one line (07-RESEARCH.md Pattern 1). Matches this
             // project's established -1 convention (King Slime/Hive Mind/Infernon/Thorn).
             NPC.SetEventFlagCleared(ref ContinentOfJourney.DownedBossSystem.downedGoblinChariot, -1);
+        }
+
+        [JITWhenModsEnabled("ContinentOfJourney")]
+        private void RegisterBigDipper()
+        {
+            int itemType = ModContent.ItemType<ContinentOfJourney.Items.MaliciousPacket>();
+            int npcType = ModContent.NPCType<ContinentOfJourney.NPCs.Boss_BigDipper.BigDipper>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+            BossArenaRoutingRegistry.Register<Subworlds.BossArenaSpaceSubworld>(npcType);
+
+            BossRegistry.Register("continentofjourney:big_dipper", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyBigDipperDowned,
+                IsDowned: IsBigDipperDowned));
+        }
+        [JITWhenModsEnabled("ContinentOfJourney")]
+        private static bool IsBigDipperDowned() => ContinentOfJourney.DownedBossSystem.downedBigDipper;
+        [JITWhenModsEnabled("ContinentOfJourney")]
+        private static void ApplyBigDipperDowned()
+        {
+            NPC.SetEventFlagCleared(ref ContinentOfJourney.DownedBossSystem.downedBigDipper, -1);
+        }
+
+        [JITWhenModsEnabled("ContinentOfJourney")]
+        private void RegisterDiverBoss()
+        {
+            int itemType = ModContent.ItemType<ContinentOfJourney.Items.CyanFlareGun>();
+            int npcType = ModContent.NPCType<ContinentOfJourney.NPCs.Boss_Diver.Diver>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+
+            BossRegistry.Register("continentofjourney:diver", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyDiverBossDowned,
+                IsDowned: IsDiverBossDowned));
+        }
+        [JITWhenModsEnabled("ContinentOfJourney")]
+        private static bool IsDiverBossDowned() => ContinentOfJourney.DownedBossSystem.downedDiverBoss;
+        [JITWhenModsEnabled("ContinentOfJourney")]
+        private static void ApplyDiverBossDowned()
+        {
+            NPC.SetEventFlagCleared(ref ContinentOfJourney.DownedBossSystem.downedDiverBoss, -1);
+        }
+
+        [JITWhenModsEnabled("ContinentOfJourney")]
+        private void RegisterWallOfShadow()
+        {
+            int itemType = ModContent.ItemType<ContinentOfJourney.Items.UltimateTorch>();
+            int npcType = ModContent.NPCType<ContinentOfJourney.NPCs.Boss_WallofShadow.WallofShadow>();
+
+            SummonItemRegistry.Register(itemType, npcType);
+
+            BossRegistry.Register("continentofjourney:wall_of_shadow", new BossDefinition(
+                NpcTypes: new[] { npcType },
+                ApplyDowned: ApplyWallOfShadowDowned,
+                IsDowned: IsWallOfShadowDowned));
+        }
+        [JITWhenModsEnabled("ContinentOfJourney")]
+        private static bool IsWallOfShadowDowned() => ContinentOfJourney.DownedBossSystem.downedBarrier;
+        [JITWhenModsEnabled("ContinentOfJourney")]
+        private static void ApplyWallOfShadowDowned()
+        {
+            if (!ContinentOfJourney.DownedBossSystem.downedBarrier)
+            {
+                Main.NewText(Terraria.Localization.Language.GetTextValue("Mods.ContinentOfJourney.DownedBarrier"), 50, 255, 130);
+            }
+            NPC.SetEventFlagCleared(ref ContinentOfJourney.DownedBossSystem.downedBarrier, -1);
         }
     }
 }

@@ -1,4 +1,7 @@
-Tiles.Test1Tile.MapEntry: Test1 Tile
+Tiles: {
+	Test1Tile.MapEntry: Test1 Tile
+	ReturnPortalTile.MapEntry: Return Portal Tile
+}
 
 Items: {
 	Test1Item: {

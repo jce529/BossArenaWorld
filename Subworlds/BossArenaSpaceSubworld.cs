@@ -22,7 +22,7 @@ namespace BossArenaSubWorld.Subworlds
 	public class BossArenaSpaceSubworld : Subworld
 	{
 		public const int PlatformWidth = 10000;
-		public const int WorldHeight = 800;
+		public const int WorldHeight = 1600;
 
 		public override int Width => PlatformWidth;
 		public override int Height => WorldHeight;
@@ -30,7 +30,7 @@ namespace BossArenaSubWorld.Subworlds
 		public override List<GenPass> Tasks => new()
 		{
 			new SpacePlatformPass("Space Boss Arena Platform", 1f),
-			new ArenaPolishPass("Space Arena Polish", 1f, surfaceY: 70, thickness: 10, tierCount: 3, tierSpacing: 18, torchInterval: 30, torchStyle: 5, boundaryMargin: 60)
+			new ArenaPolishPass("Space Arena Polish", 1f, surfaceY: 90, thickness: 10, upperTierCount: 4, lowerTierCount: 2, tierSpacing: 15, torchInterval: 30, torchStyle: 5, boundaryMargin: 15)
 		};
 
 		public override bool ShouldSave => false;

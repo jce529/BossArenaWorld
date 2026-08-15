@@ -21,7 +21,7 @@ namespace BossArenaSubWorld.Subworlds
 	public class BossArenaUnderworldSubworld : Subworld
 	{
 		public const int PlatformWidth = 10000;
-		public const int WorldHeight = 800;
+		public const int WorldHeight = 1200;
 
 		public override int Width => PlatformWidth;
 		public override int Height => WorldHeight;
@@ -29,7 +29,7 @@ namespace BossArenaSubWorld.Subworlds
 		public override List<GenPass> Tasks => new()
 		{
 			new UnderworldPlatformPass("Underworld Boss Arena Platform", 1f),
-			new ArenaPolishPass("Underworld Arena Polish", 1f, surfaceY: 670, thickness: 10, tierCount: 3, tierSpacing: 28, torchInterval: 30, torchStyle: 7, boundaryMargin: 65)
+			new ArenaPolishPass("Underworld Arena Polish", 1f, surfaceY: 1090, thickness: 10, upperTierCount: 4, lowerTierCount: 2, tierSpacing: 15, torchInterval: 30, torchStyle: 7, boundaryMargin: 20)
 		};
 
 		public override bool ShouldSave => false;

@@ -30,7 +30,6 @@ namespace BossArenaSubWorld.Systems
 
         public override void PostSetupContent()
         {
-            Register(ItemID.SlimeCrown, NPCID.KingSlime); // D-08 proof entry
         }
 
         public static void Register(int itemType, int bossNpcType, Func<bool> canSummon = null)

@@ -25,14 +25,6 @@ namespace BossArenaSubWorld.Systems
 
         public override void PostSetupContent()
         {
-            // D-04: replay vanilla's own downed-flag helper (flag + achievement notify +
-            // MessageID.WorldData netcode sync + Lantern Night trigger), not a raw assignment.
-            // gameEventId = -1 per tModLoader Migration Guide's documented safe value (see
-            // 03-RESEARCH.md Open Question 1).
-            Register("vanilla:king_slime", new BossDefinition(
-                NpcTypes: new int[] { NPCID.KingSlime },
-                ApplyDowned: () => NPC.SetEventFlagCleared(ref NPC.downedSlimeKing, -1),
-                IsDowned: () => NPC.downedSlimeKing));
         }
 
         public static void Register(string key, BossDefinition def)

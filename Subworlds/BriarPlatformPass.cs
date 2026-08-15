@@ -39,18 +39,20 @@ namespace BossArenaSubWorld.Subworlds
 		{
 			progress.Message = "Generating briar boss arena platform";
 
-			int surfaceY = 150; // <= worldSurface (240) -- satisfies the Surface variant's ZoneOverworldHeight requirement
-			int thickness = 15; // ~200(scan window)*15 = 3000 tiles >> 80 threshold, ample margin
+			int surfaceY = 130; // strictly <= worldSurface (240) -- satisfies BriarSurfaceBiome
+			int thickness = 15;
 
 			ushort briarGrass = (ushort)ModContent.TileType<BriarGrass>();
 
-			// Fill themed background wall behind the arena tiers (DECOR-01, DECOR-03)
+			// Fill themed background wall behind all 7 arena tiers (DECOR-01, DECOR-03)
 			ushort briarWall = ModContent.TryFind<ModWall>("SpiritMod", "BriarWallUnsafe", out ModWall w) ? (ushort)w.Type : (ushort)WallID.JungleUnsafe;
-			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 60, surfaceY + thickness, briarWall);
+			ArenaBuilder.FillWall(0, Main.maxTilesX, 40, 195, briarWall);
 
+			// 1. Solid briar floor slab below lower platform tiers (provides ~3000 BriarGrass tiles >> 80)
+			int floorY = surfaceY + 42;
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
-				for (int y = surfaceY; y < surfaceY + thickness; y++)
+				for (int y = floorY; y < floorY + thickness; y++)
 				{
 					Tile tile = Main.tile[x, y];
 					tile.HasTile = true;
@@ -58,11 +60,30 @@ namespace BossArenaSubWorld.Subworlds
 				}
 			}
 
+			// 2. Solid briar ceiling slab above top platform tier
+			int ceilingY = surfaceY - 75;
+			for (int x = 0; x < Main.maxTilesX; x++)
+			{
+				for (int y = ceilingY; y < ceilingY + 10; y++)
+				{
+					Tile tile = Main.tile[x, y];
+					tile.HasTile = true;
+					tile.TileType = briarGrass;
+				}
+			}
+
+			// 3. Spawn pad on center tier for campfire and portal
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+			for (int x = Main.spawnTileX - 8; x <= Main.spawnTileX + 14; x++)
+			{
+				Tile tile = Main.tile[x, surfaceY];
+				tile.HasTile = true;
+				tile.TileType = briarGrass;
+			}
 
-			// Place campfire for arena theming (DECOR-01)
-			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 6);
+			// Place campfire for arena theming (DECOR-01, style 3 = Green/Briar)
+			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 3);
 		}
 	}
 }
