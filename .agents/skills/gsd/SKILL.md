@@ -60,3 +60,4 @@ GSD is an autonomous, spec-driven project execution and planning framework desig
 1. **Never Skip State Updates**: Every plan creation or completion MUST update `.planning/STATE.md` and `.planning/ROADMAP.md`.
 2. **Preserve Integrity**: Do not overwrite or regress existing verified requirements in `REQUIREMENTS.md`.
 3. **Continuous Verification**: Ensure project compiles cleanly (`dotnet build` or equivalent) after each task.
+4. **Wave-by-Wave Execution & User Approval (Mandatory)**: In every phase, divide tasks and plans into clear sequential waves (`Wave 1`, `Wave 2`, etc.). After each wave is completed and verified, report the results to the user for inspection and obtain user approval before starting the next wave.
