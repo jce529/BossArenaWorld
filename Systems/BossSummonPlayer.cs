@@ -32,8 +32,20 @@ namespace BossArenaSubWorld.Systems
             // force it true (via InfernumMode's sanctioned Mod.Call) before spawning, so Infernum's
             // boss AI overrides (and cross-mod compatibility checks other mods key off of) behave
             // correctly for every arena boss.
-            if (ModLoader.HasMod("InfernumMode"))
+            //
+            // Only Calamity-sourced bosses need InfernumMode's toggle forced active (Providence/
+            // Profaned Guardians absence-gating, Astrum Deus/Astrum Aureus forced-night presence-
+            // gating all live in Integrations/CalamityIntegration.cs) -- a Spirit-mod boss (or any
+            // other non-Calamity boss) summoned into the arena has no reason to touch InfernumMode's
+            // toggle at all. Reuse BossRegistry's existing namespaced boss-key lookup ("calamity:*",
+            // "spirit:*", "vanilla:*" -- see Systems/BossRegistry.cs) rather than gating purely on
+            // whether InfernumMode happens to be installed.
+            if (ModLoader.HasMod("InfernumMode")
+                && BossRegistry.TryGetKeyForNpc(PendingBossNpcType.Value, out string bossKey)
+                && bossKey.StartsWith("calamity:"))
+            {
                 CalamityIntegration.ForceInfernumModeActiveInArena();
+            }
 
             NPC.SpawnOnPlayer(Player.whoAmI, PendingBossNpcType.Value);
             PendingBossNpcType = null; // consume once -- Pitfall 3 guard: prevents
