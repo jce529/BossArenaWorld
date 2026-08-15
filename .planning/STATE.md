@@ -266,6 +266,14 @@ None yet.
 - Isolation premise NOT empirically confirmed: live King Slime kill test shows NPC.downedSlimeKing=True in the main world after subworld round-trip (expected False per 01-RESEARCH.md/PITFALLS.md, which both explicitly predicted vanilla flags behave the same as modded ones for this bug). Do NOT proceed to Phase 2/3 planning until re-investigated -- see 01-04-SUMMARY.md hypotheses (in-memory-only leak vs. genuine on-disk persistence vs. vanilla-specific behavior difference). Also unconfirmed: inventory-intact check (SUBW-06) was skipped by tester during this run.
 - Dungeon and Sulphurous Sea biome-variant subworlds are deferred, not built (D-07, 2026-08-14, "for now"/일단). Blocks a future biome-safe arena for Polterghast (Spirit, Dungeon, unconditionally assignable) and The Old Duke (Calamity+Infernum, Sulphurous Sea) until a future phase reinstates them. Do not silently resurrect the discarded Wave-1 code (never merged, not reachable from master) -- treat any future request to add these back as new scope requiring its own research/planning pass. **UPDATE (2026-08-15):** The Old Duke's despawn bug was investigated and root-caused -- NOT the Sulphurous Sea Zone dependency this entry predicted, but a cross-mod subworld-isolation interaction (InfernumMode's per-world toggle resetting inside the throwaway arena, weaponized by NoxusBoss's Old-Duke-hijack AI). A general fix was implemented and kept (benefits Providence/Profaned Guardians/Astrum Deus/Astrum Aureus too). Despite the fix, The Old Duke was removed from v1 scope entirely (quick task 260815-024) by deliberate user decision rather than live re-verified and kept. This closes that open question permanently for v1, not just defers it. Polterghast/Dungeon remains the only still-open item this entry describes.
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260815-to6 | Infernum 모드 강제 활성화를 칼라미티 소속 보스에만 적용 | 2026-08-15 | 8629799 | [260815-to6-infernum](./quick/260815-to6-infernum/) |
+
+Last activity: 2026-08-15 - Completed quick task 260815-to6: Infernum 모드 강제 활성화를 칼라미티 소속 보스에만 적용
+
 ## Session Continuity
 
 Last session: 2026-08-15T00:00:00.000Z
