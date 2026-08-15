@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 아레나 서브월드 디자인 개선
-status: Ready to plan
-stopped_at: "v1.1 ROADMAP.md revised per user feedback (Phases 11-14, was 11-15: Entry & Exit Convenience moved to Phase 12, vanilla+modded biome extension merged into Phase 13); 15/15 requirements mapped; ready to plan Phase 11"
+status: Ready to plan Phase 12
+stopped_at: "Phase 11 complete (11-01-PLAN.md: BoundaryTile, ArenaBuilder static helper, ArenaPolishPass GenPass, BossArenaSubworld wiring verified with 0 errors/warnings); ready to plan Phase 12"
 last_updated: "2026-08-15T00:00:00.000Z"
 last_activity: 2026-08-15
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 25
 ---
 
 # Project State
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-15)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** v1.1 (아레나 서브월드 디자인 개선), Phase 11: Shared Arena-Polish Foundation (Plain Arena) -- ROADMAP.md revised 2026-08-15 (Phases 11-14, was 11-15; 15/15 requirements mapped), ready to plan. v1.0 MVP history preserved in .planning/MILESTONES.md and .planning/milestones/v1.0-ROADMAP.md.
+**Current focus:** v1.1 (아레나 서브월드 디자인 개선), Phase 12: Entry & Exit Convenience -- Phase 11 foundation complete, ready to plan Phase 12. v1.0 MVP history preserved in .planning/MILESTONES.md and .planning/milestones/v1.0-ROADMAP.md.
 
 ## Current Position
 
-Phase: 11 of 14 (Shared Arena-Polish Foundation (Plain Arena))
+Phase: 12 of 14 (Entry & Exit Convenience)
 Plan: TBD -- not yet planned
-Status: Ready to plan -- ROADMAP.md revised 2026-08-15 (Phases 11-14, was 11-15: Entry & Exit Convenience moved to Phase 12, vanilla/modded biome extension merged into Phase 13; 15/15 v1.1 requirements re-mapped, 100% coverage preserved). Next: `/gsd:plan-phase 11`.
+Status: Ready to plan Phase 12 (ENTRY-01, ENTRY-02, ENTRY-03: player prep timing, return portal tile). Next: `/gsd:plan-phase 12`.
 
 ### Old Duke Descope -- RESOLVED (2026-08-15)
 

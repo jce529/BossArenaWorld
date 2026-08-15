@@ -10,19 +10,19 @@
 
 - [ ] **BOUND-01**: Every one of the 9 arena subworlds has a fall/void boundary (solid containment below/around the platform) so a missed jump or knockback cannot send the player into the open void above/below the platform slab
 - [ ] **BOUND-02**: For the 2 arenas whose Zone flag is a pure-Y check (Space: `y <= 84`, Underworld: `y > 600`), the boundary is placed strictly inside that Y-window, not just "near" the platform — going outside it would silently despawn the boss (same failure class as the already-fixed Hive Mind bug)
-- [ ] **BOUND-03**: Boundary/containment logic is implemented as a shared, mod-agnostic helper (e.g. `ArenaBuilder` + a shared `ArenaPolishPass`) parameterized per-arena by that arena's own `surfaceY`/thickness — never a single hardcoded literal shared across all 9 arenas
+- [x] **BOUND-03**: Boundary/containment logic is implemented as a shared, mod-agnostic helper (e.g. `ArenaBuilder` + a shared `ArenaPolishPass`) parameterized per-arena by that arena's own `surfaceY`/thickness — never a single hardcoded literal shared across all 9 arenas
 - [ ] **BOUND-04**: The shared boundary/polish helper's public API never references a modded type directly (stays `ushort`/`int`-typed), so it can be safely called from both JIT-tagged (Astral/Briar) and untagged arena passes without introducing new JIT-unsafe surface
 
 ### Multi-Tier Platform Layout (TIER)
 
-- [ ] **TIER-01**: Each of the 9 arenas gains a multi-tier (2-4 layer) platform structure, vertically spaced per vanilla jump-height convention, sized to accommodate that arena's registered bosses' attack/movement patterns (ground, flying, area-denial)
+- [x] **TIER-01**: Each of the 9 arenas gains a multi-tier (2-4 layer) platform structure, vertically spaced per vanilla jump-height convention, sized to accommodate that arena's registered bosses' attack/movement patterns (ground, flying, area-denial)
 - [ ] **TIER-02**: Adding tiers does not drop any biome-gated arena (Corruption/Hallow/Underworld-height/Jungle/Space-height/Desert/Astral/Briar) below its existing Zone-flag qualifying threshold — each biome's documented tile-weight budget (e.g. Desert 1500, Astral 950, Jungle 140) is preserved
 - [ ] **TIER-03**: A player who climbs to an upper tier does not drift the Zone-flag scan window (which is centered on the player, not the boss) off the base biome-qualifying tile strip mid-fight — verified live per biome, with Desert and Jungle (tightest tile-weight margins) checked most carefully
 
 ### Lighting (LIGHT)
 
-- [ ] **LIGHT-01**: Each arena has torches placed at regular intervals along its platform tiers for visibility, using a biome-appropriate `TorchID` style where one exists
-- [ ] **LIGHT-02**: Torch placement is documented/scoped as visual-only — it does not suppress or reduce monster spawns (light level has no effect on spawn rate in Terraria; that is explicitly out of this milestone's scope, see Out of Scope)
+- [x] **LIGHT-01**: Each arena has torches placed at regular intervals along its platform tiers for visibility, using a biome-appropriate `TorchID` style where one exists
+- [x] **LIGHT-02**: Torch placement is documented/scoped as visual-only — it does not suppress or reduce monster spawns (light level has no effect on spawn rate in Terraria; that is explicitly out of this milestone's scope, see Out of Scope)
 
 ### Biome-Themed Decoration (DECOR)
 
@@ -70,13 +70,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | BOUND-01 | Phase 13 | Pending |
 | BOUND-02 | Phase 13 | Pending |
-| BOUND-03 | Phase 11 | Pending |
+| BOUND-03 | Phase 11 | Complete |
 | BOUND-04 | Phase 13 | Pending |
-| TIER-01 | Phase 11 | Pending |
+| TIER-01 | Phase 11 | Complete |
 | TIER-02 | Phase 13 | Pending |
 | TIER-03 | Phase 13 | Pending |
-| LIGHT-01 | Phase 11 | Pending |
-| LIGHT-02 | Phase 11 | Pending |
+| LIGHT-01 | Phase 11 | Complete |
+| LIGHT-02 | Phase 11 | Complete |
 | DECOR-01 | Phase 14 | Pending |
 | DECOR-02 | Phase 14 | Pending |
 | DECOR-03 | Phase 14 | Pending |

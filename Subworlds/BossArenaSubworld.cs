@@ -38,7 +38,8 @@ namespace BossArenaSubWorld.Subworlds
 
 		public override List<GenPass> Tasks => new()
 		{
-			new FlatStonePlatformPass("Flat Stone Platform", 1f)
+			new FlatStonePlatformPass("Flat Stone Platform", 1f),
+			new ArenaPolishPass("Arena Polish", 1f, surfaceY: 400, thickness: 15, tierCount: 3, tierSpacing: 28, torchInterval: 30, torchStyle: 0)
 		};
 
 		public override bool ShouldSave => false;
