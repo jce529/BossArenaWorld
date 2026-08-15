@@ -1,296 +1,253 @@
 # Architecture Research
 
-**Domain:** tModLoader mod — dedicated boss-arena subworld with cross-mod boss-kill detection and carrier-item state replay
-**Researched:** 2026-08-12
-**Confidence:** MEDIUM (SubworldLibrary and core tModLoader interop patterns are HIGH confidence from official wiki/docs; per-target-mod integration specifics — Calamity/Spirit/Redemption/etc. — remain LOW/unresearched per PROJECT.md and are out of scope for this file)
+**Domain:** tModLoader mod — per-biome procedural arena world-gen (SubworldLibrary `Subworld`/`GenPass` pipeline)
+**Researched:** 2026-08-15
+**Confidence:** HIGH (current codebase read directly), MEDIUM (GenPass execution-order assumption, flagged below)
 
-## Standard Architecture
+## Standard Architecture (current, as-built)
 
 ### System Overview
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│                         Main World (persistent)                      │
-├──────────────────────────────────────────────────────────────────────┤
-│ ┌─────────────────┐   ┌───────────────────┐   ┌────────────────────┐│
-│ │ Entry Item / NPC │   │ BossCoreItem       │   │ Per-mod Downed     ││
-│ │ (trigger Enter)  │   │ (ModItem, carries  │──▶│ Flags / WorldGen   ││
-│ │                  │   │  boss key as       │   │ (Calamity, Spirit, ││
-│ │                  │   │  instance data)    │   │  Redemption, ...)  ││
-│ └────────┬─────────┘   └───────────▲────────┘   └────────────────────┘│
-│          │ SubworldSystem.Enter<>() │ use/right-click → Apply(key)    │
-├──────────┼───────────────────────────┼─────────────────────────────────┤
-│          ▼                           │            SubworldLibrary      │
-│ ┌──────────────────────────────────────────────────────────────────┐ │
-│ │              BossArenaSubworld (Subworld subclass)                │ │
-│ │  - empty/minimal generation, no mod-placed content                │ │
-│ │  - hosts the actual boss fight                                    │ │
-│ └───────────────────────────────┬──────────────────────────────────┘ │
-│                                  │ NPC.Kill()                          │
-│                                  ▼                                    │
-│ ┌──────────────────────────────────────────────────────────────────┐ │
-│ │   BossKillGlobalNPC.OnKill()  →  BossRegistry.TryGetDefinition()  │ │
-│ │        │ (only when subworld active)                              │ │
-│ │        ▼                                                          │ │
-│ │   spawn BossCoreItem tagged with boss key                         │ │
-│ └──────────────────────────────────────────────────────────────────┘ │
-├──────────────────────────────────────────────────────────────────────┤
-│                     BossRegistry (ModSystem, static table)            │
-│  key → { NPC type(s), Apply() delegate, side-effect delegate }        │
-├──────────────────────────────────────────────────────────────────────┤
-│   Per-mod Integration Classes (one per source mod, isolated files)    │
-│   CalamityIntegration | SpiritIntegration | RedemptionIntegration |   │
-│   CatalystIntegration | NoxusBossIntegration | DaybreakIntegration    │
-│   — each self-registers into BossRegistry, each wrapped for safe      │
-│     loading when its target mod isn't installed                       │
-└──────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────┐
+│ Subworlds/BossArena{Plain,Corruption,Hallow,Underworld,Jungle,Space,   │
+│           Desert,Astral,Briar}Subworld.cs   (9 ModType classes)       │
+│  - autoloaded UNCONDITIONALLY at mod load (regardless of installed    │
+│    content mods) -> JIT-prefiltered in full, every method             │
+│  - Width/Height consts, ShouldSave=false, NoPlayerSaving=false        │
+│  - Tasks => new List<GenPass> { new XPlatformPass(...) }  (1 entry)   │
+│  - OnEnter()/OnExit(): ~35-field vanilla-downed-flag snapshot/restore │
+│    guard, DUPLICATED VERBATIM in all 9 classes (SubworldLibrary       │
+│    CopyDowned() workaround, applies per-subworld-type independently)  │
+├───────────────────────────────────────────────────────────────────────┤
+│ Subworlds/{FlatStone,Corruption,Hallow,Underworld,Jungle,Space,       │
+│            Desert,Astral,Briar}PlatformPass.cs  (9 GenPass classes)   │
+│  - plain C# class, NOT a ModType -> only JIT-prefiltered per-METHOD,  │
+│    only constructed when its owning Subworld.Tasks getter runs        │
+│  - single ApplyPass(): fills a flat rectangular strip (double for-    │
+│    loop over x/thickness), sets Main.spawnTileX/Y                     │
+│  - Astral/Briar ONLY: ApplyPass() tagged [JITWhenModsEnabled(modname)]│
+│    because it references CalamityMod/SpiritMod tile types directly    │
+├───────────────────────────────────────────────────────────────────────┤
+│ Systems/BossArenaRoutingRegistry.cs                                   │
+│  - static Dictionary<bossNpcType, Func<bool> Enter>, plus              │
+│    HashSet<Type> _knownArenaTypes (grows via Register<T>())           │
+│  - Systems/BossSummonPlayer.cs, Tiles/Test1Tile.cs consume this to    │
+│    stay boss-agnostic / arena-agnostic                                │
+└───────────────────────────────────────────────────────────────────────┘
 ```
+
+**Correction to milestone-context framing:** the milestone brief describes "7 biome variants alongside the plain arena." The actual repo has **8** biome-specific `Subworld` classes (Corruption, Hallow, Underworld, Jungle, Space, Desert, Astral, Briar) plus the plain arena = **9 total `Subworld` classes and 9 paired `GenPass` classes**, not 8. All build-order and file-count guidance below uses the real count (9). Only 2 of the 9 GenPass classes (Astral, Briar) touch modded types and carry `[JITWhenModsEnabled]`; the other 7 (FlatStone, Corruption, Hallow, Underworld, Jungle, Space, Desert) are 100% vanilla (`Terraria.ID.TileID` only).
 
 ### Component Responsibilities
 
-| Component | Responsibility | Typical Implementation |
+| Component | Responsibility | Current Implementation |
 |-----------|----------------|-------------------------|
-| `BossArenaSubworld` | Defines the empty arena dimension — size, generation (near no-op), save behavior | `class BossArenaSubworld : Subworld` in SubworldLibrary, overrides `Size`, `Tasks` (GenPass list), `ShouldSave`, `NoPlayerSaving` |
-| Subworld entry/exit trigger | Player-facing way to start/stop a boss run | `ModItem` or `NPC`/tile interaction calling `SubworldSystem.Enter<BossArenaSubworld>()`; return trip via `SubworldSystem.Exit()` |
-| `BossKillGlobalNPC` | Detects a registered boss dying inside the arena subworld, converts the kill into a carrier item | `GlobalNPC.OnKill(NPC npc)` override, gated by `SubworldSystem.IsActive<BossArenaSubworld>()` |
-| `BossRegistry` | Central lookup: NPC identity → boss key → apply/side-effect logic. The single seam every other component depends on | `ModSystem` (or static class populated in `PostSetupContent`) holding `Dictionary<string, BossDefinition>` |
-| `BossCoreItem` | Carries the boss key as per-instance data from subworld kill back to main-world use | `ModItem` with `CloneNewInstances = true`, `SaveData`/`LoadData`/`Clone` persisting a string/int key |
-| Per-mod integration classes | Translate one source mod's actual downed-flag API (property setter, raw static field, etc.) into a `BossRegistry` registration, including that mod's netcode/WorldGen side effects | One class per mod, isolated behind `[JITWhenModsEnabled("ModName")]` + `ModLoader.HasMod()` guard, or `Mod.Call` if the target mod exposes one |
+| `Subworlds/BossArena*Subworld.cs` (9x) | Declare world dimensions, `Tasks` list, `ShouldSave`/`NoPlayerSaving`, vanilla-downed-flag isolation guard | `Subworld` subclass, duplicated boilerplate per file, zero modded-type references even in Astral/Briar variants |
+| `Subworlds/*PlatformPass.cs` (9x) | Fill the arena's floor/platform with biome-correct tiles at biome-correct Y-position; set spawn point | `GenPass` subclass, one `ApplyPass()` method; 2 of 9 need `[JITWhenModsEnabled]` |
+| `Systems/BossArenaRoutingRegistry.cs` | Map a boss NPC type -> which arena `Subworld` to enter; track "is current subworld one of ours" | Static dictionary + `HashSet<Type>`, `Register<T>()`/`Enter()`/`IsAnyArenaActive()` |
+| `Systems/BossSummonPlayer.cs` | On subworld arrival, auto-spawn the pending boss (+ Infernum-toggle force where flagged) | `ModPlayer.OnEnterWorld()`, static `PendingBossNpcType` consumed once |
+| `Systems/BiomeOverridePlayer.cs` | Generic per-tick "force something while inside a boss arena" hook | `ModPlayer.PostUpdate()`, gated by `SubworldSystem.IsActive<BossArenaSubworld>()` (currently only checks the PLAIN arena — see Integration Points) |
+| `Tiles/Test1Tile.cs` | Entry trigger: right-click while holding a registered summon item redirects into the routed arena | `ModTile.RightClick()`, this mod's own tile type (never conditional on another mod) |
 
-## Recommended Project Structure
+## Recommended Project Structure (additions for v1.1)
 
 ```
-BossArenaSubWorld/
-├── BossArenaSubWorld.cs           # Mod entry class
-├── Subworlds/
-│   └── BossArenaSubworld.cs       # Subworld definition (empty arena)
-├── Systems/
-│   ├── BossRegistry.cs            # ModSystem: key → BossDefinition table + Apply()
-│   └── SubworldEntrySystem.cs     # optional: shared enter/exit helpers, state flags
-├── GlobalNPCs/
-│   └── BossKillGlobalNPC.cs       # OnKill hook, subworld-gated
-├── Items/
-│   └── BossCoreItem.cs            # carrier item, instance data, UseItem→Apply
-├── Integrations/                  # one file per source mod, all isolated
-│   ├── CalamityIntegration.cs
-│   ├── SpiritIntegration.cs
-│   ├── RedemptionIntegration.cs
-│   ├── CatalystIntegration.cs
-│   ├── NoxusBossIntegration.cs
-│   └── DaybreakIntegration.cs
-└── build.txt                      # weakReferences = CalamityMod, SpiritMod, ...
+Subworlds/
+├── ArenaBuilder.cs                 # NEW — static helper, vanilla-only primitives
+│                                    #   (FillRectangle, PlaceBoundaryWalls, PlaceAtInterval,
+│                                    #    BuildTierPlatform, PlaceReturnPortal). Not a ModType,
+│                                    #   not a GenPass — a plain static class both ArenaPolishPass
+│                                    #   AND the 9 per-biome ApplyPass() methods can call.
+├── ArenaPolishPass.cs              # NEW — single shared GenPass (boundary walls, Y-limit
+│                                    #   containment tiles, interval torch lighting, multi-tier
+│                                    #   deck placement, return-portal tile placement). 100%
+│                                    #   vanilla types only — NO [JITWhenModsEnabled] needed.
+├── BossArena{9 variants}Subworld.cs  # MODIFIED — Tasks list gets a 2nd entry:
+│                                      #   new ArenaPolishPass(...) appended after the existing
+│                                      #   biome fill pass, with per-arena surfaceY/thickness
+│                                      #   passed as constructor args (each arena already knows
+│                                      #   its own values today — Space=50, Underworld=650,
+│                                      #   Desert thickness=20, everything else=Main.maxTilesY/2).
+├── *PlatformPass.cs (9x)            # MODIFIED — each ApplyPass() gains biome-specific
+│                                      #   DECORATION calls (the one part that cannot be shared).
+│                                      #   For Astral/Briar, new decoration code referencing
+│                                      #   Calamity/Spirit tile types stays INSIDE the already-
+│                                      #   [JITWhenModsEnabled]-tagged ApplyPass() method — no new
+│                                      #   tagging surface introduced.
+Tiles/
+└── ReturnPortalTile.cs             # NEW — ModTile placed by ArenaPolishPass near spawn;
+                                       #   right-click calls SubworldSystem.Exit() (mirror of
+                                       #   Test1Tile's entry pattern, this mod's own tile type,
+                                       #   so it is unconditionally JIT-safe like Test1Tile).
+Systems/
+├── BossSummonPlayer.cs             # MODIFIED — add a short "preparation time" delay (tick
+│                                       #   countdown) before NPC.SpawnOnPlayer() fires, instead
+│                                       #   of spawning on the same tick as OnEnterWorld().
+└── BiomeOverridePlayer.cs          # MODIFIED (or new sibling ModPlayer) — runtime Y-bound
+                                       #   defense-in-depth: per-tick clamp/teleport-back if the
+                                       #   player exceeds the arena's intended Y range, gated by
+                                       #   BossArenaRoutingRegistry.IsAnyArenaActive() (already
+                                       #   exists and already covers all 9 arena types — note
+                                       #   BiomeOverridePlayer.PostUpdate() currently only checks
+                                       #   IsActive<BossArenaSubworld>(), the PLAIN arena; this is
+                                       #   a pre-existing narrowing bug worth fixing as part of
+                                       #   this milestone regardless of the new Y-bound feature).
 ```
 
 ### Structure Rationale
 
-- **`Subworlds/`:** SubworldLibrary auto-registers any `Subworld` subclass found in the mod — keeping it isolated makes it trivial to find and matches SubworldLibrary example-mod conventions.
-- **`Systems/BossRegistry.cs`:** This is the seam the whole mod hinges on (per PROJECT.md Core Value). Isolating it means `GlobalNPC` and `ModItem` code never needs to know which source mod a boss came from — they only talk to the registry's key-based API.
-- **`Integrations/`:** Each source mod's API shape is different (Calamity: wrapper properties with side-effecting setters; Spirit: raw static fields; others: unresearched). One file per mod keeps a broken/updated mod's integration from touching unrelated code, and lets each be built, tested, and shipped independently once the skeleton (Registry + GlobalNPC + Item) is proven with one low-risk boss.
-- **`build.txt` weakReferences:** Every integration that compiles directly against another mod's types (rather than pure string-based reflection) must be declared as a `weakReferences` entry, or the mod fails to load when that target mod is absent.
+- **`ArenaBuilder.cs` as a plain static class, not a `GenPass`:** it needs to be callable both from the new shared `ArenaPolishPass` AND from inside each existing per-biome `ApplyPass()` method (e.g., so `AstralPlatformPass.ApplyPass()` can call `ArenaBuilder.PlaceAtInterval(...)` for its own biome-flavored decoration while still resolving the Astral-specific tile type itself, inside its own already-tagged method). A plain static class carries no autoload/JIT-prefilter risk of its own as long as its method signatures never mention a modded type by name — exactly the discipline the codebase already documents for `AstralPlatformPass`/`BriarPlatformPass` ("Calamity type references live ONLY inside this class's using directives and ApplyPass() method body").
+- **`ArenaPolishPass.cs` as ONE shared `GenPass`, not 9 duplicated ones:** boundary walls, Y-limit tiles, torch spacing, multi-tier decking, and return-portal placement are all biome-agnostic — none of them need to know whether the arena is Corruption or Astral, only where the platform surface is (a primitive `int`/`ushort`, passed in via constructor). This is the direct answer to "should there be a shared ArenaPolishPass" — yes, and it should be a genuinely single class appended to all 9 `Tasks` lists, not a base class each `*PlatformPass` inherits from (composition over inheritance keeps each biome pass's `ApplyPass()` — some of which are `[JITWhenModsEnabled]`-tagged — untouched in shape).
+- **Per-biome decoration explicitly NOT centralized:** decoration requires biome-specific tile *types* (Corruption thorns vs. Hallow crystal shards vs. Astral decor items), which only each biome's own `ApplyPass()` can resolve safely (Astral/Briar's modded tile lookups must stay inside their tagged methods). `ArenaBuilder` supplies the shared *placement algorithm* (e.g., "place tile X every N columns along row Y"); each `*PlatformPass.ApplyPass()` supplies the *which tile* argument.
+- **`ReturnPortalTile.cs` needs no JIT tag at all:** it is this mod's own `ModTile`, not a modded content-mod type, so — like `Test1Tile` — it is always present regardless of which content mods are installed/enabled. It is fully safe to place from the shared, untagged `ArenaPolishPass`.
+- **Preparation-time and portal-based exit are NOT GenPass concerns:** they are runtime/tick logic, not world-gen tile placement, so they belong in `Systems/` (extending `BossSummonPlayer.cs`'s existing `OnEnterWorld()` boss-spawn trigger, and a new `ReturnPortalTile.RightClick()` mirroring `Test1Tile.RightClick()`'s existing exit-trigger shape), not in `Subworlds/`.
 
 ## Architectural Patterns
 
-### Pattern 1: Subworld as an isolated, no-save dimension
+### Pattern 1: Shared vanilla-only `GenPass` appended to every arena's `Tasks` list
 
-**What:** `Subworld` subclass overriding `Size`, `Tasks` (world-gen passes — can be a near-empty list for a flat/void arena), `ShouldSave` (whether tile edits persist between visits), and `NoPlayerSaving` (whether player stat/buff changes made inside revert on exit).
-**When to use:** Any time you need a scratch dimension that must never accumulate mod-placed content (the entire premise of this project — avoiding the FPS collapse caused by dense modded world content).
-**Trade-offs:** A fresh/void arena means bosses that expect specific terrain (e.g., some need liquid, platforms, or biome checks) may misbehave — this needs per-boss verification, not just per-mod. Also: `ShouldSave`/`NoPlayerSaving` semantics directly gate whether the `BossCoreItem` the player picks up actually survives the trip back to the main world — get this wrong and the whole pipeline silently fails at the exit boundary, not at the kill or apply step.
-
-**Example:**
-```csharp
-public class BossArenaSubworld : Subworld
-{
-    public override int Width => 800;
-    public override int Height => 600;
-    public override List<GenPass> Tasks => new() { /* minimal/flat generation */ };
-    public override bool ShouldSave => false;      // arena resets each visit
-    public override bool NoPlayerSaving => false;   // player must KEEP inventory (the carrier item)
-}
-```
-
-### Pattern 2: Central registry as the only cross-cutting seam
-
-**What:** A single `BossRegistry` mapping a stable string/int key to a `BossDefinition` record `{ NpcType(s), Apply(), OnWorldGenSideEffect() }`. `GlobalNPC.OnKill` only ever asks "is this NPC type registered?"; `BossCoreItem` only ever calls "Apply(this.BossKey)". Neither touches any source mod's API directly.
-**When to use:** Whenever multiple heterogeneous external systems (7 different content mods with 7 different downed-flag APIs) must be normalized behind one interface consumed by generic pipeline code.
-**Trade-offs:** Adds one layer of indirection, but this is exactly what makes the pipeline "reliably reproduce a boss's full downed state for any registered boss" (per PROJECT.md Core Value) — without it, `GlobalNPC`/`ModItem` code would need a growing chain of per-mod `if` branches, which is fragile and hard to extend.
+**What:** A single `ArenaPolishPass : GenPass` class, constructed once per arena with that arena's own `surfaceY`/`thickness` (and any other per-arena parameters, e.g. return-portal offset), appended as entry #2 in every `Subworld.Tasks` list after the existing biome fill pass.
+**When to use:** Any new arena feature that does not need to know the biome (boundary walls, Y-limit containment, torch lighting, multi-tier decking, return-portal placement).
+**Trade-offs:** Adds one extra `GenPass` execution per arena entry (cheap — same order of magnitude as the existing fill pass, single 10000-wide loop). Requires each `Subworld.Tasks` getter to be touched (9 one-line edits) but avoids 9x duplicated boundary/lighting/tier logic. Assumes `Tasks` list order = execution order (see confidence note below — verify with a quick in-game check before relying on "boundary walls after the biome floor exists" ordering).
 
 **Example:**
 ```csharp
-public record BossDefinition(int[] NpcTypes, Action ApplyDowned);
-
-public class BossRegistry : ModSystem
+// Subworlds/BossArenaAstralSubworld.cs — Tasks getter, MODIFIED
+public override List<GenPass> Tasks => new()
 {
-    private static readonly Dictionary<string, BossDefinition> _byKey = new();
-    private static readonly Dictionary<int, string> _npcTypeToKey = new();
-
-    public static void Register(string key, BossDefinition def)
-    {
-        _byKey[key] = def;
-        foreach (int t in def.NpcTypes) _npcTypeToKey[t] = key;
-    }
-
-    public static bool TryGetKeyForNpc(int npcType, out string key) =>
-        _npcTypeToKey.TryGetValue(npcType, out key);
-
-    public static void Apply(string key) => _byKey[key].ApplyDowned();
-}
+    new AstralPlatformPass("Astral Infection Boss Arena Platform", 1f),
+    new ArenaPolishPass("Arena Polish", 1f, surfaceY: Main.maxTilesY / 2, thickness: 15)
+};
 ```
 
-### Pattern 3: Weak references + `[JITWhenModsEnabled]` for cross-mod static access
-
-**What:** Compile directly against another mod's public types/members (obtained from that mod's built `.dll`, referenced via `<Reference>` in the `.csproj` and declared as `weakReferences = ModName` in `build.txt`), but wrap every call site in a method/property tagged `[JITWhenModsEnabled("ModName")]` so the JIT never resolves those types unless the mod is actually loaded at runtime. Always guard the call site itself with `ModLoader.TryGetMod("ModName", out _)` or `ModLoader.HasMod("ModName")`.
-**When to use:** This is the tModLoader-recommended approach for "deep integration with type safety" when the referenced mod is optional but core to functionality — exactly this project's situation with Calamity (`DownedBossSystem` wrapper properties), Spirit (`MyWorld` static fields), and the other unresearched mods.
-**Trade-offs:** Requires obtaining each target mod's compiled `.dll` before writing its integration file (a **build-order dependency**: you cannot write/compile `CalamityIntegration.cs` until Calamity's dll is available as a project reference). Raw `System.Reflection` (string-based `Assembly.GetType`/`GetField`) is the fallback only for private members or mods where no reference dll is available — the tModLoader wiki explicitly calls plain reflection for cross-mod content "fragile" and "a bad approach" compared to weak references. `Mod.Call` is a third option but only works if the *target* mod explicitly implements a `Call` handler; none of Calamity/Spirit's known APIs (direct property/field access) suggest they do.
-
-**Example:**
 ```csharp
-// CalamityIntegration.cs
-public static class CalamityIntegration
+// Subworlds/ArenaPolishPass.cs — NEW, no [JITWhenModsEnabled] anywhere in this file
+public class ArenaPolishPass : GenPass
 {
-    public static void Register()
+    private readonly int _surfaceY;
+    private readonly int _thickness;
+
+    public ArenaPolishPass(string name, float loadWeight, int surfaceY, int thickness) : base(name, loadWeight)
     {
-        if (!ModLoader.HasMod("CalamityMod")) return;
-        BossRegistry.Register("calamity:desert_scourge", new BossDefinition(
-            NpcTypes: GetDesertScourgeTypes(),
-            ApplyDowned: ApplyDesertScourgeDowned));
+        _surfaceY = surfaceY;
+        _thickness = thickness;
     }
 
-    [JITWhenModsEnabled("CalamityMod")]
-    private static int[] GetDesertScourgeTypes() =>
-        new[] { ModContent.NPCType<CalamityMod.NPCs.DesertScourge.DesertScourgeHead>() };
-
-    [JITWhenModsEnabled("CalamityMod")]
-    private static void ApplyDesertScourgeDowned()
+    protected override void ApplyPass(GenerationProgress progress, GameConfiguration configuration)
     {
-        CalamityMod.World.DownedBossSystem.downedDesertScourge = true; // wrapper property, has side-effecting setter
-        CalamityMod.CalamityNetcode.SyncWorld();
-        // + any CalamityGlobalNPC.SetNewBossJustDowned() equivalent, per PROJECT.md
+        progress.Message = "Polishing boss arena";
+        ArenaBuilder.PlaceBoundaryWalls(minY: _surfaceY - 40, maxY: _surfaceY + _thickness + 40, worldWidth: Main.maxTilesX);
+        ArenaBuilder.PlaceAtInterval(y: _surfaceY - 1, worldWidth: Main.maxTilesX, interval: 40, tileType: TileID.Torches);
+        ArenaBuilder.BuildTierPlatform(y: _surfaceY - 15, x0: Main.maxTilesX / 2 - 500, x1: Main.maxTilesX / 2 + 500, tileType: TileID.Platforms);
+        ArenaBuilder.PlaceReturnPortal(x: Main.maxTilesX / 2 + 5, y: _surfaceY - 4);
     }
 }
 ```
+
+### Pattern 2: Per-method JIT-tagging boundary preserved for the shared helper
+
+**What:** `ArenaBuilder`'s own method signatures accept only vanilla primitives (`int`, `ushort` tile-type IDs, `bool`) — never a `CalamityMod.*`/`SpiritMod.*` type by name. Biome-specific decoration keeps resolving `ModContent.TileType<AstralStone>()` etc. *inside* the already-`[JITWhenModsEnabled]`-tagged `ApplyPass()` methods, then passes the resulting `ushort` down into `ArenaBuilder`.
+**When to use:** Any time a shared helper needs to be callable from both JIT-tagged (Astral/Briar) and untagged (the other 7) call sites. This is the load-bearing rule that lets one `ArenaBuilder`/`ArenaPolishPass` exist without needing 9 separate copies or a second tag matrix.
+**Trade-offs:** Requires discipline — a future contributor adding, say, a Calamity-specific decorative tile check *inside* `ArenaBuilder` itself would silently reintroduce the exact `JITException` the codebase already hit once (Phase 9, D-01/Pitfall 4: "lazy class construction alone is NOT sufficient JIT protection" — tModLoader JIT-prefilters every method in the assembly regardless of reachability). Worth a one-line comment atop `ArenaBuilder.cs` codifying this constraint, matching the existing comment style in `AstralPlatformPass.cs`/`BriarPlatformPass.cs`.
+
+### Pattern 3: Constructor-parameterized per-arena config instead of hardcoded per-pass constants
+
+**What:** `ArenaPolishPass` (and `ReturnPortalTile` placement) take `surfaceY`/`thickness`/offsets as constructor arguments supplied by each `Subworld.Tasks` getter, rather than re-deriving or hardcoding them a second time.
+**When to use:** Whenever a new shared component needs to know where the existing biome-specific fill pass already put the floor. Each arena already has these values today as inline literals inside its own `*PlatformPass.ApplyPass()` (Space=50/10, Underworld=650/10, Desert=Main.maxTilesY/2/20, everything else=Main.maxTilesY/2/15) — this milestone is a natural point to hoist them into named `public const` fields on each `*PlatformPass` class (or each `Subworld` class) so both the fill pass and `ArenaPolishPass` reference the same source of truth instead of two independently-hardcoded numbers drifting apart.
+**Trade-offs:** Small refactor (9 files gain 1-2 named constants each) but removes an easy-to-miss duplication bug (e.g., changing Desert's `thickness` from 20 to 25 later would silently desync `ArenaPolishPass`'s boundary-wall Y math unless it reads the same constant).
 
 ## Data Flow
 
-### Boss-kill-to-apply flow
+### World-gen (arena creation) flow
 
 ```
-Player uses entry item/NPC in main world
+Test1Tile.RightClick()
+    ↓ (SUBW-01 entry trigger)
+BossArenaRoutingRegistry.Enter(bossNpcType)
     ↓
-SubworldSystem.Enter<BossArenaSubworld>()
+SubworldSystem.Enter<T>()  →  T.Tasks getter invoked
     ↓
-[BossArenaSubworld active] player fights boss (mod content/AI runs as normal — only the *world* is empty)
+[1] new XPlatformPass(...).ApplyPass()      — biome floor fill + spawn point (existing, per-biome)
+[2] new ArenaPolishPass(...).ApplyPass()    — boundary walls, Y-limit, torches, tiers, return
+                                                portal (NEW, shared, runs after [1] so it can
+                                                build relative to the already-placed floor —
+                                                MEDIUM confidence this is guaranteed by Tasks
+                                                list order; verify once in-game before depending
+                                                on it for anything load-bearing like "torches sit
+                                                exactly N tiles above the real floor")
     ↓
-NPC dies → NPC.checkDead() → BossKillGlobalNPC.OnKill(npc)
-    ↓ (gated: SubworldSystem.IsActive<BossArenaSubworld>())
-BossRegistry.TryGetKeyForNpc(npc.type, out key)
-    ↓ (match found)
-spawn BossCoreItem instance, SetKey(key) → item.SaveData persists key in TagCompound
-    ↓
-Player picks up item, exits subworld → SubworldSystem.Exit()
-    ↓ (NoPlayerSaving/inventory must survive this transition — verify in Phase: subworld skeleton)
-Player back in main world, inventory contains BossCoreItem
-    ↓
-Player uses/right-clicks BossCoreItem → ModItem hook reads instance key
-    ↓
-BossRegistry.Apply(key) → per-mod integration's ApplyDowned()
-    ↓
-source mod's downed flag set + its netcode sync call + any WorldGen side effect (ore gen, dungeon activation, etc.)
-    ↓
-item consumed
+BossSummonPlayer.OnEnterWorld()
+    ↓ [MODIFIED] short prep-time countdown (new) → then:
+NPC.SpawnOnPlayer(PendingBossNpcType)
 ```
 
-### Registration flow (mod load time, one-directional, no runtime cost per kill)
+### Runtime containment flow (new)
 
 ```
-Mod.Load() / PostSetupContent()
-    ↓
-CalamityIntegration.Register() ─┐
-SpiritIntegration.Register()    ─┤
-RedemptionIntegration.Register()─┼──▶ BossRegistry._byKey / _npcTypeToKey populated once
-CatalystIntegration.Register()  ─┤
-NoxusBossIntegration.Register() ─┤
-DaybreakIntegration.Register()  ─┘
+Every tick, while BossArenaRoutingRegistry.IsAnyArenaActive():
+    BiomeOverridePlayer.PostUpdate() (or new sibling ModPlayer)
+        → if player.position.Y < arena's minY OR > arena's maxY:
+              clamp/teleport player back inside bounds
 ```
+This mirrors the existing `BiomeOverridePlayer` pattern (per-tick force-check gated by "are we in one of our arenas," already established for biome-flag forcing) — reuse the shape, don't invent a new one. Note the existing gate (`SubworldSystem.IsActive<BossArenaSubworld>()`) only checks the **plain** arena today; extending it to all 9 requires switching to `BossArenaRoutingRegistry.IsAnyArenaActive()`, which already exists and already tracks every registered arena type via `_knownArenaTypes`.
 
 ### Key Data Flows
 
-1. **Kill → carrier item:** One-way, subworld-scoped. `BossKillGlobalNPC` never talks to a source mod directly — it only queries `BossRegistry` by NPC type. This keeps the kill-detection hook generic across all 7+ target mods.
-2. **Carrier item → main-world apply:** One-way, main-world-scoped, triggered by explicit player action (matches PROJECT.md's "manual" design philosophy — no automatic subworld-to-main sync, since that's the very SubworldLibrary limitation this mod works around).
-3. **Registration → lookup:** Static, populated once at load, read many times (once per boss kill and once per item use) — no need for thread safety or lazy invalidation.
+1. **Arena assembly:** `Subworld.Tasks` list order → biome fill pass, then shared polish pass. Both write directly to `Main.tile[x,y]`/`Main.spawnTileX/Y` (same primitive as today, no new abstraction needed for tile writes themselves).
+2. **JIT-safety boundary:** modded-type resolution happens exactly once per biome, inside that biome's own tagged `ApplyPass()`; everything downstream of that point (into `ArenaBuilder`, into `ArenaPolishPass`) only ever sees `ushort`/`int` — never a modded `Type` reference.
+3. **Containment defense-in-depth:** GenPass-time boundary tiles (physical, one-time, cheap) + runtime per-tick Y-clamp (`BiomeOverridePlayer`-style, catches drills/teleport items/anything that bypasses the physical wall) — two layers, not one, because Terraria tiles are minable by design and a purely physical wall is not a hard guarantee.
 
-## Scaling Considerations
+## Build Order (Rollout Sequencing)
 
-Not a traditional user-scaling problem — the relevant "scale" axis here is **number of registered bosses / source mods** (2 researched so far, growing to 7+ per PROJECT.md).
+Given the existing JIT-safety and per-biome isolation constraints, build in this order:
 
-| Scale | Architecture Adjustments |
-|-------|---------------------------|
-| 1-2 source mods (Calamity, Spirit) | Flat `Dictionary<string, BossDefinition>` in `BossRegistry` is sufficient; per-mod integration files can be written and tested serially |
-| 3-5 source mods (+ Redemption, CatalystMod, NoxusBoss) | Still flat dictionary; the only added cost is per-mod research time (API shape unknown for each), not architecture — this is why PROJECT.md's "no priority ordering" decision holds: registration mechanics don't get more complex, they just repeat |
-| 6-7+ source mods (+ ContinentOfJourney/Daybreak) | Watch for **NPC type collisions** if two mods reuse a type id space unexpectedly (unlikely in tModLoader since types are assigned per-mod at runtime, but worth a defensive check/log in `BossRegistry.Register` if a key or npcType is registered twice) |
-
-### Scaling Priorities
-
-1. **First bottleneck:** Build-order fragility — each weakly-referenced integration needs that mod's dll available at compile time. If a target mod updates and changes its API (e.g., Calamity renames `DownedBossSystem`), only that one integration file breaks — isolate for exactly this reason.
-2. **Second bottleneck:** Side-effect completeness, not raw scale — PROJECT.md flags that under-reproducing a mod's `OnKill` side effects (netcode sync, WorldGen triggers) breaks other systems that key off those flags (e.g. vanilla Lantern Night). This is a per-boss correctness risk, not an architectural one — mitigate by keeping each integration's `ApplyDowned()` as a faithful line-by-line replay of the source mod's actual `OnKill`, not a shortcut.
+1. **`ArenaBuilder.cs`** — pure static helper, zero dependencies on any `Subworld`/`GenPass`, easiest to write/reason about in isolation. No JIT tag anywhere in this file (enforce via the Pattern 2 discipline above).
+2. **`ArenaPolishPass.cs`** — shared `GenPass` built against `ArenaBuilder`. Wire it into **`BossArenaSubworld.cs` (the plain arena) FIRST.** This is the safest possible integration target: zero biome-flag concerns (Pattern in `FlatStonePlatformPass`'s own header comment — "absence-by-construction"), zero JIT concerns (no modded types anywhere on this arena's call path today). Boundary walls, torch spacing, multi-tier decking, return portal, and prep-time delay should all be live-verified in-game here before touching any other arena.
+3. **Extend to the 6 remaining non-modded biome variants** (Corruption, Hallow, Underworld, Jungle, Space, Desert) — one-line `Tasks`-list append + correct `surfaceY`/`thickness` constructor args per arena, following each arena's existing per-biome Y-placement comment (Space=50, Underworld=650, Desert thickness=20, rest=`Main.maxTilesY/2`/15). These carry the same JIT profile as the plain arena today (zero modded-type references anywhere in their `Tasks` chain), so this step is still low-risk mechanical repetition, not new research.
+4. **Extend to Astral and Briar LAST**, specifically because they are the only 2 of the 9 with an existing JIT-tagged surface. Appending an *untagged* `ArenaPolishPass` instance to their `Tasks` list does not by itself introduce new JIT risk (the new pass's own methods reference no modded types), but this is exactly the class of change the project has been burned by once already (Phase 9, D-01) — so treat this step as requiring the same live-verification discipline already established: **build with `CalamityMod` disabled and re-confirm `BossArenaAstralSubworld` still loads without a `JITException`; separately, with `SpiritMod` disabled, re-confirm `BossArenaBriarSubworld` still loads.** This is a cheap sanity check that directly matches the project's own documented pitfall.
+5. **Per-biome decoration LAST, inside each `*PlatformPass.ApplyPass()` individually** — the one piece of this milestone that is genuinely non-shareable. For the 7 vanilla-only passes, add decoration calls freely. For Astral/Briar, add decoration calls *inside the already-tagged `ApplyPass()` method* only — do not extract new decoration logic into a separate untagged helper method on those two classes, or the JIT-prefilter issue resurfaces for that specific new method.
+6. **Systems-layer changes (prep-time delay, return-portal exit trigger, Y-bound runtime clamp) can proceed in parallel with steps 3-5** — they touch `Systems/BossSummonPlayer.cs`, `Systems/BiomeOverridePlayer.cs` (or a new sibling `ModPlayer`), and the new `Tiles/ReturnPortalTile.cs`, none of which depend on which arena variant is currently being polished. Recommend doing this alongside step 2 (plain-arena validation), since prep-time and return-portal behavior are best sanity-checked on the simplest arena first, same rationale as step 2.
 
 ## Anti-Patterns
 
-### Anti-Pattern 1: Branching on source mod inside `GlobalNPC`/`ModItem`
+### Anti-Pattern 1: A base-class `AbstractArenaGenPass` that all 9 `*PlatformPass` classes inherit from
 
-**What people do:** Put `if (npc.ModNPC?.Mod.Name == "CalamityMod") { ... } else if (... == "SpiritMod") { ... }` directly inside `OnKill` or the item's use hook.
-**Why it's wrong:** Couples the generic pipeline to every source mod's internals, makes `OnKill`/`UseItem` grow linearly with mod count, and violates the "generic mechanism must work for any registered boss" Core Value in PROJECT.md.
-**Do this instead:** `BossRegistry` lookup only. All mod-specific knowledge lives in `Integrations/`.
+**What people do:** Reach for inheritance to "share" boundary/lighting/tier logic by putting it in a shared base `GenPass` class and having `AstralPlatformPass : AbstractArenaGenPass` etc.
+**Why it's wrong:** Two of the nine subclasses (Astral, Briar) need `[JITWhenModsEnabled]` on their `ApplyPass()` override; the other seven don't. Baking shared logic into a base class's own `ApplyPass()` (or a base method the subclasses call via `base.ApplyPass()`) blurs exactly the per-method JIT-tagging boundary this codebase has already had to fix once (D-01/Pitfall 4). Composition (a separate `ArenaPolishPass` instance appended to the `Tasks` list, plus a static `ArenaBuilder` helper) keeps every existing `*PlatformPass` class's shape — and its existing JIT tags — completely untouched.
+**Do this instead:** Composition via an extra `Tasks` list entry (Pattern 1) and a static helper (Pattern 2).
 
-### Anti-Pattern 2: Reflection everywhere instead of weak references where a dll is obtainable
+### Anti-Pattern 2: Hardcoding return-portal/torch/wall tile placement using each biome's OWN decorative tile type
 
-**What people do:** Use `Assembly.GetType("CalamityMod.World.DownedBossSystem")` + `FieldInfo`/`PropertyInfo` string lookups for every cross-mod call, to "avoid compile-time dependency."
-**Why it's wrong:** tModLoader's own wiki calls this fragile — it breaks silently (no compile error) when the target mod renames/moves a member, and it's slower and harder to debug than compiled access.
-**Do this instead:** Add the target mod as a `weakReferences` entry with a project reference to its dll, wrap access in `[JITWhenModsEnabled]`, and let the compiler catch breakage when rebuilding against an updated dll. Reserve raw reflection for members that are genuinely private/internal or for mods where no reference dll can be sourced.
-
-### Anti-Pattern 3: Setting downed flags as booleans without replaying side effects
-
-**What people do:** Treat "apply boss downed" as `SomeMod.downedX = true;` and stop there.
-**Why it's wrong:** PROJECT.md explicitly documents that Calamity's flags are wrapper properties whose setters trigger `CalamityNetcode.SyncWorld()`/`SetNewBossJustDowned()`, and that world-altering bosses need WorldGen side effects (ore gen, dungeon activation) replayed too. Skipping these leaves the flag set but dependent systems (vanilla events, mod-internal caches) unaware.
-**Do this instead:** Each integration's `ApplyDowned()` should call the *same* code path the source mod's own `OnKill` calls, not just assign the flag.
-
-### Anti-Pattern 4: Relying on SubworldLibrary's automatic save/sync for the downed flag
-
-**What people do:** Assume killing a boss in a subworld will naturally propagate to the main world's save file on exit.
-**Why it's wrong:** PROJECT.md documents this as a known SubworldLibrary-ecosystem bug — downed flags are serialized per-world-file and unconditionally overwritten on world load, so subworld kills do not propagate automatically. This is precisely why the carrier-item pattern exists.
-**Do this instead:** Treat the subworld and main world as fully separate save states connected only by the `BossCoreItem` the player physically carries in inventory across the transition.
+**What people do:** Since `ArenaPolishPass` is per-arena-constructed anyway, it's tempting to also pass in a biome-flavored torch/wall tile (e.g., Astral-themed torches) to make the "shared" pass feel more thematic.
+**Why it's wrong:** The moment `ArenaPolishPass` (or `ArenaBuilder`) accepts a parameter whose *resolution* requires a modded type (even if the parameter itself is typed `ushort`), the caller resolving that modded tile type must do so somewhere — and if that "somewhere" is inside `ArenaPolishPass`'s own constructor call site in an UNTAGGED `Subworld.Tasks` getter (recall: `Subworld` is an autoloaded `ModType`, always JIT-prefiltered, and per the codebase's own `BossArenaAstralSubworld.cs` header comment must contain **zero** direct Calamity/Spirit type references), that reintroduces the exact bug class Phase 9 already fixed once.
+**Do this instead:** Keep `ArenaPolishPass`'s vanilla-flavored torches/walls/tiers (plain `TileID.Torches`, `TileID.Platforms`, etc. — these work identically in every biome and don't affect any biome's tile-weighted Zone-flag count, since none of them appear in any biome's weighted tile set per the existing `*PlatformPass` header comments). Reserve biome-flavored decoration for the per-biome `ApplyPass()` methods, where modded-type resolution is already known-safe.
 
 ## Integration Points
 
-### External Mods (weak dependencies)
+### External Dependencies (unchanged by this milestone)
 
-| Mod | Integration Pattern | Notes |
-|-----|----------------------|-------|
-| SubworldLibrary | Strong/mod reference (required, not weak) — `Subworld` base class, `SubworldSystem.Enter<T>()`/`Exit()` | Foundation dependency; must be a real `modReferences` entry, not weak, since the whole subworld mechanic depends on it |
-| CalamityMod | Weak reference + `[JITWhenModsEnabled]`; `DownedBossSystem` wrapper properties, `CalamityNetcode.SyncWorld()`, `CalamityGlobalNPC.SetNewBossJustDowned()` | API shape confirmed per PROJECT.md research |
-| SpiritMod | Weak reference + `[JITWhenModsEnabled]`; `MyWorld` plain public static bool fields | PROJECT.md notes version may have moved from `ModWorld` to `ModSystem` — recheck against installed copy before writing integration |
-| Redemption, CatalystMod, NoxusBoss, ContinentOfJourney, Daybreak | Unresearched — API shape unknown | Each needs its own research pass (per-mod decompile/source read) before an integration file can be written; treat as a per-mod research spike, same shape as Calamity/Spirit research already done |
-| Infernum / Wrath of the Gods | No separate integration needed | These rework existing boss AI on top of Calamity/vanilla bosses rather than adding new downed flags — covered automatically once the underlying boss is registered, per PROJECT.md |
+| Dependency | Integration Pattern | Notes |
+|---------|---------------------|-------|
+| SubworldLibrary (`Subworld`, `SubworldSystem`, `GenPass`) | `Subworld.Tasks` list execution, `SubworldSystem.Enter<T>()`/`Exit()` | No new SubworldLibrary API surface needed for any of the 6 requested features — everything is expressible as additional `GenPass` steps + existing `ModPlayer`/`ModTile` hooks |
+| CalamityMod / SpiritMod (Astral/Briar tile types only) | `[JITWhenModsEnabled]`-tagged method bodies | Unchanged pattern; new decoration code for these two arenas must stay inside the existing tagged methods |
 
-### Internal Boundaries
+### Internal Boundaries (new/modified)
 
 | Boundary | Communication | Notes |
-|----------|----------------|-------|
-| Subworld entry trigger ↔ `BossArenaSubworld` | `SubworldSystem.Enter<T>()` / `Exit()` (SubworldLibrary API) | No custom data channel needed here — this boundary is pure navigation |
-| `BossKillGlobalNPC` ↔ `BossRegistry` | Direct static method call, read-only lookup | Must be subworld-gated (`SubworldSystem.IsActive<BossArenaSubworld>()`) so ordinary main-world kills of the same NPC types don't also spawn carrier items |
-| `BossCoreItem` ↔ `BossRegistry` | Direct static method call (`Apply(key)`), triggered from a use/right-click hook | Item must carry the key through `SaveData`/`LoadData` (TagCompound) and `Clone` (with `CloneNewInstances = true`) so the key survives serialization and item-instance duplication |
-| `BossRegistry` ↔ per-mod `Integrations/*` | Registration calls at load time (`Register()` static methods invoked from mod's `Load`/`PostSetupContent`) | One-directional: integrations push definitions in; registry never calls back into integration code except via the stored delegate |
-| Integration classes ↔ target mod dlls | Compiled access via weak reference + `[JITWhenModsEnabled]` (primary) or raw reflection (fallback) | Build-order dependency: target mod's dll must be available as a project reference before the integration file compiles |
+|----------|---------------|-------|
+| `Subworld.Tasks` getter ↔ `ArenaPolishPass` | Direct constructor call, `int`/`ushort` params only | 9 files touched (1-2 line addition each), zero files touched for `ArenaPolishPass.cs` itself since it's brand new |
+| `*PlatformPass.ApplyPass()` ↔ `ArenaBuilder` | Static method calls, `ushort` tile-type params resolved by the caller | Applies to all 9 `ApplyPass()` methods if the fill-loop duplication is also refactored (optional but recommended given "리토픽 전체" scope already touches every file) |
+| `ArenaPolishPass` ↔ `ReturnPortalTile` | `ArenaPolishPass.ApplyPass()` places the tile directly (`Tile.TileType = (ushort)ModContent.TileType<ReturnPortalTile>()`) — this mod's own type, always safe | No JIT concern; same category as `Test1Tile` |
+| `BossSummonPlayer.OnEnterWorld()` ↔ prep-time delay | New tick-countdown field + `PostUpdate()` (or reuse `OnEnterWorld` with a deferred flag checked next frame) | Needs a design decision: delay via `ModPlayer.PostUpdate()` countdown (consistent with `BiomeOverridePlayer`'s existing per-tick style) vs. a one-shot timer — recommend the countdown-field approach for consistency with the codebase's established per-tick pattern |
+| `BiomeOverridePlayer` (or new ModPlayer) ↔ `BossArenaRoutingRegistry.IsAnyArenaActive()` | Already-existing static method call | **Pre-existing gap worth fixing regardless of this milestone:** `BiomeOverridePlayer.PostUpdate()` currently gates on `SubworldSystem.IsActive<BossArenaSubworld>()` (plain arena ONLY), not `BossArenaRoutingRegistry.IsAnyArenaActive()` (all 9). Any new Y-bound containment logic added here should use the registry check, and it would be reasonable to fix the existing gate at the same time since it's a one-line change in a file already being modified for this milestone. |
 
 ## Sources
 
-- [SubworldLibrary Wiki (jjohnsnaill/SubworldLibrary)](https://github.com/jjohnsnaill/SubworldLibrary/wiki) — Subworld class structure, `OnEnter`/`OnLoad`/`OnExit`/`OnUnload`, `ShouldSave`/`NoPlayerSaving`, `SubworldSystem.Enter`/`Exit`/`IsActive`/`AnyActive` — MEDIUM confidence (fetched via summarized WebFetch, not directly verified against source code)
-- [tModLoader Wiki: Expert Cross-Mod Content](https://github.com/tModLoader/tModLoader/wiki/Expert-Cross-Mod-Content) — weak references, `build.txt` `weakReferences`, `[JITWhenModsEnabled]`, `ModLoader.HasMod`/`TryGetMod`, comparison of weak references vs `Mod.Call` vs reflection — HIGH confidence (official tModLoader wiki)
-- [tModLoader: GlobalNPC Class Reference](https://docs.tmodloader.net/docs/stable/class_global_n_p_c.html) — `OnKill` hook — HIGH confidence (official API docs)
-- [BossChecklist GitHub — BossChecklistIntegrationExample.cs](https://github.com/JavidPack/BossChecklist/blob/1.4/BossChecklistIntegrationExample.cs) — real-world example of `ModLoader.TryGetMod` + `Mod.Call` weak-reference cross-mod pattern — HIGH confidence (widely-used community mod, official example integration file)
-- [tModLoader Wiki: Saving and loading using TagCompound](https://github.com/tModLoader/tModLoader/wiki/Saving-and-loading-using-TagCompound) — `SaveData`/`LoadData` pattern for `ModItem` instance data — HIGH confidence (official wiki)
-- ExampleMod `ExampleInstancedItem`/`CloneNewInstances` pattern (referenced via search, not directly fetched) — MEDIUM confidence; recommend verifying directly against `tModLoader/tModLoader` GitHub `ExampleMod/Items/` during implementation
-- `.planning/PROJECT.md` — project-specific facts about Calamity `DownedBossSystem`, Spirit `MyWorld`, and the SubworldLibrary downed-flag propagation bug — project source of truth
+- Direct read of current repository source (`Subworlds/*.cs`, `Systems/*.cs`, `Tiles/Test1Tile.cs`) — HIGH confidence, ground truth for "what exists today"
+- `.planning/PROJECT.md` — HIGH confidence, project-authored history/decisions log (Phase 9 D-01/Pitfall 4 JIT discipline, Phase 4 biome-routing rationale)
+- Assumption flagged MEDIUM confidence: `Subworld.Tasks` list execution order is sequential top-to-bottom (`ArenaPolishPass` after the biome fill pass sees an already-filled floor). Inferred from every existing `Subworld.Tasks` list currently containing exactly one entry (so order has never actually been exercised in this codebase yet) plus standard `GenPass`/`WorldGenerator` semantics in tModLoader/vanilla world-gen (passes execute in list order, each seeing the previous pass's tile writes). Recommend a quick in-game check (e.g., a debug `Main.NewText` in `ArenaPolishPass.ApplyPass()` confirming `Main.tile[x, surfaceY].HasTile == true` before building on top of it) as the very first step of implementation, before relying on this ordering for anything load-bearing.
 
 ---
-*Architecture research for: tModLoader boss-arena subworld mod*
-*Researched: 2026-08-12*
+*Architecture research for: tModLoader boss-arena subworld design/visual-polish milestone (v1.1)*
+*Researched: 2026-08-15*
