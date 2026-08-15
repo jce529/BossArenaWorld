@@ -8,7 +8,12 @@ namespace BossArenaSubWorld.Systems
 {
     // D-03: namespaced string keys ("modprefix:boss_name"), decoupled from raw NPC.type --
     // a boss key maps to one or more NPC types, not the reverse (supports future multi-phase bosses).
-    public record BossDefinition(int[] NpcTypes, Action ApplyDowned, Func<bool> IsDowned);
+    // RequiresInfernumToggle (default false): true only for bosses whose AI/behavior actually
+    // depends on InfernumMode's per-world toggle being forced active inside the throwaway arena
+    // subworld (see BossSummonPlayer.OnEnterWorld() and CalamityIntegration.ForceInfernumModeActiveInArena()).
+    // Explicit per-boss flag, not a key-prefix inference -- replaces the prior
+    // bossKey.StartsWith("calamity:") heuristic from quick task 260815-to6 (see quick task 260815-u7g).
+    public record BossDefinition(int[] NpcTypes, Action ApplyDowned, Func<bool> IsDowned, bool RequiresInfernumToggle = false);
 
     // APPLY-04: 3-state result drives BossCoreItem's D-02 consume-vs-retain policy.
     public enum ApplyResult { Applied, AlreadyDowned, UnknownKey }
@@ -38,6 +43,15 @@ namespace BossArenaSubWorld.Systems
 
         public static bool TryGetKeyForNpc(int npcType, out string key) =>
             _npcTypeToKey.TryGetValue(npcType, out key);
+
+        // Exposes the full BossDefinition (not just its key) for callers that need to inspect
+        // per-boss flags (e.g. RequiresInfernumToggle) without duplicating the key->definition
+        // lookup Apply() already does internally.
+        public static bool TryGetDefinitionForNpc(int npcType, out BossDefinition def)
+        {
+            def = null;
+            return TryGetKeyForNpc(npcType, out string key) && _byKey.TryGetValue(key, out def);
+        }
 
         // D-01: idempotency via live-flag check, no separate applied-tracking set.
         public static ApplyResult Apply(string key)
