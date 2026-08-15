@@ -26,9 +26,9 @@
 
 ### Biome-Themed Decoration (DECOR)
 
-- [ ] **DECOR-01**: Each of the 9 arenas has biome-legible decorative tiles/background matching its theme (Corruption: chasms/purple grass; Hallow: crystal tones; Underworld: ash/obsidian/lava glow; Jungle: mud/vines; Desert: dunes/sandstone; Astral/Briar: mod-native palettes; plain arena: a neutral/generic theme)
-- [ ] **DECOR-02**: Decoration is additive to (or drawn from) each biome's existing Zone-flag-qualifying tile ID set, not a wholesale replacement with non-qualifying cosmetic tiles — preserving the tile-weight budget each `*PlatformPass` already depends on
-- [ ] **DECOR-03**: Astral and Briar's decoration code stays inside their existing `[JITWhenModsEnabled]`-guarded `ApplyPass()` methods (no decoration logic touching modded types moves into a shared/untagged helper)
+- [x] **DECOR-01**: Each of the 9 arenas has biome-legible decorative tiles/background matching its theme (Corruption: chasms/purple grass; Hallow: crystal tones; Underworld: ash/obsidian/lava glow; Jungle: mud/vines; Desert: dunes/sandstone; Astral/Briar: mod-native palettes; plain arena: a neutral/generic theme)
+- [x] **DECOR-02**: Decoration is additive to (or drawn from) each biome's existing Zone-flag-qualifying tile ID set, not a wholesale replacement with non-qualifying cosmetic tiles — preserving the tile-weight budget each `*PlatformPass` already depends on
+- [x] **DECOR-03**: Astral and Briar's decoration code stays inside their existing `[JITWhenModsEnabled]`-guarded `ApplyPass()` methods (no decoration logic touching modded types moves into a shared/untagged helper)
 
 ### Entry & Exit Convenience (ENTRY)
 
@@ -77,9 +77,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TIER-03 | Phase 13 | Complete |
 | LIGHT-01 | Phase 11 | Complete |
 | LIGHT-02 | Phase 11 | Complete |
-| DECOR-01 | Phase 14 | Pending |
-| DECOR-02 | Phase 14 | Pending |
-| DECOR-03 | Phase 14 | Pending |
+| DECOR-01 | Phase 14 | Complete |
+| DECOR-02 | Phase 14 | Complete |
+| DECOR-03 | Phase 14 | Complete |
 | ENTRY-01 | Phase 12 | Complete |
 | ENTRY-02 | Phase 12 | Complete |
 | ENTRY-03 | Phase 12 | Complete |

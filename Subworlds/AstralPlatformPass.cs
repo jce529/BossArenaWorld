@@ -1,4 +1,5 @@
 using Terraria;
+using Terraria.ID;
 using Terraria.IO;
 using Terraria.WorldBuilding;
 using Terraria.ModLoader;
@@ -43,6 +44,10 @@ namespace BossArenaSubWorld.Subworlds
 			ushort astralStone = (ushort)ModContent.TileType<AstralStone>();
 			ushort astralGrass = (ushort)ModContent.TileType<AstralGrass>();
 
+			// Fill themed background wall behind the arena tiers (DECOR-01, DECOR-03)
+			ushort astralWall = ModContent.TryFind<ModWall>("CalamityMod", "AstralDirtWall", out ModWall wall) ? (ushort)wall.Type : (ushort)WallID.EbonstoneUnsafe;
+			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 60, surfaceY + thickness, astralWall);
+
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
 				for (int y = surfaceY; y < surfaceY + thickness; y++)
@@ -57,6 +62,9 @@ namespace BossArenaSubWorld.Subworlds
 
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+
+			// Place campfire for arena theming (DECOR-01)
+			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 1);
 		}
 	}
 }

@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 아레나 서브월드 디자인 개선
-status: Ready to execute Wave 1
-stopped_at: "Phase 14 planned (14-01-PLAN.md: Wave 1 Plain & Vanilla biomes decorative theming / Wave 2 Modded biomes theming & JIT safety); ready to execute Wave 1"
+status: Milestone v1.1 Complete
+stopped_at: "Milestone v1.1 complete (Phase 11, 12, 13, 14 verified with 0 errors/warnings across all 9 arena subworlds); ready to archive milestone"
 last_updated: "2026-08-15T00:00:00.000Z"
 last_activity: 2026-08-15
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 4
-  completed_plans: 3
-  percent: 75
+  completed_plans: 4
+  percent: 100
 ---
 
 # Project State
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-15)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** v1.1 (아레나 서브월드 디자인 개선), Phase 14: Per-Biome Decorative Theming -- 14-01-PLAN.md created (Wave 1: Plain & Vanilla biomes, Wave 2: Modded biomes), ready to execute Wave 1. v1.0 MVP history preserved in .planning/MILESTONES.md and .planning/milestones/v1.0-ROADMAP.md.
+**Current focus:** v1.1 (아레나 서브월드 디자인 개선) -- Complete! All 9 arena subworlds retrofitted with boundary containment, 3-tier platforms, torches, return portals, and biome decorative theming.
 
 ## Current Position
 
 Phase: 14 of 14 (Per-Biome Decorative Theming)
-Plan: 01 of 01 (14-01-PLAN.md, Wave 1)
-Status: Ready to execute Wave 1 (DECOR-01, DECOR-02: background walls & accents for Plain, Corruption, Hallow, Underworld, Space, Jungle, Desert). Next: Execute Wave 1.
+Plan: 01 of 01 (14-01-PLAN.md)
+Status: Milestone v1.1 Complete (15/15 requirements satisfied).
 
 ### Old Duke Descope -- RESOLVED (2026-08-15)
 

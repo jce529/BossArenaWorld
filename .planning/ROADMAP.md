@@ -34,7 +34,7 @@ Full phase details, success criteria, and requirements: [milestones/v1.0-ROADMAP
 - [x] **Phase 11: Shared Arena-Polish Foundation (Plain Arena)** (1/1 plans) — completed 2026-08-15
 - [x] **Phase 12: Entry & Exit Convenience** (1/1 plans) — completed 2026-08-15
 - [x] **Phase 13: Boundary & Tier Extension to All Biome Variants** (1/1 plans) — completed 2026-08-15
-- [ ] **Phase 14: Per-Biome Decorative Theming** - Add biome-legible decoration to all 9 arenas, additive to each biome's existing qualifying tile set.
+- [x] **Phase 14: Per-Biome Decorative Theming** (1/1 plans) — completed 2026-08-15
 
 ## Phase Details
 
@@ -83,7 +83,7 @@ Full phase details, success criteria, and requirements: [milestones/v1.0-ROADMAP
   2. After decoration, every biome-gated arena's Zone flag still reads true on entry — decoration tiles are additive to/drawn from the existing qualifying tile set, not a replacement.
   3. Astral and Briar's new decoration code lives entirely inside their existing JIT-tagged `ApplyPass()` methods — confirmed by code inspection plus the Phase 13 disable-mod smoke test still passing after decoration is added.
 **Plans**: 1 plan
-  - [ ] 14-01-PLAN.md: Decorative theming for all 9 arenas (Wave 1: Plain & Vanilla biomes, Wave 2: Modded biomes)
+  - [x] 14-01-PLAN.md: Decorative theming for all 9 arenas (Wave 1: Plain & Vanilla biomes, Wave 2: Modded biomes) — completed 2026-08-15
 
 ## Progress
 
@@ -105,5 +105,5 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 11. Shared Arena-Polish Foundation (Plain Arena) | v1.1 | 1/1 | Complete | 2026-08-15 |
 | 12. Entry & Exit Convenience | v1.1 | 1/1 | Complete | 2026-08-15 |
 | 13. Boundary & Tier Extension to All Biome Variants | v1.1 | 1/1 | Complete | 2026-08-15 |
-| 14. Per-Biome Decorative Theming | v1.1 | 0/1 | Planned | - |
+| 14. Per-Biome Decorative Theming | v1.1 | 1/1 | Complete | 2026-08-15 |
 </content>

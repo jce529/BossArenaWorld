@@ -1,4 +1,5 @@
 using Terraria;
+using Terraria.ID;
 using Terraria.IO;
 using Terraria.WorldBuilding;
 using Terraria.ModLoader;
@@ -43,6 +44,10 @@ namespace BossArenaSubWorld.Subworlds
 
 			ushort briarGrass = (ushort)ModContent.TileType<BriarGrass>();
 
+			// Fill themed background wall behind the arena tiers (DECOR-01, DECOR-03)
+			ushort briarWall = ModContent.TryFind<ModWall>("SpiritMod", "BriarWallUnsafe", out ModWall w) ? (ushort)w.Type : (ushort)WallID.JungleUnsafe;
+			ArenaBuilder.FillWall(0, Main.maxTilesX, surfaceY - 60, surfaceY + thickness, briarWall);
+
 			for (int x = 0; x < Main.maxTilesX; x++)
 			{
 				for (int y = surfaceY; y < surfaceY + thickness; y++)
@@ -55,6 +60,9 @@ namespace BossArenaSubWorld.Subworlds
 
 			Main.spawnTileX = Main.maxTilesX / 2;
 			Main.spawnTileY = surfaceY - 3;
+
+			// Place campfire for arena theming (DECOR-01)
+			WorldGen.PlaceTile(Main.spawnTileX - 4, surfaceY - 1, TileID.Campfire, mute: true, forced: true, style: 6);
 		}
 	}
 }
