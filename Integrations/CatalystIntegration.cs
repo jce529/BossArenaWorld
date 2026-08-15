@@ -47,6 +47,17 @@ namespace BossArenaSubWorld.Integrations
             // exists in its AI (06-RESEARCH.md). Falls back to the default
             // BossArenaSubworld automatically.
 
+            // Judgment call, investigated and resolved (quick task 260815-u7g): RequiresInfernumToggle
+            // deliberately LEFT at its default (false) here. Astrageldon is a CatalystMod-native boss
+            // (CatalystMod.NPCs.Boss.Astrageldon), not one of CalamityMod's own boss NPC types that
+            // InfernumMode reworks. Confirmed via ilspycmd decompile of the installed
+            // Libs/InfernumMode.dll (2097 types enumerated): zero references to "Astrageldon" or
+            // "Catalyst" anywhere in the assembly -- InfernumMode has no AI override, hook, or type
+            // reference targeting Astrageldon at all, unlike Providence/Profaned Guardians/Astrum
+            // Deus/Astrum Aureus (all CalamityMod NPC types Infernum explicitly reworks). The Old
+            // Duke precedent (NoxusBoss's FUCKYOUOLDDUKESystem hijacking Old Duke when InfernumMode's
+            // toggle reads false) was also a NoxusBoss-specific special case hardcoded for Calamity's
+            // own Old Duke NPC type, not a generic pattern -- no equivalent risk found for Astrageldon.
             BossRegistry.Register("catalyst:astrageldon", new BossDefinition(
                 NpcTypes: new[] { npcType },
                 ApplyDowned: ApplyAstrageldonDowned,

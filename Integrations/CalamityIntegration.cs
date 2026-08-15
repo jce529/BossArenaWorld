@@ -302,7 +302,8 @@ namespace BossArenaSubWorld.Integrations
             BossRegistry.Register("calamity:providence", new BossDefinition(
                 NpcTypes: new[] { npcType },
                 ApplyDowned: ApplyProvidenceDowned,
-                IsDowned: IsProvidenceDowned));
+                IsDowned: IsProvidenceDowned,
+                RequiresInfernumToggle: true));
         }
         [JITWhenModsEnabled("CalamityMod")]
         private static bool IsProvidenceDowned() => CalamityMod.DownedBossSystem.downedProvidence;
@@ -344,7 +345,8 @@ namespace BossArenaSubWorld.Integrations
             BossRegistry.Register("calamity:profaned_guardians", new BossDefinition(
                 NpcTypes: new[] { npcType },
                 ApplyDowned: ApplyProfanedGuardiansDowned,
-                IsDowned: IsProfanedGuardiansDowned));
+                IsDowned: IsProfanedGuardiansDowned,
+                RequiresInfernumToggle: true));
         }
         [JITWhenModsEnabled("CalamityMod")]
         private static bool IsProfanedGuardiansDowned() => CalamityMod.DownedBossSystem.downedGuardians;
@@ -379,7 +381,8 @@ namespace BossArenaSubWorld.Integrations
             BossRegistry.Register("calamity:astrum_deus", new BossDefinition(
                 NpcTypes: new[] { npcType },
                 ApplyDowned: ApplyAstrumDeusDowned,
-                IsDowned: IsAstrumDeusDowned));
+                IsDowned: IsAstrumDeusDowned,
+                RequiresInfernumToggle: true));
         }
         [JITWhenModsEnabled("CalamityMod")]
         private static bool IsAstrumDeusDowned() => CalamityMod.DownedBossSystem.downedAstrumDeus;
@@ -412,7 +415,8 @@ namespace BossArenaSubWorld.Integrations
             BossRegistry.Register("calamity:astrum_aureus", new BossDefinition(
                 NpcTypes: new[] { npcType },
                 ApplyDowned: ApplyAstrumAureusDowned,
-                IsDowned: IsAstrumAureusDowned));
+                IsDowned: IsAstrumAureusDowned,
+                RequiresInfernumToggle: true));
         }
         [JITWhenModsEnabled("CalamityMod")]
         private static bool IsAstrumAureusDowned() => CalamityMod.DownedBossSystem.downedAstrumAureus;
