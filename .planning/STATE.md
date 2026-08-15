@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: Phase 10 and Phase 8 both closed. No blockers remain for v1.
-stopped_at: "Quick task 260815-u7g complete (BossDefinition.RequiresInfernumToggle explicit flag replaces bossKey.StartsWith("calamity:") heuristic); The Old Duke descoped from v1 (quick task 260815-024); Phase 10 (10-06) and Phase 8 (08-04) both closed"
-last_updated: "2026-08-15T12:59:09.232Z"
+milestone: v1.1
+milestone_name: 아레나 서브월드 디자인 개선
+status: Defining requirements
+stopped_at: "Milestone v1.1 (아레나 서브월드 디자인 개선) started; requirements not yet defined"
+last_updated: "2026-08-15T00:00:00.000Z"
 last_activity: 2026-08-15
 progress:
-  total_phases: 10
-  completed_phases: 10
-  total_plans: 36
-  completed_plans: 36
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-15)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** v1.0 MVP shipped 2026-08-15 (see .planning/MILESTONES.md and .planning/milestones/v1.0-ROADMAP.md) -- planning next milestone via `/gsd:new-milestone`
+**Current focus:** v1.1 (아레나 서브월드 디자인 개선) started 2026-08-15 -- defining requirements and roadmap. v1.0 MVP history preserved in .planning/MILESTONES.md and .planning/milestones/v1.0-ROADMAP.md.
 
 ## Current Position
 
-Phase: 10 (full-calamity-spirit-boss-roster-registration-and-biome-subworld-routing) — COMPLETE (2026-08-15)
-Plan: 6 of 6 complete (10-01..10-06). The Old Duke removed from v1 scope (quick task 260815-024) after its despawn bug was root-caused and a general fix implemented, but Old Duke itself still descoped by user decision; all other 17 bosses + the full Infernum-conditional gating matrix + polymorphic item + forced-night persistence + mod-disabled JIT safety were already user-confirmed passing live this session -- see 10-06-SUMMARY.md.
-Status: Phase 10 and Phase 8 both closed. No blockers remain for v1.
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements — Milestone v1.1 (아레나 서브월드 디자인 개선) started 2026-08-15
 
 ### Old Duke Descope -- RESOLVED (2026-08-15)
 

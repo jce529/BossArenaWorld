@@ -10,9 +10,19 @@ v1.0 MVP is shipped: the full subworld-kill → carrier-item → main-world-appl
 
 Deliberately out of v1: The Old Duke (Calamity boss, despawn bug root-caused and a general fix kept, but the boss itself descoped by user decision), NoxusBoss, Exo Mechs, Starplate Voyager, Dungeon/Sulphurous Sea biome variants, and multiplayer — see Out of Scope below.
 
-## Next Milestone Goals
+## Current Milestone: v1.1 아레나 서브월드 디자인 개선
 
-Not yet defined. Run `/gsd:new-milestone` to scope v1.1 (candidates surfaced during v1.0: Dungeon/Sulphurous Sea biome variants for Polterghast, a re-attempt at The Old Duke, multiplayer support).
+**Goal:** 기존 8개 아레나 서브월드(기본 플레인 아레나 + 7개 바이옴 변형)의 시각적 완성도, 공간 설계, 진입/퇴장 편의성을 개선한다.
+
+**Target features:**
+- 바이옴별 테마에 맞는 시각 디자인 (타일/배경/장식을 각 바이옴 특성에 맞게 — 현재는 Zone 플래그만 만족시키는 최소한의 타일 배치)
+- 낙사/함정 방지 (테두리 벽 등 안전장치)
+- 보스 공격 패턴에 맞는 다층 플랫폼 구조
+- 일정 거리마다 횃불 배치로 광원 확보
+- 너무 높거나 낮은 Y값 이동을 막는 경계 블록
+- 아레나 진입/퇴장 편의 (귀환 포탈/버튼 배치, 준비 시간 확보)
+
+**Scope:** 기존 8개 아레나 서브월드 모두 리토픽. 신규 바이옴(Dungeon/Sulphurous Sea) 추가, 리소스/버프 지점, UI 알림 기능은 이번 마일스톤에서 제외.
 
 ## Core Value
 
@@ -38,7 +48,7 @@ The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegis
 
 ### Active
 
-None yet — v1.0 shipped 2026-08-15. Run `/gsd:new-milestone` to define v1.1 requirements.
+v1.1 requirements being defined — see `.planning/REQUIREMENTS.md` once written.
 
 ### Out of Scope
 
@@ -117,4 +127,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-15 — v1.0 MVP milestone complete*
+*Last updated: 2026-08-15 — v1.1 milestone started (아레나 서브월드 디자인 개선)*
