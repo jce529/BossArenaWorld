@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 아레나 서브월드 디자인 개선
-status: Defining requirements
-stopped_at: "Milestone v1.1 (아레나 서브월드 디자인 개선) started; requirements not yet defined"
+status: Ready to plan
+stopped_at: "v1.1 ROADMAP.md revised per user feedback (Phases 11-14, was 11-15: Entry & Exit Convenience moved to Phase 12, vanilla+modded biome extension merged into Phase 13); 15/15 requirements mapped; ready to plan Phase 11"
 last_updated: "2026-08-15T00:00:00.000Z"
 last_activity: 2026-08-15
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-15)
 
 **Core value:** The generic boss-kill → carrier-item → main-world-apply mechanism (BossRegistry + BossCoreItem + GlobalNPC) must reliably reproduce a boss's full "downed" state — flags, netcode sync, and any WorldGen side effects — for any registered boss.
-**Current focus:** v1.1 (아레나 서브월드 디자인 개선) started 2026-08-15 -- defining requirements and roadmap. v1.0 MVP history preserved in .planning/MILESTONES.md and .planning/milestones/v1.0-ROADMAP.md.
+**Current focus:** v1.1 (아레나 서브월드 디자인 개선), Phase 11: Shared Arena-Polish Foundation (Plain Arena) -- ROADMAP.md revised 2026-08-15 (Phases 11-14, was 11-15; 15/15 requirements mapped), ready to plan. v1.0 MVP history preserved in .planning/MILESTONES.md and .planning/milestones/v1.0-ROADMAP.md.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements — Milestone v1.1 (아레나 서브월드 디자인 개선) started 2026-08-15
+Phase: 11 of 14 (Shared Arena-Polish Foundation (Plain Arena))
+Plan: TBD -- not yet planned
+Status: Ready to plan -- ROADMAP.md revised 2026-08-15 (Phases 11-14, was 11-15: Entry & Exit Convenience moved to Phase 12, vanilla/modded biome extension merged into Phase 13; 15/15 v1.1 requirements re-mapped, 100% coverage preserved). Next: `/gsd:plan-phase 11`.
 
 ### Old Duke Descope -- RESOLVED (2026-08-15)
 
@@ -252,6 +252,8 @@ Recent decisions affecting current work:
 - Phase 9 scope reduced 9→7 biome variants (D-07, 2026-08-14): Dungeon and Sulphurous Sea removed from Phase 9's build scope mid-execution by user decision, after both had already been built once. See 09-CONTEXT.md D-07 and the Decisions entry above for full detail.
 - Phase 10 added (2026-08-14): Full Calamity/Spirit boss roster registration and biome subworld routing — user requested during Phase 6 execution, after confirming only one worked-example boss per mod (Hive Mind/Calamity, Infernon/Spirit) is currently registered despite Phase 9's 09-ALTAR-BIOME-REFERENCE.md already having biome-classified the full researched roster (Astrum Deus/Aureus, Vinewrath Bane, etc.). This expands v1 scope beyond the "one boss per mod, prove the pattern" discipline used in Phases 3-6 — full-roster registration was previously deferred/unscheduled (see PROJECT.md Out of Scope: "no boss priority ordering"). Needs its own `/gsd:discuss-phase 10` and research/planning pass before execution.
 - Phase 7 rescoped (2026-08-14, discuss-phase): NoxusBoss (Devourer of Universes) removed from v1 scope entirely — user decision, most NoxusBoss bosses are quest-triggered (Solyn's moon-event questline) or already run in their own dedicated subworld/arena mechanic, don't fit the carrier-item pattern; no plan to revisit. MOD-05 marked Removed in REQUIREMENTS.md, moved to PROJECT.md Out of Scope. Phase 7 renamed "ContinentOfJourney/Daybreak (Homeward Journey) Integration", ROADMAP.md Goal/Success Criteria/Requirements trimmed to MOD-06 only. Also resolved during the same discuss-phase: "ContinentOfJourney" identified as **Homeward Journey** (GabeHasWon, Steam Workshop id 2930931197) — user supplied the link directly, confirming the guess that the phase title's "(Homeward series)" parenthetical was the actual pointer (09-ALTAR-BIOME-REFERENCE.md Open Item 1, previously unresolved across two research passes). "Daybreak" reconfirmed as `gold-meridian/daybreak-mod`, a boss-less library dependency of Wrath of the Gods.
+- v1.1 ROADMAP.md created (2026-08-15): Phases 11-15 derived from research/SUMMARY.md's suggested sequencing (shared foundation on plain arena -> vanilla biome extension -> modded biome extension -> per-biome decoration -> entry/exit convenience). All 15 v1.1 requirements (BOUND-01..04, TIER-01..03, LIGHT-01..02, DECOR-01..03, ENTRY-01..03) mapped to exactly one phase each based on where each requirement's "every one of the 9 arenas" claim first becomes fully true and live-verifiable: BOUND-03/TIER-01/LIGHT-01/LIGHT-02 -> Phase 11 (foundation, established once); BOUND-01/BOUND-02/TIER-02/TIER-03 -> Phase 12 (completed across the 6 vanilla arenas, including the Desert/Jungle tightest-margin drift check); BOUND-04 -> Phase 13 (JIT-safety only provable once Astral/Briar actually call the shared helper); DECOR-01..03 -> Phase 14; ENTRY-01..03 -> Phase 15. 100/100 coverage, no orphans.
+- v1.1 ROADMAP.md revised (2026-08-15, same day, pre-execution): user feedback compressed the 5-phase draft above to 4 phases. (1) Entry & Exit Convenience moved from Phase 15 (last) to Phase 12 (immediately after the shared foundation phase) -- re-verified during the revision that this phase is systems-layer (`Systems/`/`Tiles/`) with no dependency on the shared arena-polish layer or any biome-extension phase, per research/SUMMARY.md's own stated architectural independence; `Depends on: Nothing` in ROADMAP.md. (2) The vanilla-biome (Corruption/Hallow/Underworld/Jungle/Space/Desert) and modded-biome (Astral/Briar) boundary/tier extension phases merged into one combined Phase 13 covering all 8 biome variants, preserving the original two phases' internal sequencing logic as explicit success criteria (Astral/Briar's CalamityMod-disabled/SpiritMod-disabled JIT-safety smoke tests remain required acceptance criteria within the merged phase, not dropped). Requirement-to-phase mapping updated: BOUND-01/02/04 + TIER-02/03 -> Phase 13 (was Phase 12/13 split); ENTRY-01..03 -> Phase 12 (was Phase 15); BOUND-03/TIER-01/LIGHT-01/LIGHT-02 -> Phase 11 (unchanged); DECOR-01..03 -> Phase 14 (unchanged, still depends on Phase 13). 15/15 coverage preserved, no orphans.
 
 ### Pending Todos
 
@@ -279,7 +281,7 @@ Last activity: 2026-08-15 - Completed quick task 260815-u7g: BossDefinition에 �
 ## Session Continuity
 
 Last session: 2026-08-15T00:00:00.000Z
-Stopped at: Quick task 260815-u7g complete (BossDefinition.RequiresInfernumToggle explicit flag replaces bossKey.StartsWith("calamity:") heuristic); The Old Duke descoped from v1 (quick task 260815-024); Phase 10 (10-06) and Phase 8 (08-04) both closed
+Stopped at: v1.1 ROADMAP.md revised per user feedback (Phases 11-14, was 11-15: Entry & Exit Convenience moved to Phase 12, vanilla+modded biome extension merged into Phase 13); REQUIREMENTS.md traceability updated; all 15 v1.1 requirements re-mapped, 100% coverage preserved; ready to plan Phase 11 (`/gsd:plan-phase 11`)
 Resume file: none -- no open blockers
 
 **What's in flight when this session ends:**
@@ -290,5 +292,7 @@ Resume file: none -- no open blockers
 4. Phase 10 is COMPLETE (6/6) -- 10-06 closed 2026-08-15 for the resulting 17-boss roster.
 5. Worktree setup note (historical, from earlier this session's code-writing waves): gitignored `Libs/*.dll` compile-time references were missing in each fresh worktree and were copied from the main working tree before each first build; they remain gitignored, not committed. `Libs/InfernumMode.dll` was also copied into the main working tree's `Libs/` folder (from `../ModAssemblies/InfernumMode_v2.0.1.35.dll`) so master itself can build Plan 10-05's code.
 6. Build-lock note: immediately after merging Plan 10-05, `dotnet build` failed with `TML003: Please close tModLoader or disable the mod in-game to build mods directly` (C# compiles clean, 0 errors -- only `.tmod` packaging was locked because tModLoader was running). The user was told to close tModLoader and rebuild before live-testing Wave 4/5 content; unclear whether a fresh successful build has been confirmed since (worth re-checking `dotnet build BossArenaSubWorld.csproj` at the start of the next session if any doubt exists about whether the currently-loaded `.tmod` matches the latest merged code).
+7. v1.1 ROADMAP.md/REQUIREMENTS.md revised this session (Phases 11-15 -> 11-14) per explicit user feedback, before any Phase 11 planning/execution began -- no plans, code, or worktrees exist yet for v1.1, so the revision touched only planning artifacts (ROADMAP.md, REQUIREMENTS.md, STATE.md), nothing in-flight to reconcile.
 
 All planning artifacts (CONTEXT/RESEARCH/VALIDATION/PLAN/ROADMAP/REQUIREMENTS/PROJECT/STATE) through this point are committed to git except this STATE.md update itself (about to be committed) -- nothing is lost.
+</content>

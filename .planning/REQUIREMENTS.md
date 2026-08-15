@@ -68,27 +68,28 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BOUND-01 | TBD | Pending |
-| BOUND-02 | TBD | Pending |
-| BOUND-03 | TBD | Pending |
-| BOUND-04 | TBD | Pending |
-| TIER-01 | TBD | Pending |
-| TIER-02 | TBD | Pending |
-| TIER-03 | TBD | Pending |
-| LIGHT-01 | TBD | Pending |
-| LIGHT-02 | TBD | Pending |
-| DECOR-01 | TBD | Pending |
-| DECOR-02 | TBD | Pending |
-| DECOR-03 | TBD | Pending |
-| ENTRY-01 | TBD | Pending |
-| ENTRY-02 | TBD | Pending |
-| ENTRY-03 | TBD | Pending |
+| BOUND-01 | Phase 13 | Pending |
+| BOUND-02 | Phase 13 | Pending |
+| BOUND-03 | Phase 11 | Pending |
+| BOUND-04 | Phase 13 | Pending |
+| TIER-01 | Phase 11 | Pending |
+| TIER-02 | Phase 13 | Pending |
+| TIER-03 | Phase 13 | Pending |
+| LIGHT-01 | Phase 11 | Pending |
+| LIGHT-02 | Phase 11 | Pending |
+| DECOR-01 | Phase 14 | Pending |
+| DECOR-02 | Phase 14 | Pending |
+| DECOR-03 | Phase 14 | Pending |
+| ENTRY-01 | Phase 12 | Pending |
+| ENTRY-02 | Phase 12 | Pending |
+| ENTRY-03 | Phase 12 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 15 total
-- Mapped to phases: 0 (pending roadmap creation)
-- Unmapped: 15 ⚠️ (expected — roadmap not yet created)
+- Mapped to phases: 15/15 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-08-15*
-*Last updated: 2026-08-15 — initial v1.1 requirements definition*
+*Last updated: 2026-08-15 — roadmap revised per user feedback (Phases 11-14, was 11-15): Entry & Exit Convenience moved to Phase 12 (was Phase 15); vanilla-biome and modded-biome boundary/tier extension phases merged into one combined Phase 13. All 15 v1.1 requirements re-mapped, 100% coverage preserved.*
+</content>
