@@ -71,7 +71,8 @@ Full phase details, success criteria, and requirements: [milestones/v1.0-ROADMAP
   3. Climbing to the highest platform tier in Desert and Jungle (tightest vanilla tile-weight margins) does not flip ZoneDesert/ZoneJungle false mid-fight — confirmed live by checking the Zone flag from the top tier.
   4. Each of the 8 biome arenas' pre-existing Zone/Biome-flag qualification (including Desert's 1500-weight threshold and Astral/Briar's modded `IsBiomeActive` checks) is unchanged after adding tiers — the flag still reads true on entry exactly as it did pre-retrofit.
   5. Loading the mod with CalamityMod disabled succeeds without a JITException (Astral), and loading with SpiritMod disabled succeeds without a JITException (Briar) — confirming the shared `ArenaBuilder`/`ArenaPolishPass` public API stayed strictly primitive-typed and introduced no new JIT-unsafe surface reachable from either arena's untagged call path.
-**Plans**: TBD
+**Plans**: 1 plan
+  - [ ] 13-01-PLAN.md: Boundary and multi-tier platform extension to all 8 biome arenas (Wave 1: Vanilla biomes, Wave 2: Modded biomes)
 
 ### Phase 14: Per-Biome Decorative Theming
 **Goal**: All 9 arenas read as visually distinct, biome-legible spaces rather than minimal Zone-flag-satisfying platforms, without regressing any biome's tile-weight budget or JIT safety.
@@ -102,6 +103,6 @@ Phases execute in numeric order: 11 → 12 → 13 → 14
 | 10. Full Calamity/Spirit Boss Roster Registration & Biome Subworld Routing | v1.0 | 6/6 | Complete | 2026-08-15 |
 | 11. Shared Arena-Polish Foundation (Plain Arena) | v1.1 | 1/1 | Complete | 2026-08-15 |
 | 12. Entry & Exit Convenience | v1.1 | 1/1 | Complete | 2026-08-15 |
-| 13. Boundary & Tier Extension to All Biome Variants | v1.1 | 0/TBD | Not started | - |
+| 13. Boundary & Tier Extension to All Biome Variants | v1.1 | 0/1 | Planned | - |
 | 14. Per-Biome Decorative Theming | v1.1 | 0/TBD | Not started | - |
 </content>
